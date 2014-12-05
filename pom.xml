@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>ontologizer</groupId>
   <artifactId>ontologizer.parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -8,33 +10,32 @@
   <!-- Our local repository. We won't like to depend on external ones so - 
        the software can be still compiled with Eclipse without a Maven - plugin -->
   <repositories>
-   <repository>
-    <id>ontologizer-dependency-repo</id>
-    <url>file://${basedir}/../core/local-maven-repo</url>
-   </repository>
+    <repository>
+      <id>ontologizer-dependency-repo</id>
+      <url>file://${basedir}/../core/local-maven-repo</url>
+    </repository>
   </repositories>
 
   <build>
-   <plugins>
-    <plugin>
-     <groupId>org.apache.maven.plugins</groupId>
-     <artifactId>maven-compiler-plugin</artifactId>
-     <version>2.3.2</version>
-     <configuration>
-     <source>1.6</source>
-     <target>1.6</target>
-     </configuration>
-    </plugin>
-   </plugins>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-  
+
   <modules>
-  	<module>core</module>
-  	<module>svd</module>
-  	<module>tests</module>
-  	<module>gui</module>
-	<module>cmdline</module>
-	<module>benchmark</module>
+    <module>core</module>
+    <module>svd</module>
+    <module>tests</module>
+    <module>gui</module>
+    <module>cmdline</module>
+    <module>benchmark</module>
   </modules>
-  
 </project>
