@@ -6,36 +6,6 @@
      Try ant -projecthelp if you are new to ant.
     </description>
 
-	<!-- Target for building the version containing class. Requires svn command. -->
-	<target name="version">
-
-		<exec executable="svn" outputproperty="svn.info">
-			<arg value="info"/>
-			<arg path="${basedir}/src"/>
-		</exec>
-		<exec executable="grep" outputproperty="grep.out" inputstring="${svn.info}">
-			<arg value="^Revision:"/>
-		</exec>
-
-		<exec executable="sed" outputproperty="svn.revision" inputstring="${grep.out}">
-			<arg value="s/Revision: //"/>
-		</exec>
-		
-		<tstamp>
-		    <format property="DATE" pattern="yyyyMMdd" locale="ENGLISH, GERMANY"/>
-		</tstamp>
-		
-		<echo file="${basedir}/src/ontologizer/BuildInfoData.java">
-package ontologizer;
-
-public class BuildInfoData {
-	public static final String revisionNumber="${svn.revision}";
-	public static final String date ="${DATE}";
-}
-		</echo>
-
-	</target>
-
 	<!-- INITIALIZE BUILD -->
 
 	<target name="init">
@@ -82,7 +52,7 @@ public class BuildInfoData {
 
 	<!-- MAIN TARGET FOR COMPILING ONTOLOGIZER SOURCE -->
 
-	<target name="compile" depends="init,version" description="compile the main source">
+	<target name="compile" depends="init" description="compile the main source">
 		<mkdir dir="${build.classes}" />
 		<javac destdir="${build.classes}" debug="${debug}" verbose="yes">
 			<src path="${src.dir}" /> 

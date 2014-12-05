@@ -1,7 +1,7 @@
 
 package ontologizer;
 
-import java.lang.reflect.Field;
+import java.util.ResourceBundle;
 
 /**
  * Simple class to get some info about the current
@@ -14,31 +14,23 @@ public class BuildInfo
 {
 	private static String revisionNumber="NA";
 	private static String date ="NA";
-	private static String version = "2.1";
+	private static String version = "NA";
 	private static String copyright = "2005-2012";
 	private static boolean infoExtracted = false;
 
-
 	/**
-	 * Extract the info stored in BuildInfoData.class.
+	 * Extract the info stored in {@code ontologizer.properties}.
 	 */
 	private static void extractInfo()
 	{
 		if (infoExtracted)
 			return;
 		
-		try {
-			Class<?> c = Class.forName("ontologizer.BuildInfoData");
-			Field r = c.getField("revisionNumber");
-			Field d = c.getField("date");
-			revisionNumber = (String)r.get(null);
-			date = (String)d.get(null);
-		} catch (ClassNotFoundException e) {
-		} catch (SecurityException e) {
-		} catch (NoSuchFieldException e) {
-		} catch (IllegalArgumentException e) {
-		} catch (IllegalAccessException e) {
-		}
+		ResourceBundle properties = ResourceBundle.getBundle("ontologizer");
+		revisionNumber = properties.getString("build.revision");
+		date = properties.getString("build.date");
+		copyright = copyright.substring(0, copyright.indexOf('-')) + '-' + date.substring(0, date.indexOf('-'));
+		version = properties.getString("application.version");
 		infoExtracted = true;
 	}
 	
