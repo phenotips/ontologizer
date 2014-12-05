@@ -10,10 +10,6 @@
   <artifactId>ontologizer.gui</artifactId>
   <name>Ontologizer - GUI</name>
 
-  <properties>
-    <swt.version>3.7.1</swt.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>net.sourceforge.nattable</groupId>

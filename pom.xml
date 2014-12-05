@@ -33,12 +33,6 @@
   </distributionManagement>
 
   <repositories>
-    <!-- Our local repository. We won't like to depend on external ones so
-         the software can be still compiled with Eclipse without a Maven - plugin -->
-    <repository>
-      <id>ontologizer-dependency-repo</id>
-      <url>file://${basedir}/../core/local-maven-repo</url>
-    </repository>
     <repository>
       <id>phenotips-releases</id>
       <name>PhenoTips Releases repository</name>
