@@ -8,6 +8,7 @@
     <version>2.1-SNAPSHOT</version>
   </parent>
   <artifactId>ontologizer</artifactId>
+  <name>Ontologizer - Core library</name>
 
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>

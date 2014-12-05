@@ -9,6 +9,7 @@
     <version>2.1-SNAPSHOT</version>
   </parent>
   <artifactId>ontologizer.benchmark</artifactId>
+  <name>Ontologizer - Benchmarking jar</name>
 
   <dependencies>
     <dependency>
