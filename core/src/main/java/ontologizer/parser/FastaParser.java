@@ -39,7 +39,7 @@ public final class FastaParser extends AbstractItemParser
     public void parseSource(IParserCallback callback) throws IOException
     {
         String inputLine;
-        BufferedReader is = new BufferedReader(new FileReader(file));
+        BufferedReader is = new BufferedReader(new FileReader(this.file));
 
         while ((inputLine = is.readLine()) != null)
         {

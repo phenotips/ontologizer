@@ -22,7 +22,7 @@ class GeneIDs
 
     public GeneIDs(int size)
     {
-        gid = new int[size];
+        this.gid = new int[size];
     }
 }
 
@@ -116,42 +116,42 @@ abstract public class Bayes2GOScore
         this.rnd = rnd;
 
         /* Initialize basics of genes */
-        population = populationEnumerator.getGenes();
-        genes = new ByteString[population.size()];
-        observedGenes = new boolean[genes.length];
+        this.population = populationEnumerator.getGenes();
+        this.genes = new ByteString[this.population.size()];
+        this.observedGenes = new boolean[this.genes.length];
         i = 0;
-        for (ByteString g : population)
+        for (ByteString g : this.population)
         {
-            gene2GenesIdx.put(g, i);
-            genes[i] = g;
-            observedGenes[i] = observedActiveGenes.contains(g);
+            this.gene2GenesIdx.put(g, i);
+            this.genes[i] = g;
+            this.observedGenes[i] = observedActiveGenes.contains(g);
             i++;
         }
-        activeHiddenGenes = new int[population.size()];
+        this.activeHiddenGenes = new int[this.population.size()];
 
         /* Initialize basics of terms */
-        isActive = new boolean[termList.size()];
-        termsArray = new TermID[termList.size()];
-        termPartition = new int[termList.size()];
-        positionOfTermInPartition = new int[termList.size()];
-        numInactiveTerms = termList.size();
-        termActivationCounts = new int[termList.size()];
-        termLinks = new GeneIDs[termList.size()];
+        this.isActive = new boolean[termList.size()];
+        this.termsArray = new TermID[termList.size()];
+        this.termPartition = new int[termList.size()];
+        this.positionOfTermInPartition = new int[termList.size()];
+        this.numInactiveTerms = termList.size();
+        this.termActivationCounts = new int[termList.size()];
+        this.termLinks = new GeneIDs[termList.size()];
 
         i = 0;
         for (TermID tid : termList)
         {
-            term2TermsIdx.put(tid, i);
-            termsArray[i] = tid;
-            termPartition[i] = i;
-            positionOfTermInPartition[i] = i;
+            this.term2TermsIdx.put(tid, i);
+            this.termsArray[i] = tid;
+            this.termPartition[i] = i;
+            this.positionOfTermInPartition[i] = i;
 
             /* Fill in the links */
-            termLinks[i] = new GeneIDs(populationEnumerator.getAnnotatedGenes(tid).totalAnnotated.size());
+            this.termLinks[i] = new GeneIDs(populationEnumerator.getAnnotatedGenes(tid).totalAnnotated.size());
             int j = 0;
             for (ByteString gene : populationEnumerator.getAnnotatedGenes(tid).totalAnnotated)
             {
-                termLinks[i].gid[j] = gene2GenesIdx.get(gene);
+                this.termLinks[i].gid[j] = this.gene2GenesIdx.get(gene);
                 j++;
             }
 
@@ -168,12 +168,12 @@ abstract public class Bayes2GOScore
 
     public boolean getUsePrior()
     {
-        return usePrior;
+        return this.usePrior;
     }
 
     public void setExpectedNumberOfTerms(double terms)
     {
-        p = terms / termsArray.length;
+        this.p = terms / this.termsArray.length;
     }
 
     /**
@@ -184,9 +184,9 @@ abstract public class Bayes2GOScore
      */
     public double score(Collection<TermID> activeTerms)
     {
-        int[] oldTerms = new int[termsArray.length - numInactiveTerms];
-        for (int i = numInactiveTerms, j = 0; i < termsArray.length; i++, j++) {
-            oldTerms[j] = termPartition[i];
+        int[] oldTerms = new int[this.termsArray.length - this.numInactiveTerms];
+        for (int i = this.numInactiveTerms, j = 0; i < this.termsArray.length; i++, j++) {
+            oldTerms[j] = this.termPartition[i];
         }
 
         /* Deactivate old terms */
@@ -197,7 +197,7 @@ abstract public class Bayes2GOScore
         /* Enable new terms */
         for (TermID tid : activeTerms)
         {
-            Integer idx = term2TermsIdx.get(tid);
+            Integer idx = this.term2TermsIdx.get(tid);
             if (idx != null) {
                 switchState(idx);
             }
@@ -208,7 +208,7 @@ abstract public class Bayes2GOScore
         /* Disable new terms */
         for (TermID tid : activeTerms)
         {
-            Integer idx = term2TermsIdx.get(tid);
+            Integer idx = this.term2TermsIdx.get(tid);
             if (idx != null) {
                 switchState(idx);
             }
@@ -233,7 +233,7 @@ abstract public class Bayes2GOScore
 
     public void proposeNewState()
     {
-        proposeNewState(rnd.nextLong());
+        proposeNewState(this.rnd.nextLong());
     }
 
     public abstract void hiddenGeneActivated(int gid);
@@ -246,21 +246,21 @@ abstract public class Bayes2GOScore
     {
         // long enterTime = System.nanoTime();
 
-        int[] geneIDs = termLinks[toSwitch].gid;
+        int[] geneIDs = this.termLinks[toSwitch].gid;
 
-        isActive[toSwitch] = !isActive[toSwitch];
-        if (isActive[toSwitch])
+        this.isActive[toSwitch] = !this.isActive[toSwitch];
+        if (this.isActive[toSwitch])
         {
             /* A term was added, activate/deactivate genes */
             for (int gid : geneIDs)
             {
-                if (activeHiddenGenes[gid] == 0)
+                if (this.activeHiddenGenes[gid] == 0)
                 {
-                    activeHiddenGenes[gid] = 1;
+                    this.activeHiddenGenes[gid] = 1;
                     hiddenGeneActivated(gid);
                 } else
                 {
-                    activeHiddenGenes[gid]++;
+                    this.activeHiddenGenes[gid]++;
                 }
             }
 
@@ -268,31 +268,31 @@ abstract public class Bayes2GOScore
              * Move the added set from the 0 partition to the 1 partition (it essentially becomes the new first element
              * of the 1 element, while the last 0 element gets the original position of the added set)
              */
-            numInactiveTerms--;
-            if (numInactiveTerms != 0)
+            this.numInactiveTerms--;
+            if (this.numInactiveTerms != 0)
             {
-                int pos = positionOfTermInPartition[toSwitch];
-                int e0 = termPartition[numInactiveTerms];
+                int pos = this.positionOfTermInPartition[toSwitch];
+                int e0 = this.termPartition[this.numInactiveTerms];
 
                 /* Move last element in the partition to left */
-                termPartition[pos] = e0;
-                positionOfTermInPartition[e0] = pos;
+                this.termPartition[pos] = e0;
+                this.positionOfTermInPartition[e0] = pos;
                 /* Let be the newly added term the first in the partition */
-                termPartition[numInactiveTerms] = toSwitch;
-                positionOfTermInPartition[toSwitch] = numInactiveTerms;
+                this.termPartition[this.numInactiveTerms] = toSwitch;
+                this.positionOfTermInPartition[toSwitch] = this.numInactiveTerms;
             }
         } else
         {
             /* Update hiddenActiveGenes */
             for (int gid : geneIDs)
             {
-                if (activeHiddenGenes[gid] == 1)
+                if (this.activeHiddenGenes[gid] == 1)
                 {
-                    activeHiddenGenes[gid] = 0;
+                    this.activeHiddenGenes[gid] = 0;
                     hiddenGeneDeactivated(gid);
                 } else
                 {
-                    activeHiddenGenes[gid]--;
+                    this.activeHiddenGenes[gid]--;
                 }
             }
 
@@ -300,16 +300,16 @@ abstract public class Bayes2GOScore
              * Converse of above. Here the removed set, which belonged to the 1 partition, is moved at the end of the 0
              * partition while the element at that place is pushed to the original position of the removed element.
              */
-            if (numInactiveTerms != (termsArray.length - 1))
+            if (this.numInactiveTerms != (this.termsArray.length - 1))
             {
-                int pos = positionOfTermInPartition[toSwitch];
-                int b1 = termPartition[numInactiveTerms];
-                termPartition[pos] = b1;
-                positionOfTermInPartition[b1] = pos;
-                termPartition[numInactiveTerms] = toSwitch;
-                positionOfTermInPartition[toSwitch] = numInactiveTerms;
+                int pos = this.positionOfTermInPartition[toSwitch];
+                int b1 = this.termPartition[this.numInactiveTerms];
+                this.termPartition[pos] = b1;
+                this.positionOfTermInPartition[b1] = pos;
+                this.termPartition[this.numInactiveTerms] = toSwitch;
+                this.positionOfTermInPartition[toSwitch] = this.numInactiveTerms;
             }
-            numInactiveTerms++;
+            this.numInactiveTerms++;
 
         }
 
@@ -323,8 +323,8 @@ abstract public class Bayes2GOScore
 
     public void exchange(TermID t1, TermID t2)
     {
-        switchState(term2TermsIdx.get(t1));
-        switchState(term2TermsIdx.get(t2));
+        switchState(this.term2TermsIdx.get(t1));
+        switchState(this.term2TermsIdx.get(t2));
     }
 
     public abstract void undoProposal();
@@ -336,18 +336,18 @@ abstract public class Bayes2GOScore
      */
     public void record()
     {
-        for (int i = numInactiveTerms; i < termsArray.length; i++) {
-            termActivationCounts[termPartition[i]]++;
+        for (int i = this.numInactiveTerms; i < this.termsArray.length; i++) {
+            this.termActivationCounts[this.termPartition[i]]++;
         }
 
-        numRecords++;
+        this.numRecords++;
     }
 
     public ArrayList<TermID> getActiveTerms()
     {
-        ArrayList<TermID> list = new ArrayList<TermID>(termsArray.length - numInactiveTerms);
-        for (int i = numInactiveTerms; i < termsArray.length; i++) {
-            list.add(termsArray[termPartition[i]]);
+        ArrayList<TermID> list = new ArrayList<TermID>(this.termsArray.length - this.numInactiveTerms);
+        for (int i = this.numInactiveTerms; i < this.termsArray.length; i++) {
+            list.add(this.termsArray[this.termPartition[i]]);
         }
         return list;
     }

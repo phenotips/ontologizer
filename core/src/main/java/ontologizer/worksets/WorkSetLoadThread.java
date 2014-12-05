@@ -89,7 +89,7 @@ public class WorkSetLoadThread extends Thread
          */
         public void addCallback(Runnable run)
         {
-            callbacks.add(run);
+            this.callbacks.add(run);
         }
 
         /**
@@ -97,7 +97,7 @@ public class WorkSetLoadThread extends Thread
          */
         public void issueCallbacks()
         {
-            for (Runnable run : callbacks) {
+            for (Runnable run : this.callbacks) {
                 run.run();
             }
         }
@@ -105,14 +105,14 @@ public class WorkSetLoadThread extends Thread
         @Override
         public int hashCode()
         {
-            return obo.hashCode() + assoc.hashCode();
+            return this.obo.hashCode() + this.assoc.hashCode();
         }
 
         @Override
         public boolean equals(Object arg0)
         {
             Task t = (Task) arg0;
-            return t.obo.equals(obo) && t.assoc.equals(assoc);
+            return t.obo.equals(this.obo) && t.assoc.equals(this.assoc);
         }
 
         /**
@@ -123,7 +123,7 @@ public class WorkSetLoadThread extends Thread
          */
         public boolean matches(WorkSet ws)
         {
-            return ws.getAssociationPath().equals(assoc) && ws.getOboPath().equals(obo);
+            return ws.getAssociationPath().equals(this.assoc) && ws.getOboPath().equals(this.obo);
         }
     }
 
@@ -257,7 +257,7 @@ public class WorkSetLoadThread extends Thread
         });
 
         /* Our callback function */
-        fileCacheUpdateCallback = new FileCacheUpdateCallback()
+        this.fileCacheUpdateCallback = new FileCacheUpdateCallback()
         {
             /**
              * This runnable has to be called from the workset load thread. It is called whenever a new state of an URL
@@ -287,12 +287,12 @@ public class WorkSetLoadThread extends Thread
                     List<Task> toBeRemoved = new LinkedList<Task>();
 
                     /* Go through all task, check whether the URL affects any tasks */
-                    for (Task t : taskList)
+                    for (Task t : WorkSetLoadThread.this.taskList)
                     {
-                        if (url.equals(t.obo)) {
+                        if (this.url.equals(t.obo)) {
                             t.oboDownloaded = true;
                         }
-                        if (url.equals(t.assoc)) {
+                        if (this.url.equals(t.assoc)) {
                             t.assocDownloaded = true;
                         }
 
@@ -329,11 +329,11 @@ public class WorkSetLoadThread extends Thread
                         }
                     }
 
-                    taskList.removeAll(toBeRemoved);
+                    WorkSetLoadThread.this.taskList.removeAll(toBeRemoved);
 
                     /* We are not interested in further events */
-                    if (taskList.size() == 0) {
-                        FileCache.removeUpdateCallback(fileCacheUpdateCallback);
+                    if (WorkSetLoadThread.this.taskList.size() == 0) {
+                        FileCache.removeUpdateCallback(WorkSetLoadThread.this.fileCacheUpdateCallback);
                     }
                 }
             }
@@ -360,15 +360,15 @@ public class WorkSetLoadThread extends Thread
             /* Message loop */
             again: while (true)
             {
-                Message msg = messageQueue.take();
+                Message msg = this.messageQueue.take();
 
                 if (msg instanceof CallbackMessage)
                 {
                     ((CallbackMessage) msg).run.run();
                 } else if (msg instanceof CleanCacheMessage)
                 {
-                    graphMap.clear();
-                    assocMap.clear();
+                    this.graphMap.clear();
+                    this.assocMap.clear();
                 } else if (msg instanceof WorkSetMessage)
                 {
                     WorkSetMessage wsm = (WorkSetMessage) msg;
@@ -378,14 +378,15 @@ public class WorkSetLoadThread extends Thread
                     {
                         /* Check whether stuff has already been loaded. Fire if positive */
                         ObtainWorkSetMessage owsm = (ObtainWorkSetMessage) msg;
-                        if (graphMap.containsKey(ws.getOboPath()) && assocMap.containsKey(ws.getAssociationPath()))
+                        if (this.graphMap.containsKey(ws.getOboPath())
+                            && this.assocMap.containsKey(ws.getAssociationPath()))
                         {
                             owsm.callback.run();
                             continue again;
                         }
 
                         /* Check whether a similar task is pending. Add the callback if positive. */
-                        for (Task task : taskList)
+                        for (Task task : this.taskList)
                         {
                             if (task.matches(ws))
                             {
@@ -445,11 +446,11 @@ public class WorkSetLoadThread extends Thread
      */
     private void addTask(Task newTask)
     {
-        if (taskList.size() == 0) {
-            FileCache.addUpdateCallback(fileCacheUpdateCallback);
+        if (this.taskList.size() == 0) {
+            FileCache.addUpdateCallback(this.fileCacheUpdateCallback);
         }
 
-        taskList.add(newTask);
+        this.taskList.add(newTask);
     }
 
     /**
@@ -462,10 +463,10 @@ public class WorkSetLoadThread extends Thread
      * @throws OBOParserException
      */
     private Ontology loadGraph(String oboName, final IWorkSetProgress workSetProgress) throws IOException,
-        OBOParserException
+    OBOParserException
     {
         Ontology graph;
-        if (!graphMap.containsKey(oboName))
+        if (!this.graphMap.containsKey(oboName))
         {
             OBOParser oboParser = new OBOParser(oboName, OBOParser.IGNORE_SYNONYMS);
             workSetProgress.message("Parsing OBO file");
@@ -489,10 +490,10 @@ public class WorkSetLoadThread extends Thread
                 new TermContainer(oboParser.getTermMap(), oboParser.getFormatVersion(), oboParser.getDate());
             workSetProgress.message("Building GO graph");
             graph = new Ontology(goTerms);
-            graphMap.put(oboName, graph);
+            this.graphMap.put(oboName, graph);
         } else
         {
-            graph = graphMap.get(oboName);
+            graph = this.graphMap.get(oboName);
         }
         return graph;
     }
@@ -517,7 +518,7 @@ public class WorkSetLoadThread extends Thread
         {
             Ontology graph = loadGraph(oboName, workSetProgress);
 
-            if (!assocMap.containsKey(assocName))
+            if (!this.assocMap.containsKey(assocName))
             {
                 logger.info("Parse local association file \"" + assocName + "\"");
 
@@ -541,7 +542,7 @@ public class WorkSetLoadThread extends Thread
 
                 AssociationContainer ac =
                     new AssociationContainer(ap.getAssociations(), ap.getSynonym2gene(), ap.getDbObject2gene());
-                assocMap.put(assocName, ac);
+                this.assocMap.put(assocName, ac);
                 workSetProgress.message("");
                 workSetProgress.initGauge(0);
             }
@@ -560,7 +561,7 @@ public class WorkSetLoadThread extends Thread
     {
         CallbackMessage cmsg = new CallbackMessage();
         cmsg.run = run;
-        messageQueue.add(cmsg);
+        this.messageQueue.add(cmsg);
     }
 
 }

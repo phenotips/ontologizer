@@ -65,48 +65,48 @@ public class ProbabilisticCalculation implements ICalculation
          */
         public void switchTerm(TermID t)
         {
-            if (activeTerms.contains(t))
+            if (this.activeTerms.contains(t))
             {
                 /* Term is going to be deactivated */
-                activeTerms.remove(t);
+                this.activeTerms.remove(t);
 
-                for (ByteString g : popEnumerator.getAnnotatedGenes(t).totalAnnotated)
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
                 {
-                    if (activeGenes.contains(g))
+                    if (this.activeGenes.contains(g))
                     {
-                        Integer cnt = Ag.get(g);
+                        Integer cnt = this.Ag.get(g);
                         if (cnt == 1) {
-                            Ag.remove(g);
+                            this.Ag.remove(g);
                         } else {
-                            Ag.put(g, cnt - 1);
+                            this.Ag.put(g, cnt - 1);
                         }
                     }
                     else
                     {
                         /* Gene is inactive but term active */
-                        nsg--;
+                        this.nsg--;
                     }
                 }
             } else
             {
                 /* Term is going to be activated */
-                activeTerms.add(t);
+                this.activeTerms.add(t);
 
-                for (ByteString g : popEnumerator.getAnnotatedGenes(t).totalAnnotated)
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
                 {
-                    if (activeGenes.contains(g))
+                    if (this.activeGenes.contains(g))
                     {
-                        Integer cnt = Ag.get(g);
+                        Integer cnt = this.Ag.get(g);
                         if (cnt == null) {
-                            Ag.put(g, 1);
+                            this.Ag.put(g, 1);
                         } else {
-                            Ag.put(g, cnt + 1);
+                            this.Ag.put(g, cnt + 1);
                         }
                     }
                     else
                     {
                         /* Gene is inactive but term active */
-                        nsg++;
+                        this.nsg++;
                     }
                 }
             }
@@ -125,8 +125,9 @@ public class ProbabilisticCalculation implements ICalculation
             double obj;
 
             obj =
-                ag * Math.log(p) + an * Math.log(q) + sg * Math.log(1 - p) + sn * Math.log(1 - q) - alpha
-                    * activeTerms.size();
+                this.ag * Math.log(this.p) + this.an * Math.log(this.q) + this.sg * Math.log(1 - this.p) + this.sn
+                    * Math.log(1 - this.q) - this.alpha
+                * this.activeTerms.size();
 
             return obj;
         }
@@ -142,18 +143,18 @@ public class ProbabilisticCalculation implements ICalculation
 
             /* I inactive gene nodes */
             /* Number of edges connecting nodes in I with active term nodes */
-            sg = 0;
+            this.sg = 0;
 
             /* Number of edges connecting nodes in I with inactive term nodes */
-            sn = 0;
+            this.sn = 0;
 
             Ag.clear();
 
-            for (TermID t : activeTerms)
+            for (TermID t : this.activeTerms)
             {
-                for (ByteString g : popEnumerator.getAnnotatedGenes(t).totalAnnotated)
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
                 {
-                    if (activeGenes.contains(g))
+                    if (this.activeGenes.contains(g))
                     {
                         // Ag.add(g);
                         Integer cnt = Ag.get(g);
@@ -166,7 +167,7 @@ public class ProbabilisticCalculation implements ICalculation
                     else
                     {
                         /* Gene is inactive but term active */
-                        sg++;
+                        this.sg++;
                     }
                 }
             }
@@ -188,12 +189,12 @@ public class ProbabilisticCalculation implements ICalculation
             // }
 
             /* Active gene nodes connected to at least one active term */
-            ag = Ag.size();
+            this.ag = Ag.size();
 
             /* Active gene nodes not connected to any active term */
-            an = activeGenes.size() - ag;
+            this.an = this.activeGenes.size() - this.ag;
 
-            sn = st - sg;
+            this.sn = this.st - this.sg;
         }
 
         /**
@@ -203,16 +204,16 @@ public class ProbabilisticCalculation implements ICalculation
         {
             /* I inactive gene nodes */
             /* Number of edges connecting nodes in I with active term nodes */
-            sg = nsg;
+            this.sg = this.nsg;
 
             /* Number of edges connecting nodes in I with inactive term nodes */
-            sn = st - sg;
+            this.sn = this.st - this.sg;
 
             /* Active gene nodes connected to at least one active term */
-            ag = Ag.size();
+            this.ag = this.Ag.size();
 
             /* Active gene nodes not connected to any active term */
-            an = activeGenes.size() - ag;
+            this.an = this.activeGenes.size() - this.ag;
         }
 
         /**
@@ -224,10 +225,10 @@ public class ProbabilisticCalculation implements ICalculation
         private double optimizeForTerms(Ontology graph)
         {
             /* No active terms in the init phase. */
-            activeTerms.clear();
-            Ag.clear();
-            sg = 0;
-            nsg = 0;
+            this.activeTerms.clear();
+            this.Ag.clear();
+            this.sg = 0;
+            this.nsg = 0;
 
             double obj = objective();
 
@@ -238,7 +239,7 @@ public class ProbabilisticCalculation implements ICalculation
 
                 // System.out.println(obj + "  " + best + "  " + activeTerms.size());
 
-                for (TermID t : allTerms)
+                for (TermID t : this.allTerms)
                 {
                     switchTerm(t);
 
@@ -277,8 +278,8 @@ public class ProbabilisticCalculation implements ICalculation
 
     public ProbabilisticCalculation(ProbabilisticCalculation calc)
     {
-        defaultP = calc.defaultP;
-        defaultQ = calc.defaultQ;
+        this.defaultP = calc.defaultP;
+        this.defaultQ = calc.defaultQ;
     }
 
     public void setDefaultP(double defaultP)
@@ -315,16 +316,16 @@ public class ProbabilisticCalculation implements ICalculation
         }
         data.st = total;
 
-        if (Double.isNaN(defaultP)) {
+        if (Double.isNaN(this.defaultP)) {
             data.p = 0.5;
         } else {
-            data.p = defaultP;
+            data.p = this.defaultP;
         }
 
-        if (Double.isNaN(defaultQ)) {
+        if (Double.isNaN(this.defaultQ)) {
             data.q = ((double) data.activeGenes.size()) / data.allGenes.size();
         } else {
-            data.q = defaultQ;
+            data.q = this.defaultQ;
         }
 
         double eps = 0.0001;
@@ -339,7 +340,7 @@ public class ProbabilisticCalculation implements ICalculation
             double pNext = (double) (data.ag) / (data.ag + data.sg);
             double qNext = (double) (data.an) / (data.an + data.sn);
 
-            if (!Double.isNaN(defaultP) && !Double.isNaN(defaultQ)) {
+            if (!Double.isNaN(this.defaultP) && !Double.isNaN(this.defaultQ)) {
                 break;
             }
 

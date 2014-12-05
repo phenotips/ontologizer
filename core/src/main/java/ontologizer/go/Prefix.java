@@ -20,7 +20,7 @@ public class Prefix
      */
     public Prefix(String newPrefix)
     {
-        prefix = new ByteString(newPrefix);
+        this.prefix = new ByteString(newPrefix);
     }
 
     /**
@@ -31,7 +31,7 @@ public class Prefix
      */
     public Prefix(String newPrefix, int length)
     {
-        prefix = new ByteString(newPrefix, length);
+        this.prefix = new ByteString(newPrefix, length);
     }
 
     /**
@@ -41,7 +41,7 @@ public class Prefix
      */
     public Prefix(ByteString newPrefix)
     {
-        prefix = newPrefix;
+        this.prefix = newPrefix;
     }
 
     @Override
@@ -61,23 +61,23 @@ public class Prefix
 
     public boolean equals(ByteString obj)
     {
-        return prefix.equals(obj);
+        return this.prefix.equals(obj);
     }
 
     public boolean equals(Prefix obj)
     {
-        return prefix.equals(obj.prefix);
+        return this.prefix.equals(obj.prefix);
     }
 
     @Override
     public int hashCode()
     {
-        return prefix.hashCode();
+        return this.prefix.hashCode();
     }
 
     @Override
     public String toString()
     {
-        return prefix.toString();
+        return this.prefix.toString();
     }
 }

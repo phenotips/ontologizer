@@ -59,7 +59,7 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
     @Override
     public Iterator<AbstractGOTermProperties> iterator()
     {
-        return list.iterator();
+        return this.list.iterator();
     }
 
     /**
@@ -71,10 +71,10 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
             throw new IllegalArgumentException("prop.goTerm mustn't be null");
         }
 
-        list.add(prop);
-        Integer integer = new Integer(index);
-        go2Index.put(prop.goTerm, integer);
-        index++;
+        this.list.add(prop);
+        Integer integer = new Integer(this.index);
+        this.go2Index.put(prop.goTerm, integer);
+        this.index++;
     }
 
     /**
@@ -85,11 +85,11 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
      */
     public AbstractGOTermProperties getGOTermProperties(TermID goID)
     {
-        Integer index = go2Index.get(go.getTerm(goID));
+        Integer index = this.go2Index.get(this.go.getTerm(goID));
         if (index == null) {
             return null;
         }
-        return list.get(index);
+        return this.list.get(index);
     }
 
     /**
@@ -100,11 +100,11 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
      */
     public AbstractGOTermProperties getGOTermProperties(Term term)
     {
-        Integer idx = go2Index.get(term);
+        Integer idx = this.go2Index.get(term);
         if (idx == null) {
             return null;
         }
-        return list.get(idx);
+        return this.list.get(idx);
     }
 
     /**
@@ -114,7 +114,7 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
      */
     public AssociationContainer getAssociations()
     {
-        return associations;
+        return this.associations;
     }
 
     /**
@@ -124,7 +124,7 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
      */
     public int getSize()
     {
-        return list.size();
+        return this.list.size();
     }
 
     /**
@@ -134,7 +134,7 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
      */
     public Ontology getGO()
     {
-        return go;
+        return this.go;
     }
 
     /**
@@ -152,7 +152,7 @@ public class AbstractGOTermsResult implements Iterable<AbstractGOTermProperties>
     public void writeDOT(Ontology graph, File file, TermID rootTerm, HashSet<TermID> terms,
         AbstractDotAttributesProvider provider)
     {
-        if (list.isEmpty()) {
+        if (this.list.isEmpty()) {
             return;
         }
 

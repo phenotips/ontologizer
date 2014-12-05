@@ -128,9 +128,9 @@ public class Association
     @Deprecated
     public Association(ByteString db_object_symbol, int goIntID)
     {
-        DB_Object = synonym = new ByteString("");
-        DB_Object_Symbol = db_object_symbol;
-        termID = new TermID(goIntID);
+        this.DB_Object = this.synonym = new ByteString("");
+        this.DB_Object_Symbol = db_object_symbol;
+        this.termID = new TermID(goIntID);
     }
 
     /**
@@ -141,8 +141,8 @@ public class Association
      */
     public Association(ByteString db_object_symbol, TermID termID)
     {
-        DB_Object = synonym = new ByteString("");
-        DB_Object_Symbol = db_object_symbol;
+        this.DB_Object = this.synonym = new ByteString("");
+        this.DB_Object_Symbol = db_object_symbol;
         this.termID = termID;
     }
 
@@ -154,9 +154,9 @@ public class Association
      */
     public Association(ByteString db_object_symbol, String term)
     {
-        DB_Object = synonym = new ByteString("");
-        DB_Object_Symbol = db_object_symbol;
-        termID = new TermID(term);
+        this.DB_Object = this.synonym = new ByteString("");
+        this.DB_Object_Symbol = db_object_symbol;
+        this.termID = new TermID(term);
     }
 
     private Association()
@@ -170,7 +170,7 @@ public class Association
      */
     public TermID getTermID()
     {
-        return termID;
+        return this.termID;
     }
 
     /**
@@ -180,7 +180,7 @@ public class Association
      */
     public ByteString getObjectSymbol()
     {
-        return DB_Object_Symbol;
+        return this.DB_Object_Symbol;
     }
 
     /**
@@ -190,7 +190,7 @@ public class Association
      */
     public ByteString getSynonym()
     {
-        return synonym;
+        return this.synonym;
     }
 
     /**
@@ -200,7 +200,7 @@ public class Association
      */
     public boolean hasNotQualifier()
     {
-        return notQualifier;
+        return this.notQualifier;
     }
 
     /**
@@ -209,7 +209,7 @@ public class Association
      */
     public ByteString getDB_Object()
     {
-        return DB_Object;
+        return this.DB_Object;
     }
 
     /**
@@ -219,7 +219,7 @@ public class Association
      */
     public ByteString getAspect()
     {
-        return aspect;
+        return this.aspect;
     }
 
     /**
@@ -229,7 +229,7 @@ public class Association
      */
     public ByteString getEvidence()
     {
-        return evidence;
+        return this.evidence;
     }
 
     /**

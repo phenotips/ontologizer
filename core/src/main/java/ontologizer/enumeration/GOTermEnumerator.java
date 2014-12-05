@@ -38,12 +38,12 @@ public class GOTermEnumerator implements Iterable<TermID>
 
         public int directAnnotatedCount()
         {
-            return directAnnotated.size();
+            return this.directAnnotated.size();
         }
 
         public int totalAnnotatedCount()
         {
-            return totalAnnotated.size();
+            return this.totalAnnotated.size();
         }
     }
 
@@ -64,7 +64,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     {
         this.graph = graph;
 
-        map = new HashMap<TermID, GOTermAnnotatedGenes>();
+        this.map = new HashMap<TermID, GOTermAnnotatedGenes>();
     }
 
     /**
@@ -91,27 +91,12 @@ public class GOTermEnumerator implements Iterable<TermID>
          * orgininating from i. If an annotation isn't suspicious it is valid and placed in validAssocs
          */
         /*
-        LinkedList<Association> validAssocs = new LinkedList<Association>();
-        for (Association i : geneAssociations) {
-            boolean existsPath = false;
-
-            for (Association j : geneAssociations) {
-                if (i.getGoID().equals(j.getGoID())) {
-                    continue;
-                }
-
-                if (graph.existsPath(i.getGoID(), j.getGoID())) {
-                    suspiciousCount++;
-                    existsPath = true;
-                }
-            }
-
-            if (!existsPath) {
-                // No direct path from i to another assoc exists hence the association is valid
-                validAssocs.add(i);
-            }
-        }
-        */
+         * LinkedList<Association> validAssocs = new LinkedList<Association>(); for (Association i : geneAssociations) {
+         * boolean existsPath = false; for (Association j : geneAssociations) { if (i.getGoID().equals(j.getGoID())) {
+         * continue; } if (graph.existsPath(i.getGoID(), j.getGoID())) { suspiciousCount++; existsPath = true; } } if
+         * (!existsPath) { // No direct path from i to another assoc exists hence the association is valid
+         * validAssocs.add(i); } }
+         */
         /*
          * Here we ignore the association qualifier (e.g. colocalized_with) completely.
          */
@@ -122,7 +107,7 @@ public class GOTermEnumerator implements Iterable<TermID>
         {
             TermID termID = association.getTermID();
 
-            if (!graph.isRelevantTermID(termID)) {
+            if (!this.graph.isRelevantTermID(termID)) {
                 continue;
             }
 
@@ -133,13 +118,13 @@ public class GOTermEnumerator implements Iterable<TermID>
                 }
             }
 
-            GOTermAnnotatedGenes termGenes = map.get(termID);
+            GOTermAnnotatedGenes termGenes = this.map.get(termID);
 
             /* Create an entry if it doesn't exist */
             if (termGenes == null)
             {
                 termGenes = new GOTermAnnotatedGenes();
-                map.put(termID, termGenes);
+                this.map.put(termID, termGenes);
             }
 
             termGenes.directAnnotated.add(geneName);
@@ -168,16 +153,16 @@ public class GOTermEnumerator implements Iterable<TermID>
             @Override
             public boolean visited(Term term)
             {
-                if (graph.isRelevantTermID(term.getID()))
+                if (GOTermEnumerator.this.graph.isRelevantTermID(term.getID()))
                 {
-                    GOTermAnnotatedGenes termGenes = map.get(term.getID());
+                    GOTermAnnotatedGenes termGenes = GOTermEnumerator.this.map.get(term.getID());
 
                     if (termGenes == null)
                     {
                         termGenes = new GOTermAnnotatedGenes();
-                        map.put(term.getID(), termGenes);
+                        GOTermEnumerator.this.map.put(term.getID(), termGenes);
                     }
-                    termGenes.totalAnnotated.add(geneName);
+                    termGenes.totalAnnotated.add(this.geneName);
                 }
                 return true;
             }
@@ -195,7 +180,7 @@ public class GOTermEnumerator implements Iterable<TermID>
         }
 
         /* Walk from goTerm to source by using vistingGOVertex */
-        graph.walkToSource(termIDSet, vistingGOVertex);
+        this.graph.walkToSource(termIDSet, vistingGOVertex);
     }
 
     /**
@@ -206,8 +191,8 @@ public class GOTermEnumerator implements Iterable<TermID>
      */
     public GOTermAnnotatedGenes getAnnotatedGenes(TermID goTermID)
     {
-        if (map.containsKey(goTermID)) {
-            return map.get(goTermID);
+        if (this.map.containsKey(goTermID)) {
+            return this.map.get(goTermID);
         } else {
             return new GOTermAnnotatedGenes();
         }
@@ -226,7 +211,7 @@ public class GOTermEnumerator implements Iterable<TermID>
         public int compareTo(GOTermOftenAnnotatedCount o)
         {
             /* We sort reversly */
-            return o.counts - counts;
+            return o.counts - this.counts;
         }
     };
 
@@ -240,28 +225,28 @@ public class GOTermEnumerator implements Iterable<TermID>
     {
         ArrayList<GOTermOftenAnnotatedCount> list = new ArrayList<GOTermOftenAnnotatedCount>();
 
-        GOTermAnnotatedGenes goTermIDAnnotated = map.get(goTermID);
+        GOTermAnnotatedGenes goTermIDAnnotated = this.map.get(goTermID);
         if (goTermIDAnnotated == null) {
             return null;
         }
 
         /* For every term genes are annotated to */
-        for (TermID curTerm : map.keySet())
+        for (TermID curTerm : this.map.keySet())
         {
             /* Ignore terms on the same path */
-            if (graph.isRootTerm(curTerm)) {
+            if (this.graph.isRootTerm(curTerm)) {
                 continue;
             }
             if (curTerm.equals(goTermID)) {
                 continue;
             }
-            if (graph.existsPath(curTerm, goTermID) || graph.existsPath(goTermID, curTerm)) {
+            if (this.graph.existsPath(curTerm, goTermID) || this.graph.existsPath(goTermID, curTerm)) {
                 continue;
             }
 
             /* Find out the number of genes which are annotated to both terms */
             int count = 0;
-            GOTermAnnotatedGenes curTermAnnotated = map.get(curTerm);
+            GOTermAnnotatedGenes curTermAnnotated = this.map.get(curTerm);
             for (ByteString gene : curTermAnnotated.totalAnnotated)
             {
                 if (goTermIDAnnotated.totalAnnotated.contains(gene)) {
@@ -288,7 +273,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     @Override
     public Iterator<TermID> iterator()
     {
-        return map.keySet().iterator();
+        return this.map.keySet().iterator();
     }
 
     /**
@@ -298,7 +283,7 @@ public class GOTermEnumerator implements Iterable<TermID>
      */
     public int getTotalNumberOfAnnotatedTerms()
     {
-        return map.size();
+        return this.map.size();
     }
 
     /**
@@ -338,7 +323,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     {
         LinkedHashSet<ByteString> genes = new LinkedHashSet<ByteString>();
 
-        for (Entry<TermID, GOTermAnnotatedGenes> ent : map.entrySet()) {
+        for (Entry<TermID, GOTermAnnotatedGenes> ent : this.map.entrySet()) {
             genes.addAll(ent.getValue().totalAnnotated);
         }
 
@@ -365,14 +350,14 @@ public class GOTermEnumerator implements Iterable<TermID>
     public void removeTerms(IRemover remove)
     {
         ArrayList<TermID> toBeRemoved = new ArrayList<TermID>();
-        for (Entry<TermID, GOTermAnnotatedGenes> entry : map.entrySet())
+        for (Entry<TermID, GOTermAnnotatedGenes> entry : this.map.entrySet())
         {
             if (remove.remove(entry.getKey(), entry.getValue())) {
                 toBeRemoved.add(entry.getKey());
             }
         }
         for (TermID tid : toBeRemoved) {
-            map.remove(tid);
+            this.map.remove(tid);
         }
     }
 }

@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author grossman
  */
 public class FDRBySteffen extends AbstractTestCorrection
-    implements IResampling
+implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -36,10 +36,10 @@ public class FDRBySteffen extends AbstractTestCorrection
         int m = rawP.length;
 
         /* this will hold the sorted resampled p-values */
-        double[][] pValues = new double[numberOfResamplingSteps][m];
+        double[][] pValues = new double[this.numberOfResamplingSteps][m];
 
         /* create them */
-        for (int b = 0; b < numberOfResamplingSteps; b++)
+        for (int b = 0; b < this.numberOfResamplingSteps; b++)
         {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = pvalues.calculateRandomPValues();
@@ -51,7 +51,7 @@ public class FDRBySteffen extends AbstractTestCorrection
                 pValues[b][i] = randomRawP[i].p;
             }
 
-            System.out.print("created " + (b + 1) + " samples out of " + numberOfResamplingSteps + "\r");
+            System.out.print("created " + (b + 1) + " samples out of " + this.numberOfResamplingSteps + "\r");
         }
         System.out.println();
 
@@ -65,10 +65,10 @@ public class FDRBySteffen extends AbstractTestCorrection
          * This will hold the number of rejected tests in the samples at the current level. We assume that sampled
          * p-values are sorted!
          */
-        int[] lastSampleRejects = new int[numberOfResamplingSteps];
+        int[] lastSampleRejects = new int[this.numberOfResamplingSteps];
         int lastTotalSampleRejects = 0;
         // initializing
-        for (int b = 0; b < numberOfResamplingSteps; b++) {
+        for (int b = 0; b < this.numberOfResamplingSteps; b++) {
             lastSampleRejects[b] = 0;
             while (pValues[b][lastSampleRejects[b]] < lastPValue) {
                 lastSampleRejects[b]++;
@@ -77,16 +77,16 @@ public class FDRBySteffen extends AbstractTestCorrection
         }
 
         double lastFDR = 0.0;
-        for (int b = 0; b < numberOfResamplingSteps; b++) {
+        for (int b = 0; b < this.numberOfResamplingSteps; b++) {
             lastFDR +=
                 (lastSampleRejects[b])
-                    / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
-                        / numberOfResamplingSteps);
+                / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
+                    / this.numberOfResamplingSteps);
         }
         if (Double.isNaN(lastFDR)) {
             lastFDR = 0;
         } else {
-            lastFDR /= numberOfResamplingSteps;
+            lastFDR /= this.numberOfResamplingSteps;
         }
 
         i = 0;
@@ -115,7 +115,7 @@ public class FDRBySteffen extends AbstractTestCorrection
             // update counts
             lastObservedRejections += lc;
             lastTotalSampleRejects = 0;
-            for (int b = 0; b < numberOfResamplingSteps; b++) {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
                 while (pValues[b][lastSampleRejects[b]] < lastPValue) {
                     lastSampleRejects[b]++;
                 }
@@ -124,16 +124,16 @@ public class FDRBySteffen extends AbstractTestCorrection
 
             // update FDR
             lastFDR = 0.0;
-            for (int b = 0; b < numberOfResamplingSteps; b++) {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
                 lastFDR +=
                     lastSampleRejects[b]
                         / (lastSampleRejects[b] + lastObservedRejections - (double) lastTotalSampleRejects
-                            / numberOfResamplingSteps);
+                            / this.numberOfResamplingSteps);
             }
             if (Double.isNaN(lastFDR)) {
                 lastFDR = 0;
             } else {
-                lastFDR /= numberOfResamplingSteps;
+                lastFDR /= this.numberOfResamplingSteps;
                 /*
                  * System.out.println("After: m: " + m + "\ti: " + i + "\tlast P: " + lastPValue +
                  * "\tlastObservedRejections: " + lastObservedRejections + "\tlastFDR: " + lastFDR);
@@ -147,13 +147,13 @@ public class FDRBySteffen extends AbstractTestCorrection
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        numberOfResamplingSteps = n;
+        this.numberOfResamplingSteps = n;
     }
 
     @Override
     public int getNumberOfResamplingSteps()
     {
-        return numberOfResamplingSteps;
+        return this.numberOfResamplingSteps;
     }
 
     @Override

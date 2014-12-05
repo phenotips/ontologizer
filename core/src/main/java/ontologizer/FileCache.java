@@ -64,7 +64,7 @@ class DownloadThread extends Thread
 
         String proxyHost = GlobalPreferences.getProxyHost();
         if (proxyHost != null && proxyHost.length() > 0) {
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, GlobalPreferences.getProxyPort()));
+            this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, GlobalPreferences.getProxyPort()));
         }
     }
 
@@ -87,7 +87,7 @@ class DownloadThread extends Thread
     {
         synchronized (this)
         {
-            return contentLength;
+            return this.contentLength;
         }
     }
 
@@ -100,7 +100,7 @@ class DownloadThread extends Thread
     {
         synchronized (this)
         {
-            return contentActual;
+            return this.contentActual;
         }
     }
 
@@ -111,7 +111,7 @@ class DownloadThread extends Thread
      */
     public List<FileCache.FileDownload> getCallbackSubscriberList()
     {
-        return callbackSubscriberList;
+        return this.callbackSubscriberList;
     }
 
     /**
@@ -121,9 +121,9 @@ class DownloadThread extends Thread
     {
         interrupt();
 
-        if (urlConnection instanceof HttpURLConnection)
+        if (this.urlConnection instanceof HttpURLConnection)
         {
-            HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
+            HttpURLConnection httpConnection = (HttpURLConnection) this.urlConnection;
             httpConnection.disconnect();
         }
     }
@@ -142,47 +142,47 @@ class DownloadThread extends Thread
         {
             logger.fine("Open connection");
 
-            if (proxy != null) {
-                urlConnection = u.openConnection(proxy);
+            if (this.proxy != null) {
+                this.urlConnection = this.u.openConnection(this.proxy);
             } else {
-                urlConnection = u.openConnection();
+                this.urlConnection = this.u.openConnection();
             }
 
-            urlConnection.setConnectTimeout(10000);
+            this.urlConnection.setConnectTimeout(10000);
 
-            int cl = urlConnection.getContentLength();
+            int cl = this.urlConnection.getContentLength();
 
             logger.fine("Content-Length = " + cl);
             synchronized (this)
             {
-                contentLength = cl;
+                this.contentLength = cl;
             }
             /* Forward content length */
-            downloadCallback.initProgress(contentLength);
+            this.downloadCallback.initProgress(this.contentLength);
 
-            stream = urlConnection.getInputStream();
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(destFile));
+            stream = this.urlConnection.getInputStream();
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(this.destFile));
 
             while ((read = stream.read(buf)) > 0)
             {
                 bos.write(buf, 0, read);
                 synchronized (this)
                 {
-                    contentActual += read;
+                    this.contentActual += read;
                 }
 
                 /* Forward current state */
-                downloadCallback.progress(contentActual);
+                this.downloadCallback.progress(this.contentActual);
             }
             bos.close();
 
             /* Forward ready status */
-            downloadCallback.ready(null, destFile.getCanonicalPath());
+            this.downloadCallback.ready(null, this.destFile.getCanonicalPath());
         } catch (Exception e)
         {
             logger.log(Level.SEVERE, "Exception while downloading a file.", e);
             /* Forward ready status */
-            downloadCallback.ready(e, null);
+            this.downloadCallback.ready(e, null);
         }
     }
 
@@ -531,7 +531,7 @@ public class FileCache
             public void progress(int current)
             {
                 long progressMillis = System.currentTimeMillis();
-                if (progressMillis - lastProgressMillis > 200)
+                if (progressMillis - this.lastProgressMillis > 200)
                 {
                     synchronized (dt)
                     {
@@ -632,7 +632,7 @@ public class FileCache
      * @throws InterruptedException
      */
     public static String getCachedFileNameBlocking(String url, final FileDownload ready) throws IOException,
-        InterruptedException
+    InterruptedException
     {
         Object lock = new Object();
 
@@ -657,12 +657,12 @@ public class FileCache
 
             public String getName()
             {
-                return name;
+                return this.name;
             }
 
             public Exception getException()
             {
-                return ex;
+                return this.ex;
             }
 
             @Override
@@ -691,9 +691,9 @@ public class FileCache
                     this.ex = ex;
                 }
 
-                synchronized (lock)
+                synchronized (this.lock)
                 {
-                    lock.notifyAll();
+                    this.lock.notifyAll();
                 }
                 if (ready != null) {
                     ready.ready(ex, name);

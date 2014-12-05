@@ -48,18 +48,18 @@ public class MultisetEnumerator
         int i;
 
         /* Cancelation criterion, we're ready, when we are ready :) */
-        if (pos >= elementList.length)
+        if (pos >= this.elementList.length)
         {
-            callback.visit(elementList, multiplicitiesPerElement);
+            callback.visit(this.elementList, this.multiplicitiesPerElement);
             return;
         }
 
-        for (i = nextValue; i <= maxElement; i++) {
+        for (i = nextValue; i <= this.maxElement; i++) {
 
-            elementList[pos] = i;
-            multiplicitiesPerElement[i]++;
+            this.elementList[pos] = i;
+            this.multiplicitiesPerElement[i]++;
 
-            nextValue = callback.enter(pos, elementList, multiplicitiesPerElement);
+            nextValue = callback.enter(pos, this.elementList, this.multiplicitiesPerElement);
             if (nextValue > -1)
             {
                 /* Sub problem */
@@ -67,11 +67,11 @@ public class MultisetEnumerator
                 // callback.leave(pos);
             }
             else if (nextValue == -2) {
-                multiplicitiesPerElement[i]--;
+                this.multiplicitiesPerElement[i]--;
                 return;
             }
 
-            multiplicitiesPerElement[i]--;
+            this.multiplicitiesPerElement[i]--;
         }
     }
 
@@ -80,7 +80,7 @@ public class MultisetEnumerator
      */
     public void print()
     {
-        for (int element : elementList) {
+        for (int element : this.elementList) {
             System.out.print(element + " ");
         }
         System.out.println();
@@ -88,7 +88,7 @@ public class MultisetEnumerator
 
     public int getMaxElement()
     {
-        return maxElement;
+        return this.maxElement;
     }
 
 }

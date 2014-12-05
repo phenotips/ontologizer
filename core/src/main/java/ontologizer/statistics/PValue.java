@@ -21,10 +21,10 @@ public class PValue implements Cloneable, Comparable<PValue>
     @Override
     public int compareTo(PValue o)
     {
-        if (p < o.p) {
+        if (this.p < o.p) {
             return -1;
         }
-        if (p > o.p) {
+        if (this.p > o.p) {
             return 1;
         }
         return 0;
@@ -38,6 +38,6 @@ public class PValue implements Cloneable, Comparable<PValue>
      */
     public boolean isSignificant(double thresh)
     {
-        return p_adjusted < thresh;
+        return this.p_adjusted < thresh;
     }
 }

@@ -35,7 +35,7 @@ class OntologyEdge extends Edge<Term>
 
     public TermRelation getRelation()
     {
-        return relation;
+        return this.relation;
     }
 
     public OntologyEdge(Term source, Term dest, TermRelation relation)
@@ -89,11 +89,11 @@ public class Ontology implements Iterable<Term>
     {
         this.termContainer = newTermContainer;
 
-        graph = new DirectedGraph<Term>();
+        this.graph = new DirectedGraph<Term>();
 
         /* At first add all goterms to the graph */
         for (Term term : newTermContainer) {
-            graph.addVertex(term);
+            this.graph.addVertex(term);
         }
 
         int skippedEdges = 0;
@@ -103,7 +103,7 @@ public class Ontology implements Iterable<Term>
         {
             if (term.getSubsets() != null) {
                 for (Subset s : term.getSubsets()) {
-                    availableSubsets.add(s);
+                    this.availableSubsets.add(s);
                 }
             }
 
@@ -124,7 +124,7 @@ public class Ontology implements Iterable<Term>
                     ++skippedEdges;
                     continue;
                 }
-                graph.addEdge(new OntologyEdge(newTermContainer.get(parent.termid), term, parent.relation));
+                this.graph.addEdge(new OntologyEdge(newTermContainer.get(parent.termid), term, parent.relation));
             }
         }
 
@@ -151,10 +151,10 @@ public class Ontology implements Iterable<Term>
             }
         }
 
-        subgraph.availableSubsets = availableSubsets;
-        subgraph.graph = graph.subGraph(allTerms);
-        subgraph.termContainer = termContainer;
-        subgraph.availableSubsets = availableSubsets;
+        subgraph.availableSubsets = this.availableSubsets;
+        subgraph.graph = this.graph.subGraph(allTerms);
+        subgraph.termContainer = this.termContainer;
+        subgraph.availableSubsets = this.availableSubsets;
 
         subgraph.assignLevel1TermsAndFixRoot();
 
@@ -169,9 +169,9 @@ public class Ontology implements Iterable<Term>
     public ArrayList<Term> getLeafTerms()
     {
         ArrayList<Term> leafTerms = new ArrayList<Term>();
-        for (Term t : graph.getVertices())
+        for (Term t : this.graph.getVertices())
         {
-            if (graph.getOutDegree(t) == 0) {
+            if (this.graph.getOutDegree(t) == 0) {
                 leafTerms.add(t);
             }
         }
@@ -187,9 +187,9 @@ public class Ontology implements Iterable<Term>
     public Collection<TermID> getLeafTermIDs()
     {
         ArrayList<TermID> leafTerms = new ArrayList<TermID>();
-        for (Term t : graph.getVertices())
+        for (Term t : this.graph.getVertices())
         {
-            if (graph.getOutDegree(t) == 0) {
+            if (this.graph.getOutDegree(t) == 0) {
                 leafTerms.add(t.getID());
             }
         }
@@ -204,7 +204,7 @@ public class Ontology implements Iterable<Term>
      */
     public ArrayList<Term> getTermsInTopologicalOrder()
     {
-        return graph.topologicalOrder();
+        return this.graph.topologicalOrder();
     }
 
     /**
@@ -214,7 +214,7 @@ public class Ontology implements Iterable<Term>
      */
     public SlimDirectedGraphView<Term> getSlimGraphView()
     {
-        return new SlimDirectedGraphView<Term>(graph);
+        return new SlimDirectedGraphView<Term>(this.graph);
     }
 
     /**
@@ -222,34 +222,34 @@ public class Ontology implements Iterable<Term>
      */
     private void assignLevel1TermsAndFixRoot()
     {
-        level1terms = new ArrayList<Term>();
+        this.level1terms = new ArrayList<Term>();
 
         /* Find the terms without any ancestors */
-        for (Term goTerm : graph)
+        for (Term goTerm : this.graph)
         {
-            if (graph.getInDegree(goTerm) == 0 && !goTerm.isObsolete()) {
-                level1terms.add(goTerm);
+            if (this.graph.getInDegree(goTerm) == 0 && !goTerm.isObsolete()) {
+                this.level1terms.add(goTerm);
             }
         }
 
-        if (level1terms.size() > 1)
+        if (this.level1terms.size() > 1)
         {
             StringBuilder level1StringBuilder = new StringBuilder();
             level1StringBuilder.append("\"");
-            level1StringBuilder.append(level1terms.get(0).getName());
+            level1StringBuilder.append(this.level1terms.get(0).getName());
             level1StringBuilder.append("\"");
-            for (int i = 1; i < level1terms.size(); i++)
+            for (int i = 1; i < this.level1terms.size(); i++)
             {
                 level1StringBuilder.append(" ,\"");
-                level1StringBuilder.append(level1terms.get(i).getName());
+                level1StringBuilder.append(this.level1terms.get(i).getName());
                 level1StringBuilder.append("\"");
             }
 
             String rootName = "root";
-            if (level1terms.size() == 3)
+            if (this.level1terms.size() == 3)
             {
                 boolean isGO = false;
-                for (Term t : level1terms)
+                for (Term t : this.level1terms)
                 {
                     if (goLevel1TermNames.contains(t.getName().toLowerCase())) {
                         isGO = true;
@@ -264,24 +264,24 @@ public class Ontology implements Iterable<Term>
                 }
             }
 
-            rootTerm = new Term(level1terms.get(0).getID().getPrefix().toString() + ":0000000", rootName);
+            this.rootTerm = new Term(this.level1terms.get(0).getID().getPrefix().toString() + ":0000000", rootName);
 
             logger.info("Ontology contains multiple level-one terms: " + level1StringBuilder.toString()
-                + ". Adding artificial root term \"" + rootTerm.getID().toString() + "\".");
+                + ". Adding artificial root term \"" + this.rootTerm.getID().toString() + "\".");
 
-            rootTerm.setSubsets(new ArrayList<Subset>(availableSubsets));
-            graph.addVertex(rootTerm);
+            this.rootTerm.setSubsets(new ArrayList<Subset>(this.availableSubsets));
+            this.graph.addVertex(this.rootTerm);
 
-            for (Term lvl1 : level1terms)
+            for (Term lvl1 : this.level1terms)
             {
-                graph.addEdge(new OntologyEdge(rootTerm, lvl1, TermRelation.UNKOWN));
+                this.graph.addEdge(new OntologyEdge(this.rootTerm, lvl1, TermRelation.UNKOWN));
             }
         } else
         {
-            if (level1terms.size() == 1)
+            if (this.level1terms.size() == 1)
             {
-                rootTerm = level1terms.get(0);
-                logger.info("Ontology contains a single level-one term (" + rootTerm.toString() + "");
+                this.rootTerm = this.level1terms.get(0);
+                logger.info("Ontology contains a single level-one term (" + this.rootTerm.toString() + "");
             }
         }
     }
@@ -297,7 +297,7 @@ public class Ontology implements Iterable<Term>
      */
     public boolean isRootTerm(TermID id)
     {
-        return id.equals(rootTerm.getID());
+        return id.equals(this.rootTerm.getID());
     }
 
     /**
@@ -307,7 +307,7 @@ public class Ontology implements Iterable<Term>
      */
     public Term getRootTerm()
     {
-        return rootTerm;
+        return this.rootTerm;
     }
 
     /**
@@ -317,7 +317,7 @@ public class Ontology implements Iterable<Term>
      */
     public Collection<Subset> getAvailableSubsets()
     {
-        return availableSubsets;
+        return this.availableSubsets;
     }
 
     /**
@@ -329,14 +329,14 @@ public class Ontology implements Iterable<Term>
     public Set<String> getTermChildrenAsStrings(String termID)
     {
         Term goTerm;
-        if (termID.equals(rootTerm.getIDAsString())) {
-            goTerm = rootTerm;
+        if (termID.equals(this.rootTerm.getIDAsString())) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(termID);
+            goTerm = this.termContainer.get(termID);
         }
 
         HashSet<String> terms = new HashSet<String>();
-        Iterator<Edge<Term>> edgeIter = graph.getOutEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getOutEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getDest().getIDAsString());
         }
@@ -352,15 +352,15 @@ public class Ontology implements Iterable<Term>
     public Set<String> getTermParentsAsStrings(String termID)
     {
         Term goTerm;
-        if (termID.equals(rootTerm.getIDAsString())) {
-            goTerm = rootTerm;
+        if (termID.equals(this.rootTerm.getIDAsString())) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(termID);
+            goTerm = this.termContainer.get(termID);
         }
 
         HashSet<String> terms = new HashSet<String>();
 
-        Iterator<Edge<Term>> edgeIter = graph.getInEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getInEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getSource().getIDAsString());
         }
@@ -376,14 +376,14 @@ public class Ontology implements Iterable<Term>
     public Set<TermID> getTermChildren(TermID termID)
     {
         Term goTerm;
-        if (rootTerm.getID().id == termID.id) {
-            goTerm = rootTerm;
+        if (this.rootTerm.getID().id == termID.id) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(termID);
+            goTerm = this.termContainer.get(termID);
         }
 
         HashSet<TermID> terms = new HashSet<TermID>();
-        Iterator<Edge<Term>> edgeIter = graph.getOutEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getOutEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getDest().getID());
         }
@@ -399,14 +399,14 @@ public class Ontology implements Iterable<Term>
     public Set<Term> getTermChildren(Term term)
     {
         Term goTerm;
-        if (rootTerm.getID().id == term.getID().id) {
-            goTerm = rootTerm;
+        if (this.rootTerm.getID().id == term.getID().id) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(term.getID());
+            goTerm = this.termContainer.get(term.getID());
         }
 
         HashSet<Term> terms = new HashSet<Term>();
-        Iterator<Edge<Term>> edgeIter = graph.getOutEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getOutEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getDest());
         }
@@ -422,18 +422,18 @@ public class Ontology implements Iterable<Term>
     public Set<TermID> getTermParents(TermID goTermID)
     {
         HashSet<TermID> terms = new HashSet<TermID>();
-        if (rootTerm.getID().id == goTermID.id) {
+        if (this.rootTerm.getID().id == goTermID.id) {
             return terms;
         }
 
         Term goTerm;
-        if (goTermID.equals(rootTerm.getIDAsString())) {
-            goTerm = rootTerm;
+        if (goTermID.equals(this.rootTerm.getIDAsString())) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(goTermID);
+            goTerm = this.termContainer.get(goTermID);
         }
 
-        Iterator<Edge<Term>> edgeIter = graph.getInEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getInEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getSource().getID());
         }
@@ -449,18 +449,18 @@ public class Ontology implements Iterable<Term>
     public Set<Term> getTermParents(Term term)
     {
         HashSet<Term> terms = new HashSet<Term>();
-        if (rootTerm.getID().id == term.getID().id) {
+        if (this.rootTerm.getID().id == term.getID().id) {
             return terms;
         }
 
         Term goTerm;
-        if (term.getID().equals(rootTerm.getIDAsString())) {
-            goTerm = rootTerm;
+        if (term.getID().equals(this.rootTerm.getIDAsString())) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(term.getID());
+            goTerm = this.termContainer.get(term.getID());
         }
 
-        Iterator<Edge<Term>> edgeIter = graph.getInEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getInEdges(goTerm);
         while (edgeIter.hasNext()) {
             terms.add(edgeIter.next().getSource());
         }
@@ -476,18 +476,18 @@ public class Ontology implements Iterable<Term>
     public Set<ParentTermID> getTermParentsWithRelation(TermID goTermID)
     {
         HashSet<ParentTermID> terms = new HashSet<ParentTermID>();
-        if (rootTerm.getID().id == goTermID.id) {
+        if (this.rootTerm.getID().id == goTermID.id) {
             return terms;
         }
 
         Term goTerm;
-        if (goTermID.equals(rootTerm.getIDAsString())) {
-            goTerm = rootTerm;
+        if (goTermID.equals(this.rootTerm.getIDAsString())) {
+            goTerm = this.rootTerm;
         } else {
-            goTerm = termContainer.get(goTermID);
+            goTerm = this.termContainer.get(goTermID);
         }
 
-        Iterator<Edge<Term>> edgeIter = graph.getInEdges(goTerm);
+        Iterator<Edge<Term>> edgeIter = this.graph.getInEdges(goTerm);
         while (edgeIter.hasNext())
         {
             OntologyEdge t = (OntologyEdge) edgeIter.next();
@@ -555,8 +555,8 @@ public class Ontology implements Iterable<Term>
          */
 
         /* TODO: Make this a method of DirectedGraph (already implemented there) */
-        Term source = termContainer.get(sourceID);
-        Term dest = termContainer.get(destID);
+        Term source = this.termContainer.get(sourceID);
+        Term dest = this.termContainer.get(destID);
 
         HashSet<Term> visited = new HashSet<Term>();
 
@@ -573,7 +573,7 @@ public class Ontology implements Iterable<Term>
              * Add not yet visited neighbours of old head to the queue and mark them as visited. If such a node is the
              * source, return true (because than there exists a directed path between source and destination)
              */
-            Iterator<Edge<Term>> edgeIter = graph.getInEdges(head);
+            Iterator<Edge<Term>> edgeIter = this.graph.getInEdges(head);
             while (edgeIter.hasNext())
             {
                 Edge<Term> edge = edgeIter.next();
@@ -630,9 +630,9 @@ public class Ontology implements Iterable<Term>
             Term t;
 
             if (isRootTerm(id)) {
-                t = rootTerm;
+                t = this.rootTerm;
             } else {
-                t = termContainer.get(id);
+                t = this.termContainer.get(id);
             }
             if (t == null) {
                 throw new IllegalArgumentException("\"" + id + "\" could not be mapped to a known term!");
@@ -653,7 +653,7 @@ public class Ontology implements Iterable<Term>
      */
     public void walkToSource(Collection<TermID> termIDSet, IVisitingGOVertex vistingVertex)
     {
-        graph.bfs(termIDsToTerms(termIDSet), true, vistingVertex);
+        this.graph.bfs(termIDsToTerms(termIDSet), true, vistingVertex);
     }
 
     /**
@@ -668,12 +668,12 @@ public class Ontology implements Iterable<Term>
     public void walkToSource(Collection<TermID> termIDSet, IVisitingGOVertex vistingVertex,
         final Set<TermRelation> relationsToFollow)
     {
-        graph.bfs(termIDsToTerms(termIDSet), new INeighbourGrabber<Term>()
-        {
+        this.graph.bfs(termIDsToTerms(termIDSet), new INeighbourGrabber<Term>()
+            {
             @Override
             public Iterator<Term> grabNeighbours(Term t)
             {
-                Iterator<Edge<Term>> inIter = graph.getInEdges(t);
+                Iterator<Edge<Term>> inIter = Ontology.this.graph.getInEdges(t);
                 ArrayList<Term> termsToConsider = new ArrayList<Term>();
                 while (inIter.hasNext())
                 {
@@ -684,7 +684,7 @@ public class Ontology implements Iterable<Term>
                 }
                 return termsToConsider.iterator();
             }
-        }, vistingVertex);
+            }, vistingVertex);
     }
 
     /**
@@ -712,7 +712,7 @@ public class Ontology implements Iterable<Term>
      */
     public void walkToSinks(Collection<TermID> goTermIDSet, IVisitingGOVertex vistingVertex)
     {
-        graph.bfs(termIDsToTerms(goTermIDSet), false, vistingVertex);
+        this.graph.bfs(termIDsToTerms(goTermIDSet), false, vistingVertex);
     }
 
     /**
@@ -723,7 +723,7 @@ public class Ontology implements Iterable<Term>
      */
     public TermContainer getTermContainer()
     {
-        return termContainer;
+        return this.termContainer;
     }
 
     /**
@@ -734,7 +734,7 @@ public class Ontology implements Iterable<Term>
      */
     public Term getTerm(String term)
     {
-        Term go = termContainer.get(term);
+        Term go = this.termContainer.get(term);
         if (go == null)
         {
             /*
@@ -743,8 +743,8 @@ public class Ontology implements Iterable<Term>
             try
             {
                 TermID id = new TermID(term);
-                if (id.id == rootTerm.getID().id) {
-                    return rootTerm;
+                if (id.id == this.rootTerm.getID().id) {
+                    return this.rootTerm;
                 }
             } catch (IllegalArgumentException iea)
             {
@@ -754,7 +754,7 @@ public class Ontology implements Iterable<Term>
          * In order to avoid the returning of terms that are only in the TermContainer but not in the graph we check
          * here that the term is contained in the graph.
          */
-        if (!graph.containsVertex(go)) {
+        if (!this.graph.containsVertex(go)) {
             return null;
         }
 
@@ -782,14 +782,14 @@ public class Ontology implements Iterable<Term>
          */
 
         // do we already have a mapping between alternative ids and primary ids ?
-        if (alternativeId2primaryId == null) {
+        if (this.alternativeId2primaryId == null) {
             setUpMappingAlternativeId2PrimaryId();
         }
 
         // try to find a mapping to a primary term-id
-        if (alternativeId2primaryId.containsKey(termIdString)) {
-            String primaryId = alternativeId2primaryId.get(termIdString);
-            term = termContainer.get(primaryId);
+        if (this.alternativeId2primaryId.containsKey(termIdString)) {
+            String primaryId = this.alternativeId2primaryId.get(termIdString);
+            term = this.termContainer.get(primaryId);
         }
 
         // term still null?
@@ -801,8 +801,8 @@ public class Ontology implements Iterable<Term>
             try
             {
                 TermID id = new TermID(termIdString);
-                if (id.id == rootTerm.getID().id) {
-                    return rootTerm;
+                if (id.id == this.rootTerm.getID().id) {
+                    return this.rootTerm;
                 }
             } catch (IllegalArgumentException iea)
             {
@@ -813,11 +813,11 @@ public class Ontology implements Iterable<Term>
 
     private void setUpMappingAlternativeId2PrimaryId()
     {
-        alternativeId2primaryId = new HashMap<String, String>();
+        this.alternativeId2primaryId = new HashMap<String, String>();
         for (Term t : this.termContainer) {
             String primaryId = t.getIDAsString();
             for (TermID alternativeTermId : t.getAlternatives()) {
-                alternativeId2primaryId.put(alternativeTermId.toString(), primaryId);
+                this.alternativeId2primaryId.put(alternativeTermId.toString(), primaryId);
             }
         }
 
@@ -831,9 +831,9 @@ public class Ontology implements Iterable<Term>
      */
     public Term getTerm(TermID id)
     {
-        Term go = termContainer.get(id);
-        if (go == null && id.id == rootTerm.getID().id) {
-            return rootTerm;
+        Term go = this.termContainer.get(id);
+        if (go == null && id.id == this.rootTerm.getID().id) {
+            return this.rootTerm;
         }
         return go;
     }
@@ -846,7 +846,7 @@ public class Ontology implements Iterable<Term>
      */
     public boolean termExists(TermID term)
     {
-        return graph.getOutDegree(getTerm(term)) != -1;
+        return this.graph.getOutDegree(getTerm(term)) != -1;
     }
 
     /**
@@ -891,17 +891,17 @@ public class Ontology implements Iterable<Term>
             @Override
             public boolean visited(Term term)
             {
-                if (rootTermID != null && !graph.isRootTerm(rootTermID))
+                if (rootTermID != null && !this.graph.isRootTerm(rootTermID))
                 {
                     /*
                      * Only add the term if there exists a path from the requested root term to the visited term. TODO:
                      * Instead of existsPath() implement walkToGoTerm() to speed up the whole stuff
                      */
-                    if (term.getID().equals(rootTermID) || graph.existsPath(rootTermID, term.getID())) {
-                        nodeSet.add(term.getID());
+                    if (term.getID().equals(rootTermID) || this.graph.existsPath(rootTermID, term.getID())) {
+                        this.nodeSet.add(term.getID());
                     }
                 } else {
-                    nodeSet.add(term.getID());
+                    this.nodeSet.add(term.getID());
                 }
 
                 return true;
@@ -925,7 +925,7 @@ public class Ontology implements Iterable<Term>
      */
     public Collection<Term> getLevel1Terms()
     {
-        return level1terms;
+        return this.level1terms;
     }
 
     /**
@@ -974,13 +974,13 @@ public class Ontology implements Iterable<Term>
      */
     public ArrayList<HashSet<TermID>> getUnrelatedTermTupels(
         HashSet<TermID> baseTerms, int tupelSize)
-    {
+        {
         ArrayList<HashSet<TermID>> unrelatedTupels = new ArrayList<HashSet<TermID>>();
 
         // TODO: Not sure what to implement here...
 
         return unrelatedTupels;
-    }
+        }
 
     static public class GOLevels
     {
@@ -992,17 +992,17 @@ public class Ontology implements Iterable<Term>
 
         public void putLevel(TermID tid, int distance)
         {
-            HashSet<TermID> levelTerms = level2terms.get(distance);
+            HashSet<TermID> levelTerms = this.level2terms.get(distance);
             if (levelTerms == null)
             {
                 levelTerms = new HashSet<TermID>();
-                level2terms.put(distance, levelTerms);
+                this.level2terms.put(distance, levelTerms);
             }
             levelTerms.add(tid);
-            terms2level.put(tid, distance);
+            this.terms2level.put(tid, distance);
 
-            if (distance > maxLevel) {
-                maxLevel = distance;
+            if (distance > this.maxLevel) {
+                this.maxLevel = distance;
             }
         }
 
@@ -1014,7 +1014,7 @@ public class Ontology implements Iterable<Term>
          */
         public int getTermLevel(TermID tid)
         {
-            Integer level = terms2level.get(tid);
+            Integer level = this.terms2level.get(tid);
             if (level == null) {
                 return -1;
             }
@@ -1023,12 +1023,12 @@ public class Ontology implements Iterable<Term>
 
         public Set<TermID> getLevelTermSet(int level)
         {
-            return level2terms.get(level);
+            return this.level2terms.get(level);
         }
 
         public int getMaxLevel()
         {
-            return maxLevel;
+            return this.maxLevel;
         }
     };
 
@@ -1050,14 +1050,14 @@ public class Ontology implements Iterable<Term>
             transRoot = ontologyTransGraph.getRootTerm();
         } else
         {
-            transGraph = graph;
-            transRoot = rootTerm;
+            transGraph = this.graph;
+            transRoot = this.rootTerm;
         }
 
         final GOLevels levels = new GOLevels();
 
         transGraph.singleSourceLongestPath(transRoot, new IDistanceVisitor<Term>()
-        {
+            {
             @Override
             public boolean visit(Term vertex, List<Term> path,
                 int distance)
@@ -1067,7 +1067,7 @@ public class Ontology implements Iterable<Term>
                 }
                 return true;
             }
-        });
+            });
         return levels;
     }
 
@@ -1078,7 +1078,7 @@ public class Ontology implements Iterable<Term>
      */
     public int getNumberOfTerms()
     {
-        return graph.getNumberOfVertices();
+        return this.graph.getNumberOfVertices();
     }
 
     /**
@@ -1090,7 +1090,7 @@ public class Ontology implements Iterable<Term>
     {
         int id = 0;
 
-        for (Term t : termContainer)
+        for (Term t : this.termContainer)
         {
             if (t.getID().id > id) {
                 id = t.getID().id;
@@ -1106,7 +1106,7 @@ public class Ontology implements Iterable<Term>
     @Override
     public Iterator<Term> iterator()
     {
-        return graph.getVertexIterator();
+        return this.graph.getVertexIterator();
     }
 
     private Subset relevantSubset;
@@ -1122,16 +1122,16 @@ public class Ontology implements Iterable<Term>
     {
         System.out.println(subsetName);
 
-        for (Subset s : availableSubsets)
+        for (Subset s : this.availableSubsets)
         {
             if (s.getName().equals(subsetName))
             {
-                relevantSubset = s;
+                this.relevantSubset = s;
                 return;
             }
         }
 
-        relevantSubset = null;
+        this.relevantSubset = null;
         throw new IllegalArgumentException("Subset \"" + subsetName + "\" couldn't be found!");
     }
 
@@ -1142,7 +1142,7 @@ public class Ontology implements Iterable<Term>
      */
     public Subset getRelevantSubset()
     {
-        return relevantSubset;
+        return this.relevantSubset;
     }
 
     /**
@@ -1153,11 +1153,11 @@ public class Ontology implements Iterable<Term>
     public void setRelevantSubontology(String subontologyName)
     {
         /* FIXME: That's so slow */
-        for (Term t : termContainer)
+        for (Term t : this.termContainer)
         {
             if (t.getName().equals(subontologyName))
             {
-                relevantSubontology = t;
+                this.relevantSubontology = t;
                 return;
             }
         }
@@ -1171,10 +1171,10 @@ public class Ontology implements Iterable<Term>
      */
     public TermID getRelevantSubontology()
     {
-        if (relevantSubontology != null) {
-            return relevantSubontology.getID();
+        if (this.relevantSubontology != null) {
+            return this.relevantSubontology.getID();
         }
-        return rootTerm.getID();
+        return this.rootTerm.getID();
     }
 
     /**
@@ -1185,12 +1185,12 @@ public class Ontology implements Iterable<Term>
      */
     public boolean isRelevantTerm(Term term)
     {
-        if (relevantSubset != null)
+        if (this.relevantSubset != null)
         {
             boolean found = false;
             for (Subset s : term.getSubsets())
             {
-                if (s.equals(relevantSubset))
+                if (s.equals(this.relevantSubset))
                 {
                     found = true;
                     break;
@@ -1201,10 +1201,10 @@ public class Ontology implements Iterable<Term>
             }
         }
 
-        if (relevantSubontology != null)
+        if (this.relevantSubontology != null)
         {
-            if (term.getID().id != relevantSubontology.getID().id) {
-                if (!(existsPath(relevantSubontology.getID(), term.getID()))) {
+            if (term.getID().id != this.relevantSubontology.getID().id) {
+                if (!(existsPath(this.relevantSubontology.getID(), term.getID()))) {
                     return false;
                 }
             }
@@ -1223,9 +1223,9 @@ public class Ontology implements Iterable<Term>
     {
         Term t;
         if (isRootTerm(goTermID)) {
-            t = rootTerm;
+            t = this.rootTerm;
         } else {
-            t = termContainer.get(goTermID);
+            t = this.termContainer.get(goTermID);
         }
 
         return isRelevantTerm(t);
@@ -1300,11 +1300,11 @@ public class Ontology implements Iterable<Term>
             }
         }
 
-        DirectedGraph<Term> trans = graph.pathMaintainingSubGraph(terms);
+        DirectedGraph<Term> trans = this.graph.pathMaintainingSubGraph(terms);
 
         Ontology g = new Ontology();
         g.graph = trans;
-        g.termContainer = termContainer;
+        g.termContainer = this.termContainer;
         g.assignLevel1TermsAndFixRoot();
 
         /* TODO: Add real GOEdges */
@@ -1314,7 +1314,7 @@ public class Ontology implements Iterable<Term>
 
     public DirectedGraph<Term> getGraph()
     {
-        return graph;
+        return this.graph;
     }
 
     /**

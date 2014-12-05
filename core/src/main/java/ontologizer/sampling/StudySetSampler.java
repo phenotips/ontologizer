@@ -61,12 +61,12 @@ public class StudySetSampler
             return;
         }
         cleanedRepository.removeAll(weHave);
-        KSubsetSampler<ByteString> sampler = new KSubsetSampler<ByteString>(cleanedRepository, rnd);
+        KSubsetSampler<ByteString> sampler = new KSubsetSampler<ByteString>(cleanedRepository, this.rnd);
         ArrayList<ByteString> sample = sampler.sampleOneOrdered(desiredSize);
 
         for (ByteString gene : sample)
         {
-            studySet.addGene(gene, baseStudySet.getGeneDescription(gene));
+            studySet.addGene(gene, this.baseStudySet.getGeneDescription(gene));
         }
     }
 
@@ -99,7 +99,7 @@ public class StudySetSampler
     {
         StudySet sampledStudySet = new StudySet();
 
-        addSampleToStudySet(desiredSize, sampledStudySet, baseStudySet);
+        addSampleToStudySet(desiredSize, sampledStudySet, this.baseStudySet);
         return sampledStudySet;
     }
 
@@ -114,8 +114,8 @@ public class StudySetSampler
         int desiredSize;
 
         /* Determine the desired size of the study set randomly */
-        desiredSize = (int) Math.floor(rnd.nextDouble()
-            * baseStudySet.getGeneCount());
+        desiredSize = (int) Math.floor(this.rnd.nextDouble()
+            * this.baseStudySet.getGeneCount());
 
         return sampleRandomStudySet(desiredSize);
     }
@@ -143,7 +143,7 @@ public class StudySetSampler
     {
         StudySet sampledStudySet = new StudySet();
 
-        GOTermEnumerator termEnum = baseStudySet.enumerateGOTerms(graph,
+        GOTermEnumerator termEnum = this.baseStudySet.enumerateGOTerms(graph,
             associationContainer);
 
         HashSet<ByteString> seenGenes = new HashSet<ByteString>();
@@ -190,7 +190,7 @@ public class StudySetSampler
     {
         StudySet studySet = new StudySet();
 
-        GOTermEnumerator termEnum = baseStudySet.enumerateGOTerms(graph,
+        GOTermEnumerator termEnum = this.baseStudySet.enumerateGOTerms(graph,
             associationContainer);
 
         /*
@@ -218,7 +218,7 @@ public class StudySetSampler
 
         for (ByteString gene : sampledGenes)
         {
-            studySet.addGene(gene, baseStudySet.getGeneDescription(gene));
+            studySet.addGene(gene, this.baseStudySet.getGeneDescription(gene));
         }
 
         return studySet;

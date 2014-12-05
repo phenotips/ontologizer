@@ -60,9 +60,9 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
 
                 /* Retrieve back the slim graph index which was stored as a label */
                 int index = Integer.parseInt(e.getName());
-                positionCallback.set(slimGraph.getVertex(index), x, y);
+                this.positionCallback.set(this.slimGraph.getVertex(index), x, y);
             }
-                break;
+            break;
 
             case GrappaConstants.EDGE:
                 break;
@@ -78,7 +78,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                     }
                 }
             }
-                break;
+            break;
         }
     }
 
@@ -101,24 +101,26 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
             dotTmpFile.deleteOnExit();
             layoutedDotTmpFile.deleteOnExit();
 
-            graph.writeDOT(new FileOutputStream(dotTmpFile), graph.getVertices(), new DotAttributesProvider<T>()
-            {
-                @Override
-                public String getDotNodeAttributes(T vt)
+            this.graph.writeDOT(new FileOutputStream(dotTmpFile), this.graph.getVertices(),
+                new DotAttributesProvider<T>()
                 {
-                    dimensionCallback.get(vt, dim);
+                    @Override
+                    public String getDotNodeAttributes(T vt)
+                    {
+                        DirectedGraphDotLayout.this.dimensionCallback.get(vt, dim);
 
-                    /*
-                     * The fixedsize attribute tells dot not to change width and height. We store the unique slim graph
-                     * index of this vertex as label.
-                     */
-                    return "width=" + dim.width / DPI + ",height=" + dim.height / DPI
-                        + ",fixedsize=true,shape=box,label=\"" + slimGraph.getVertexIndex(vt) + "\"";
-                };
-            }, horizSpace / DPI, vertSpace / DPI);
+                        /*
+                         * The fixedsize attribute tells dot not to change width and height. We store the unique slim
+                         * graph index of this vertex as label.
+                         */
+                        return "width=" + dim.width / DPI + ",height=" + dim.height / DPI
+                            + ",fixedsize=true,shape=box,label=\""
+                            + DirectedGraphDotLayout.this.slimGraph.getVertexIndex(vt) + "\"";
+                    };
+                }, horizSpace / DPI, vertSpace / DPI);
             String[] args = new String[] {
-            "dot", dotTmpFile.getCanonicalPath(),
-            "-Tdot", "-o", layoutedDotTmpFile.getCanonicalPath() };
+                "dot", dotTmpFile.getCanonicalPath(),
+                "-Tdot", "-o", layoutedDotTmpFile.getCanonicalPath() };
             Process dotProcess = Runtime.getRuntime().exec(args);
 
             /* Gather error stream */
@@ -147,7 +149,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                  * Inform the client about the size FIXME: Check for rounding errors
                  */
                 Rectangle2D bb = g.getBoundingBox();
-                positionCallback.setSize((int) (bb.getMaxX() - bb.getMinX()), (int) (bb.getMaxY() - bb.getMinY()));
+                this.positionCallback.setSize((int) (bb.getMaxX() - bb.getMinX()), (int) (bb.getMaxY() - bb.getMinY()));
 
                 /* And walk though the graph and emit the positions */
                 emitPosition(g, (int) bb.getMinY());

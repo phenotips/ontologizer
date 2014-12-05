@@ -15,7 +15,7 @@ import ontologizer.statistics.PValue;
 import ontologizer.types.ByteString;
 
 public class ParentChildCutCalculation extends
-    AbstractHypergeometricCalculation
+AbstractHypergeometricCalculation
 {
 
     @Override
@@ -69,19 +69,19 @@ public class ParentChildCutCalculation extends
             {
                 /* We need this to get genes annotated in the study set */
                 GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(
-                    graph, goAssociations);
+                    this.graph, this.goAssociations);
 
                 // PValue p [] = new
                 // PValue[populationTermCounter.getTotalNumberOfAnnotatedTerms()];
-                PValue p[] = new PValue[popTermEnumerator.getTotalNumberOfAnnotatedTerms()];
+                PValue p[] = new PValue[this.popTermEnumerator.getTotalNumberOfAnnotatedTerms()];
                 int i = 0;
 
                 /* For every term within the goTermCounter */
-                for (TermID term : popTermEnumerator)
+                for (TermID term : this.popTermEnumerator)
                 {
                     // calculating properties of term
                     ParentChildGOTermProperties termProp = calculateTerm(term,
-                        graph, popTermEnumerator, studyTermEnumerator);
+                        this.graph, this.popTermEnumerator, studyTermEnumerator);
 
                     // adding properties to p Vector
                     p[i++] = termProp;
@@ -93,19 +93,19 @@ public class ParentChildCutCalculation extends
             @Override
             public int currentStudySetSize()
             {
-                return observedStudySet.getGeneCount();
+                return this.observedStudySet.getGeneCount();
             }
 
             @Override
             public PValue[] calculateRawPValues()
             {
-                return calculatePValues(observedStudySet);
+                return calculatePValues(this.observedStudySet);
             }
 
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
+                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
 
             private ParentChildGOTermProperties calculateTerm(TermID term,
@@ -182,14 +182,14 @@ public class ParentChildCutCalculation extends
                             prop.p_min = 1.0;
                         } else
                         {
-                            double p = hyperg.phypergeometric(popFamilyCount,
+                            double p = ParentChildCutCalculation.this.hyperg.phypergeometric(popFamilyCount,
                                 (double) popTermCount
-                                    / (double) popFamilyCount,
+                                / (double) popFamilyCount,
                                 studyFamilyCount, studyTermCount);
 
                             prop.ignoreAtMTC = false;
                             prop.p = p;
-                            prop.p_min = hyperg.dhyper(popTermCount,
+                            prop.p_min = ParentChildCutCalculation.this.hyperg.dhyper(popTermCount,
                                 popFamilyCount, popTermCount, popTermCount);
                         }
                     } else

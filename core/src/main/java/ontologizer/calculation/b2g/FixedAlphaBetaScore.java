@@ -25,34 +25,34 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     private TermID proposalT2;
 
     protected double[] ALPHA = new double[] { 0.0000001, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55,
-    0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 };
+        0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 };
 
     private int alphaIdx = 0;
 
     private int oldAlphaIdx;
 
-    protected int[] totalAlpha = new int[ALPHA.length];
+    protected int[] totalAlpha = new int[this.ALPHA.length];
 
     private boolean doAlphaMCMC = true;
 
-    protected double[] BETA = ALPHA;
+    protected double[] BETA = this.ALPHA;
 
     private int betaIdx = 0;
 
     private int oldBetaIdx;
 
-    protected int totalBeta[] = new int[BETA.length];
+    protected int totalBeta[] = new int[this.BETA.length];
 
     private boolean doBetaMCMC = true;
 
     protected final int[] EXPECTED_NUMBER_OF_TERMS = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    17, 18, 19, 20 };
+        17, 18, 19, 20 };
 
     private int expIdx = 0;
 
     private int oldExpIdx;
 
-    protected int totalExp[] = new int[EXPECTED_NUMBER_OF_TERMS.length];
+    protected int totalExp[] = new int[this.EXPECTED_NUMBER_OF_TERMS.length];
 
     private boolean doExpMCMC = true;
 
@@ -81,20 +81,20 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     public void setAlpha(double alpha)
     {
         this.alpha = alpha;
-        doAlphaMCMC = Double.isNaN(alpha);
+        this.doAlphaMCMC = Double.isNaN(alpha);
     }
 
     public void setBeta(double beta)
     {
         this.beta = beta;
-        doBetaMCMC = Double.isNaN(beta);
+        this.doBetaMCMC = Double.isNaN(beta);
     }
 
     @Override
     public void setExpectedNumberOfTerms(double terms)
     {
         super.setExpectedNumberOfTerms(terms);
-        doExpMCMC = Double.isNaN(terms);
+        this.doExpMCMC = Double.isNaN(terms);
     }
 
     public void setMaxAlpha(double maxAlpha)
@@ -114,12 +114,12 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             span = 19;
         }
 
-        ALPHA = new double[20];
-        totalAlpha = new int[20];
+        this.ALPHA = new double[20];
+        this.totalAlpha = new int[20];
 
-        ALPHA[0] = 0.0000001;
+        this.ALPHA[0] = 0.0000001;
         for (int i = 1; i < 20; i++) {
-            ALPHA[i] = i * maxAlpha / span;
+            this.ALPHA[i] = i * maxAlpha / span;
         }
     }
 
@@ -140,12 +140,12 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             span = 19;
         }
 
-        BETA = new double[20];
-        totalBeta = new int[20];
+        this.BETA = new double[20];
+        this.totalBeta = new int[20];
 
-        BETA[0] = 0.0000001;
+        this.BETA[0] = 0.0000001;
         for (int i = 1; i < 20; i++) {
-            BETA[i] = i * maxBeta / span;
+            this.BETA[i] = i * maxBeta / span;
         }
 
     }
@@ -163,35 +163,35 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
         setMaxAlpha(1.);
         setMaxBeta(1.);
 
-        n10 = observedActiveGenes.size();
-        n00 = population.size() - n10;
+        this.n10 = observedActiveGenes.size();
+        this.n00 = this.population.size() - this.n10;
     }
 
     @Override
     public void hiddenGeneActivated(int gid)
     {
-        if (observedGenes[gid])
+        if (this.observedGenes[gid])
         {
-            n11++;
-            n10--;
+            this.n11++;
+            this.n10--;
         } else
         {
-            n01++;
-            n00--;
+            this.n01++;
+            this.n00--;
         }
     }
 
     @Override
     public void hiddenGeneDeactivated(int gid)
     {
-        if (observedGenes[gid])
+        if (this.observedGenes[gid])
         {
-            n11--;
-            n10++;
+            this.n11--;
+            this.n10++;
         } else
         {
-            n01--;
-            n00++;
+            this.n01--;
+            this.n00++;
         }
     }
 
@@ -200,78 +200,78 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     {
         long oldPossibilities = getNeighborhoodSize();
 
-        proposalSwitch = -1;
-        proposalT1 = null;
-        proposalT2 = null;
-        oldAlphaIdx = -1;
-        oldBetaIdx = -1;
-        oldExpIdx = -1;
+        this.proposalSwitch = -1;
+        this.proposalT1 = null;
+        this.proposalT2 = null;
+        this.oldAlphaIdx = -1;
+        this.oldBetaIdx = -1;
+        this.oldExpIdx = -1;
 
-        if ((!doAlphaMCMC && !doBetaMCMC && !doExpMCMC) || rnd.nextBoolean())
+        if ((!this.doAlphaMCMC && !this.doBetaMCMC && !this.doExpMCMC) || this.rnd.nextBoolean())
         {
             long choose = Math.abs(rand) % oldPossibilities;
 
-            if (choose < termsArray.length)
+            if (choose < this.termsArray.length)
             {
                 /* on/off */
-                proposalSwitch = (int) choose;
-                switchState(proposalSwitch);
+                this.proposalSwitch = (int) choose;
+                switchState(this.proposalSwitch);
             } else
             {
-                long base = choose - termsArray.length;
+                long base = choose - this.termsArray.length;
 
-                int activeTermPos = (int) (base / numInactiveTerms);
-                int inactiveTermPos = (int) (base % numInactiveTerms);
+                int activeTermPos = (int) (base / this.numInactiveTerms);
+                int inactiveTermPos = (int) (base % this.numInactiveTerms);
 
-                proposalT1 = termsArray[termPartition[activeTermPos + numInactiveTerms]];
-                proposalT2 = termsArray[termPartition[inactiveTermPos]];
+                this.proposalT1 = this.termsArray[this.termPartition[activeTermPos + this.numInactiveTerms]];
+                this.proposalT2 = this.termsArray[this.termPartition[inactiveTermPos]];
 
-                exchange(proposalT1, proposalT2);
+                exchange(this.proposalT1, this.proposalT2);
             }
         } else
         {
             int max = 0;
 
-            if (doAlphaMCMC) {
-                max += ALPHA.length;
+            if (this.doAlphaMCMC) {
+                max += this.ALPHA.length;
             }
-            if (doBetaMCMC) {
-                max += BETA.length;
+            if (this.doBetaMCMC) {
+                max += this.BETA.length;
             }
-            if (doExpMCMC) {
-                max += EXPECTED_NUMBER_OF_TERMS.length;
+            if (this.doExpMCMC) {
+                max += this.EXPECTED_NUMBER_OF_TERMS.length;
             }
 
             int choose = Math.abs((int) rand) % max;
 
-            if (doAlphaMCMC)
+            if (this.doAlphaMCMC)
             {
-                if (choose < ALPHA.length)
+                if (choose < this.ALPHA.length)
                 {
-                    oldAlphaIdx = alphaIdx;
-                    alphaIdx = choose;
+                    this.oldAlphaIdx = this.alphaIdx;
+                    this.alphaIdx = choose;
                     return;
                 }
-                choose -= ALPHA.length;
+                choose -= this.ALPHA.length;
             }
 
-            if (doBetaMCMC)
+            if (this.doBetaMCMC)
             {
-                if (choose < BETA.length)
+                if (choose < this.BETA.length)
                 {
-                    oldBetaIdx = betaIdx;
-                    betaIdx = choose;
+                    this.oldBetaIdx = this.betaIdx;
+                    this.betaIdx = choose;
                     return;
                 }
-                choose -= BETA.length;
+                choose -= this.BETA.length;
             }
 
-            if (!doExpMCMC) {
+            if (!this.doExpMCMC) {
                 throw new RuntimeException("MCMC requested proposal but no proposal is possible");
             }
 
-            oldExpIdx = expIdx;
-            expIdx = choose;
+            this.oldExpIdx = this.expIdx;
+            this.expIdx = choose;
         }
     }
 
@@ -280,7 +280,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
         double alpha;
 
         if (Double.isNaN(this.alpha)) {
-            alpha = ALPHA[alphaIdx];
+            alpha = this.ALPHA[this.alphaIdx];
         } else {
             alpha = this.alpha;
         }
@@ -293,7 +293,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
         double beta;
 
         if (Double.isNaN(this.beta)) {
-            beta = BETA[betaIdx];
+            beta = this.BETA[this.betaIdx];
         } else {
             beta = this.beta;
         }
@@ -305,7 +305,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     {
         double p;
         if (Double.isNaN(this.p)) {
-            p = (double) EXPECTED_NUMBER_OF_TERMS[expIdx] / termsArray.length;
+            p = (double) this.EXPECTED_NUMBER_OF_TERMS[this.expIdx] / this.termsArray.length;
         } else {
             p = this.p;
         }
@@ -321,13 +321,13 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             return 0.0;
         }
 
-        if (a < lGamma.length)
+        if (a < this.lGamma.length)
         {
-            double lg = lGamma[a];
+            double lg = this.lGamma[a];
             if (lg == 0.0)
             {
                 lg = Gamma.lgamma(a);
-                lGamma[a] = lg;
+                this.lGamma[a] = lg;
             }
             return lg;
         }
@@ -344,7 +344,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     {
         double newScore2;
 
-        if (!integrateParams)
+        if (!this.integrateParams)
         {
             double alpha;
             double beta;
@@ -355,10 +355,13 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             p = getP();
 
             newScore2 =
-                Math.log(alpha) * n10 + Math.log(1 - alpha) * n00 + Math.log(1 - beta) * n11 + Math.log(beta) * n01;
+                Math.log(alpha) * this.n10 + Math.log(1 - alpha) * this.n00 + Math.log(1 - beta) * this.n11
+                    + Math.log(beta) * this.n01;
 
-            if (usePrior) {
-                newScore2 += Math.log(p) * (termsArray.length - numInactiveTerms) + Math.log(1 - p) * numInactiveTerms;
+            if (this.usePrior) {
+                newScore2 +=
+                    Math.log(p) * (this.termsArray.length - this.numInactiveTerms) + Math.log(1 - p)
+                        * this.numInactiveTerms;
             }
         } else
         {
@@ -372,11 +375,11 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             int p1 = 1; /* Pseudocounts, on */
             int p2 = 1; /* Pseudocounts, off */
 
-            int m1 = termsArray.length - numInactiveTerms;
-            int m0 = numInactiveTerms;
+            int m1 = this.termsArray.length - this.numInactiveTerms;
+            int m0 = this.numInactiveTerms;
 
-            double s1 = logBeta(alpha1 + n10, alpha2 + n00);
-            double s2 = logBeta(beta1 + n01, beta2 + n11);
+            double s1 = logBeta(alpha1 + this.n10, alpha2 + this.n00);
+            double s2 = logBeta(beta1 + this.n01, beta2 + this.n11);
             double s3 = logBeta(p1 + m1, p2 + m0);
             newScore2 = s1 + s2 + s3;
         }
@@ -387,16 +390,16 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     @Override
     public void undoProposal()
     {
-        if (proposalSwitch != -1) {
-            switchState(proposalSwitch);
-        } else if (proposalT1 != null) {
-            exchange(proposalT2, proposalT1);
-        } else if (oldAlphaIdx != -1) {
-            alphaIdx = oldAlphaIdx;
-        } else if (oldBetaIdx != -1) {
-            betaIdx = oldBetaIdx;
-        } else if (oldExpIdx != -1) {
-            expIdx = oldExpIdx;
+        if (this.proposalSwitch != -1) {
+            switchState(this.proposalSwitch);
+        } else if (this.proposalT1 != null) {
+            exchange(this.proposalT2, this.proposalT1);
+        } else if (this.oldAlphaIdx != -1) {
+            this.alphaIdx = this.oldAlphaIdx;
+        } else if (this.oldBetaIdx != -1) {
+            this.betaIdx = this.oldBetaIdx;
+        } else if (this.oldExpIdx != -1) {
+            this.expIdx = this.oldExpIdx;
         } else {
             throw new RuntimeException("Wanted to undo a proposal that wasn't proposed");
         }
@@ -405,7 +408,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     @Override
     public long getNeighborhoodSize()
     {
-        long size = termsArray.length + (termsArray.length - numInactiveTerms) * numInactiveTerms;
+        long size = this.termsArray.length + (this.termsArray.length - this.numInactiveTerms) * this.numInactiveTerms;
         return size;
     }
 
@@ -414,40 +417,40 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     {
         super.record();
 
-        totalN00 += n00;
-        totalN01 += n01;
-        totalN10 += n10;
-        totalN11 += n11;
+        this.totalN00 += this.n00;
+        this.totalN01 += this.n01;
+        this.totalN10 += this.n10;
+        this.totalN11 += this.n11;
 
-        totalAlpha[alphaIdx]++;
-        totalBeta[betaIdx]++;
-        totalExp[expIdx]++;
-        totalT += (termsArray.length - numInactiveTerms);
+        this.totalAlpha[this.alphaIdx]++;
+        this.totalBeta[this.betaIdx]++;
+        this.totalExp[this.expIdx]++;
+        this.totalT += (this.termsArray.length - this.numInactiveTerms);
     }
 
     public double getAvgN00()
     {
-        return (double) totalN00 / numRecords;
+        return (double) this.totalN00 / this.numRecords;
     }
 
     public double getAvgN01()
     {
-        return (double) totalN01 / numRecords;
+        return (double) this.totalN01 / this.numRecords;
     }
 
     public double getAvgN10()
     {
-        return (double) totalN10 / numRecords;
+        return (double) this.totalN10 / this.numRecords;
     }
 
     public double getAvgN11()
     {
-        return (double) totalN11 / numRecords;
+        return (double) this.totalN11 / this.numRecords;
     }
 
     public double getAvgT()
     {
-        return (double) totalT / numRecords;
+        return (double) this.totalT / this.numRecords;
     }
 
     /**
@@ -457,7 +460,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
      */
     public double[] getAlphaValues()
     {
-        return ALPHA;
+        return this.ALPHA;
     }
 
     /**
@@ -487,7 +490,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
      */
     public double[] getAlphaDistribution()
     {
-        return getDistribution(totalAlpha);
+        return getDistribution(this.totalAlpha);
     }
 
     /**
@@ -497,7 +500,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
      */
     public double[] getBetaValues()
     {
-        return BETA;
+        return this.BETA;
     }
 
     /**
@@ -507,7 +510,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
      */
     public double[] getBetaDistribution()
     {
-        return getDistribution(totalBeta);
+        return getDistribution(this.totalBeta);
     }
 
 }

@@ -41,7 +41,7 @@ public class MemoryWarningSystem
                     MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED)) {
                     long maxMemory = tenuredGenPool.getUsage().getMax();
                     long usedMemory = tenuredGenPool.getUsage().getUsed();
-                    for (Listener listener : listeners) {
+                    for (Listener listener : MemoryWarningSystem.this.listeners) {
                         listener.memoryUsageLow(usedMemory, maxMemory);
                     }
                 }
@@ -51,12 +51,12 @@ public class MemoryWarningSystem
 
     public boolean addListener(Listener listener)
     {
-        return listeners.add(listener);
+        return this.listeners.add(listener);
     }
 
     public boolean removeListener(Listener listener)
     {
-        return listeners.remove(listener);
+        return this.listeners.remove(listener);
     }
 
     private static final MemoryPoolMXBean tenuredGenPool =

@@ -21,16 +21,16 @@ public class ChiSquareQGOTermProperties extends AbstractGOTermProperties
     public int observedHigherChisquares;
 
     private static final String[] propertyNames = new String[] {
-    "ID",
-    "Pop.total",
-    "Pop.term",
-    "Study.total",
-    "Study.term",
-    "chisquare",
-    "expected.higher",
-    "observed.higher",
-    "p",
-    "q"
+        "ID",
+        "Pop.total",
+        "Pop.term",
+        "Study.total",
+        "Study.term",
+        "chisquare",
+        "expected.higher",
+        "observed.higher",
+        "p",
+        "q"
     };
 
     @Override
@@ -51,25 +51,25 @@ public class ChiSquareQGOTermProperties extends AbstractGOTermProperties
         switch (propNumber)
         {
             case 0:
-                return goTerm.getIDAsString();
+                return this.goTerm.getIDAsString();
             case 1:
                 return null; /* population gene count */
             case 2:
-                return Integer.toString(annotatedPopulationGenes);
+                return Integer.toString(this.annotatedPopulationGenes);
             case 3:
                 return null; /* study gene count */
             case 4:
-                return Integer.toString(annotatedStudyGenes);
+                return Integer.toString(this.annotatedStudyGenes);
             case 5:
-                return Double.toString(chisquare);
+                return Double.toString(this.chisquare);
             case 6:
-                return Double.toString(expectedHigherChisquares);
+                return Double.toString(this.expectedHigherChisquares);
             case 7:
-                return Integer.toString(observedHigherChisquares);
+                return Integer.toString(this.observedHigherChisquares);
             case 8:
-                return Double.toString(p);
+                return Double.toString(this.p);
             case 9:
-                return Double.toString(p_adjusted);
+                return Double.toString(this.p_adjusted);
         }
         return null;
     }

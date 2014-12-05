@@ -18,11 +18,11 @@ public class ReferencePool<T>
 
     public T map(T toBeMapped)
     {
-        T ref = referenceMap.get(toBeMapped);
+        T ref = this.referenceMap.get(toBeMapped);
         if (ref != null) {
             return ref;
         }
-        referenceMap.put(toBeMapped, toBeMapped);
+        this.referenceMap.put(toBeMapped, toBeMapped);
         return toBeMapped;
     }
 }

@@ -60,19 +60,19 @@ public class TopCalculation extends AbstractHypergeometricCalculation
              */
             private HashSet<ByteString> calculateTerm(GOTermEnumerator populationTermEnumerator,
                 GOTermEnumerator studyTermEnumerator, StudySet studySet, TermID term, ArrayList<PValue> pList)
-            {
+                {
                 if (term.id == 5982) {
-                    System.out.println("HUHUHUH" + markedGenesMap.containsKey(term));
+                    System.out.println("HUHUHUH" + this.markedGenesMap.containsKey(term));
                 }
 
                 /* Leave early if we already processed this term */
-                if (markedGenesMap.containsKey(term)) {
-                    return markedGenesMap.get(term);
+                if (this.markedGenesMap.containsKey(term)) {
+                    return this.markedGenesMap.get(term);
                 }
 
                 /* Determine genes that are marked */
                 HashSet<ByteString> markedGenes = new HashSet<ByteString>();
-                Set<TermID> d = graph.getTermChildren(term);
+                Set<TermID> d = this.graph.getTermChildren(term);
                 if (d != null)
                 {
                     for (TermID c : d) {
@@ -82,7 +82,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 }
 
                 /* Now calculate the p value */
-                int popGeneCount = populationSet.getGeneCount();
+                int popGeneCount = this.populationSet.getGeneCount();
                 int studyGeneCount = studySet.getGeneCount();
 
                 GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(term);
@@ -108,12 +108,12 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 /* We have to use the real count here */
                 if (annotated.totalAnnotated.size() == 0)
                 {
-                    markedGenesMap.put(term, markedGenes);
+                    this.markedGenesMap.put(term, markedGenes);
                     return markedGenes;
                 }
 
                 TopGOTermProperties myP = new TopGOTermProperties();
-                myP.goTerm = graph.getTerm(term);
+                myP.goTerm = this.graph.getTerm(term);
                 myP.annotatedStudyGenes = studyAnnotatedGenes.totalAnnotatedCount();
                 myP.annotatedPopulationGenes = populationTermEnumerator.getAnnotatedGenes(term).totalAnnotatedCount();
 
@@ -128,11 +128,12 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                      */
 
                     myP.p =
-                        hyperg.phypergeometric(popGeneCount,
+                        TopCalculation.this.hyperg.phypergeometric(popGeneCount,
                             (double) goidAnnotatedPopGeneCount / (double) popGeneCount, studyGeneCount,
                             goidAnnotatedStudyGeneCount);
                     myP.p_min =
-                        hyperg.dhyper(goidAnnotatedPopGeneCount, popGeneCount, goidAnnotatedPopGeneCount,
+                        TopCalculation.this.hyperg.dhyper(goidAnnotatedPopGeneCount, popGeneCount,
+                            goidAnnotatedPopGeneCount,
                             goidAnnotatedPopGeneCount);
 
                     if (myP.p < SIGNIFICANCE_LEVEL) {
@@ -147,17 +148,19 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 }
                 myP.p_adjusted = myP.p;
                 pList.add(myP);
-                markedGenesMap.put(term, markedGenes);
+                this.markedGenesMap.put(term, markedGenes);
                 return markedGenes;
-            }
+                }
 
             private PValue[] calculatePValues(StudySet studySet)
             {
-                markedGenesMap = new HashMap<TermID, HashSet<ByteString>>();
-                GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(graph, goAssociations);
-                GOTermEnumerator populationTermEnumerator = populationSet.enumerateGOTerms(graph, goAssociations);
+                this.markedGenesMap = new HashMap<TermID, HashSet<ByteString>>();
+                GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(this.graph, this.goAssociations);
+                GOTermEnumerator populationTermEnumerator =
+                    this.populationSet.enumerateGOTerms(this.graph, this.goAssociations);
                 ArrayList<PValue> list = new ArrayList<PValue>(100);
-                calculateTerm(populationTermEnumerator, studyTermEnumerator, studySet, graph.getRootTerm().getID(),
+                calculateTerm(populationTermEnumerator, studyTermEnumerator, studySet,
+                    this.graph.getRootTerm().getID(),
                     list);
                 PValue p[] = new PValue[list.size()];
                 return list.toArray(p);
@@ -166,19 +169,19 @@ public class TopCalculation extends AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRawPValues()
             {
-                return calculatePValues(observedStudySet);
+                return calculatePValues(this.observedStudySet);
             }
 
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
+                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
 
             @Override
             public int currentStudySetSize()
             {
-                return observedStudySet.getGeneCount();
+                return this.observedStudySet.getGeneCount();
             }
         }
 

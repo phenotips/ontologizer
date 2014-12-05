@@ -13,6 +13,6 @@ public class PrefixPool
 
     public Prefix map(Prefix ref)
     {
-        return prefixPool.map(ref);
+        return this.prefixPool.map(ref);
     }
 }

@@ -182,17 +182,17 @@ public class Hypergeometric
         /*
          * Make sure value is already in lfactorial. If not, calculate all values up to that for i
          */
-        if (i > (lfactorial.size() - 1))
+        if (i > (this.lfactorial.size() - 1))
         {
-            for (int j = lfactorial.size(); j <= i; j++)
+            for (int j = this.lfactorial.size(); j <= i; j++)
             {
-                double lf = lfactorial.get(j - 1).doubleValue()
+                double lf = this.lfactorial.get(j - 1).doubleValue()
                     + java.lang.Math.log(j);
-                lfactorial.add(j, new Double(lf));
+                this.lfactorial.add(j, new Double(lf));
             }
         }
 
-        return lfactorial.get(i).doubleValue();
+        return this.lfactorial.get(i).doubleValue();
     }
 
     /**
@@ -201,9 +201,9 @@ public class Hypergeometric
     public Hypergeometric()
     {
 
-        lfactorial = new Vector<Double>();
-        lfactorial.add(0, new Double(0.0)); /* 0! = 1, therefore let log(0)=0 */
-        lfactorial.add(1, new Double(0.0));
+        this.lfactorial = new Vector<Double>();
+        this.lfactorial.add(0, new Double(0.0)); /* 0! = 1, therefore let log(0)=0 */
+        this.lfactorial.add(1, new Double(0.0));
 
     }
 

@@ -33,7 +33,7 @@ class DoubleParam extends B2GParam
 
     double getValue()
     {
-        return val;
+        return this.val;
     }
 
     void setValue(double newVal)
@@ -69,7 +69,7 @@ class DoubleParam extends B2GParam
      */
     public double getMin()
     {
-        return min;
+        return this.min;
     }
 
     /**
@@ -79,7 +79,7 @@ class DoubleParam extends B2GParam
      */
     public boolean hasMin()
     {
-        return !Double.isNaN(min);
+        return !Double.isNaN(this.min);
     }
 
     /**
@@ -89,7 +89,7 @@ class DoubleParam extends B2GParam
      */
     public double getMax()
     {
-        return max;
+        return this.max;
     }
 
     /**
@@ -99,14 +99,14 @@ class DoubleParam extends B2GParam
      */
     public boolean hasMax()
     {
-        return !Double.isNaN(max);
+        return !Double.isNaN(this.max);
     }
 
     @Override
     public String toString()
     {
         if (isFixed()) {
-            return String.format("%g", val);
+            return String.format("%g", this.val);
         }
         return getType().toString();
     }

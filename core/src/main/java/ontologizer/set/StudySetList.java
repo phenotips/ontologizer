@@ -91,12 +91,12 @@ public class StudySetList implements Iterable<StudySet>
                 StudySet study = StudySetFactory.createFromFile(myfile, false);
 
                 /* Enqueue the study set into the array list */
-                list.add(study);
+                this.list.add(study);
             } catch (FileNotFoundException fne)
             {
                 /* Quite strange that this happnen but we must react anywhy */
                 System.err
-                    .println("Ignoring study file " + myfile.getAbsolutePath() + " because it couldn't be found.");
+                .println("Ignoring study file " + myfile.getAbsolutePath() + " because it couldn't be found.");
             } catch (IOException e)
             {
                 System.err.println("Ignoring study file " + myfile.getAbsolutePath() + " because: " + e.getMessage());
@@ -121,7 +121,7 @@ public class StudySetList implements Iterable<StudySet>
      */
     public void addStudySet(StudySet study)
     {
-        list.add(study);
+        this.list.add(study);
     }
 
     /**
@@ -150,7 +150,7 @@ public class StudySetList implements Iterable<StudySet>
     @Override
     public Iterator<StudySet> iterator()
     {
-        return list.iterator();
+        return this.list.iterator();
     }
 
     /**
@@ -160,6 +160,6 @@ public class StudySetList implements Iterable<StudySet>
      */
     public int size()
     {
-        return list.size();
+        return this.list.size();
     }
 }

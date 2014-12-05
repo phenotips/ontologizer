@@ -68,8 +68,9 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
 
             private PValue[] calculatePValues(StudySet studySet)
             {
-                GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(graph, goAssociations);
-                GOTermEnumerator populationTermEnumerator = populationSet.enumerateGOTerms(graph, goAssociations);
+                GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(this.graph, this.goAssociations);
+                GOTermEnumerator populationTermEnumerator =
+                    this.populationSet.enumerateGOTerms(this.graph, this.goAssociations);
 
                 int i = 0;
 
@@ -81,12 +82,12 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
                 {
                     int goidAnnotatedPopGeneCount =
                         populationTermEnumerator.getAnnotatedGenes(term).totalAnnotatedCount();
-                    int popGeneCount = populationSet.getGeneCount();
+                    int popGeneCount = this.populationSet.getGeneCount();
                     int studyGeneCount = studySet.getGeneCount();
                     int goidAnnotatedStudyGeneCount = studyTermEnumerator.getAnnotatedGenes(term).totalAnnotatedCount();
 
                     myP = new TermForTermGOTermProperties();
-                    myP.goTerm = graph.getTerm(term);
+                    myP.goTerm = this.graph.getTerm(term);
                     myP.annotatedStudyGenes = goidAnnotatedStudyGeneCount;
                     myP.annotatedPopulationGenes = goidAnnotatedPopGeneCount;
 
@@ -102,10 +103,11 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
                          */
 
                         myP.p =
-                            hyperg.phypergeometric(popGeneCount, (double) goidAnnotatedPopGeneCount
-                                / (double) popGeneCount,
+                            TermForTermCalculation.this.hyperg.phypergeometric(popGeneCount,
+                                (double) goidAnnotatedPopGeneCount
+                                    / (double) popGeneCount,
                                 studyGeneCount, goidAnnotatedStudyGeneCount);
-                        myP.p_min = hyperg.dhyper(
+                        myP.p_min = TermForTermCalculation.this.hyperg.dhyper(
                             goidAnnotatedPopGeneCount,
                             popGeneCount,
                             goidAnnotatedPopGeneCount,
@@ -126,19 +128,19 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRawPValues()
             {
-                return calculatePValues(observedStudySet);
+                return calculatePValues(this.observedStudySet);
             }
 
             @Override
             public int currentStudySetSize()
             {
-                return observedStudySet.getGeneCount();
+                return this.observedStudySet.getGeneCount();
             }
 
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
+                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
         }
         ;

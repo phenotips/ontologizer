@@ -17,7 +17,6 @@ import java.util.List;
  * is_a: GO:0051052 (cardinality 0..n)
  * relationship: part_of GO:0006310 (cardinality 0..n)
  * </pre>
- *
  * <p>
  * Both is_a and part_of refer to child-parent relationships in the GO directed acyclic graph. The Ontologizer does not
  * distinguish between these types of child-parent relationships, but rather places both type of parent in an ArrayList
@@ -79,9 +78,9 @@ public class Term
      */
     public Term(TermID id, String name, Namespace namespace, ArrayList<ParentTermID> parentList)
     {
-        parents = new ParentTermID[parentList.size()];
-        parentList.toArray(parents);
-        init(id, name, namespace, parents);
+        this.parents = new ParentTermID[parentList.size()];
+        parentList.toArray(this.parents);
+        init(id, name, namespace, this.parents);
     }
 
     /**
@@ -94,9 +93,9 @@ public class Term
      */
     public Term(String strId, String name, Namespace namespace, ArrayList<ParentTermID> parentList)
     {
-        parents = new ParentTermID[parentList.size()];
-        parentList.toArray(parents);
-        init(new TermID(strId), name, namespace, parents);
+        this.parents = new ParentTermID[parentList.size()];
+        parentList.toArray(this.parents);
+        init(new TermID(strId), name, namespace, this.parents);
     }
 
     /**
@@ -176,22 +175,22 @@ public class Term
     public String getIDAsString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(id.getPrefix());
+        buffer.append(this.id.getPrefix());
         buffer.append(":");
-        if (id.id < 10) {
+        if (this.id.id < 10) {
             buffer.append("000000");
-        } else if (id.id < 100) {
+        } else if (this.id.id < 100) {
             buffer.append("00000");
-        } else if (id.id < 1000) {
+        } else if (this.id.id < 1000) {
             buffer.append("0000");
-        } else if (id.id < 10000) {
+        } else if (this.id.id < 10000) {
             buffer.append("000");
-        } else if (id.id < 100000) {
+        } else if (this.id.id < 100000) {
             buffer.append("00");
-        } else if (id.id < 1000000) {
+        } else if (this.id.id < 1000000) {
             buffer.append("0");
         }
-        buffer.append(id.id);
+        buffer.append(this.id.id);
         return buffer.toString();
     }
 
@@ -202,7 +201,7 @@ public class Term
      */
     public TermID getID()
     {
-        return id;
+        return this.id;
     }
 
     /**
@@ -210,7 +209,7 @@ public class Term
      */
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     /**
@@ -220,10 +219,10 @@ public class Term
      */
     public Namespace getNamespace()
     {
-        if (namespace == null) {
+        if (this.namespace == null) {
             return Namespace.UNKOWN_NAMESPACE;
         }
-        return namespace;
+        return this.namespace;
     }
 
     /**
@@ -233,10 +232,10 @@ public class Term
      */
     public String getNamespaceAsString()
     {
-        if (namespace == null) {
+        if (this.namespace == null) {
             return Namespace.UNKOWN_NAMESPACE.getName();
         }
-        return namespace.getName();
+        return this.namespace.getName();
     }
 
     /**
@@ -246,10 +245,10 @@ public class Term
      */
     public String getNamespaceAsAbbrevString()
     {
-        if (namespace == null) {
+        if (this.namespace == null) {
             return Namespace.UNKOWN_NAMESPACE.getName();
         }
-        String nameSpace = namespace.getName();
+        String nameSpace = this.namespace.getName();
 
         if (nameSpace.equalsIgnoreCase("biological_process")) {
             return "B";
@@ -270,20 +269,20 @@ public class Term
      */
     public ParentTermID[] getParents()
     {
-        return parents;
+        return this.parents;
     }
 
     @Override
     public String toString()
     {
-        return name + " (" + id.toString() + ")";
+        return this.name + " (" + this.id.toString() + ")";
     }
 
     @Override
     public int hashCode()
     {
         /* We take the hash code of the id */
-        return id.hashCode();
+        return this.id.hashCode();
     }
 
     @Override
@@ -291,7 +290,7 @@ public class Term
     {
         if (obj instanceof Term) {
             Term goTerm = (Term) obj;
-            return goTerm.id.equals(id);
+            return goTerm.id.equals(this.id);
         }
         return super.equals(obj);
     }
@@ -303,7 +302,7 @@ public class Term
      */
     protected void setObsolete(boolean currentObsolete)
     {
-        obsolete = currentObsolete;
+        this.obsolete = currentObsolete;
     }
 
     /**
@@ -311,7 +310,7 @@ public class Term
      */
     public boolean isObsolete()
     {
-        return obsolete;
+        return this.obsolete;
     }
 
     /**
@@ -321,7 +320,7 @@ public class Term
      */
     public String getDefinition()
     {
-        return definition;
+        return this.definition;
     }
 
     /**
@@ -336,16 +335,16 @@ public class Term
 
     public void setEquivalents(ArrayList<TermID> currentEquivalents)
     {
-        equivalents = new TermID[currentEquivalents.size()];
+        this.equivalents = new TermID[currentEquivalents.size()];
         int i = 0;
         for (TermID t : currentEquivalents) {
-            equivalents[i++] = t;
+            this.equivalents[i++] = t;
         }
     }
 
     public TermID[] getEquivalents()
     {
-        return equivalents;
+        return this.equivalents;
     }
 
     /**
@@ -366,7 +365,7 @@ public class Term
      */
     public ArrayList<TermID> getAlternatives()
     {
-        return alternatives;
+        return this.alternatives;
     }
 
     /**
@@ -376,8 +375,8 @@ public class Term
      */
     public void setSubsets(ArrayList<Subset> newSubsets)
     {
-        subsets = new Subset[newSubsets.size()];
-        newSubsets.toArray(subsets);
+        this.subsets = new Subset[newSubsets.size()];
+        newSubsets.toArray(this.subsets);
     }
 
     /**
@@ -387,48 +386,48 @@ public class Term
      */
     public Subset[] getSubsets()
     {
-        return subsets;
+        return this.subsets;
     }
 
     public void setSynonyms(ArrayList<String> currentSynonyms)
     {
 
         if (currentSynonyms.size() > 0) {
-            synonyms = new String[currentSynonyms.size()];
-            currentSynonyms.toArray(synonyms);
+            this.synonyms = new String[currentSynonyms.size()];
+            currentSynonyms.toArray(this.synonyms);
         }
     }
 
     public String[] getSynonyms()
     {
-        return synonyms;
+        return this.synonyms;
     }
 
     public void setXrefs(ArrayList<TermXref> currentXrefs)
     {
         if (currentXrefs.size() > 0) {
-            xrefs = new TermXref[currentXrefs.size()];
-            currentXrefs.toArray(xrefs);
+            this.xrefs = new TermXref[currentXrefs.size()];
+            currentXrefs.toArray(this.xrefs);
         }
     }
 
     public TermXref[] getXrefs()
     {
-        return xrefs;
+        return this.xrefs;
     }
 
     public void setIntersections(ArrayList<String> currentIntersections)
     {
         if (currentIntersections.size() > 0) {
-            intersections = new String[currentIntersections.size()];
-            currentIntersections.toArray(intersections);
+            this.intersections = new String[currentIntersections.size()];
+            currentIntersections.toArray(this.intersections);
         }
 
     }
 
     public String[] getIntersections()
     {
-        return intersections;
+        return this.intersections;
     }
 
     public void addAlternativeId(TermID id2)
@@ -446,7 +445,7 @@ public class Term
 
     public double getInformationContent()
     {
-        return informationContent;
+        return this.informationContent;
     }
 
 }

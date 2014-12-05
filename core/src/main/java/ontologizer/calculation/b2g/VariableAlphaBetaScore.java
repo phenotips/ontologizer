@@ -37,14 +37,14 @@ class VariableAlphaBetaScore extends Bayes2GOScore
 
     public void calcLLR()
     {
-        for (ByteString g : population)
+        for (ByteString g : this.population)
         {
-            int gid = gene2GenesIdx.get(g);
-            if (observedGenes[gid]) {
-                llr.put(g, Math.log(1 - beta) - Math.log(alpha)); // P(oi=1|h=1) / P(oi=1|h=0)
+            int gid = this.gene2GenesIdx.get(g);
+            if (this.observedGenes[gid]) {
+                this.llr.put(g, Math.log(1 - this.beta) - Math.log(this.alpha)); // P(oi=1|h=1) / P(oi=1|h=0)
             }
             else {
-                llr.put(g, Math.log(beta) - Math.log(1 - alpha)); // P(oi=0|h=1) / P(oi=0|h=0)
+                this.llr.put(g, Math.log(this.beta) - Math.log(1 - this.alpha)); // P(oi=0|h=1) / P(oi=0|h=0)
             }
         }
 
@@ -59,15 +59,15 @@ class VariableAlphaBetaScore extends Bayes2GOScore
     @Override
     public void hiddenGeneActivated(int gid)
     {
-        ByteString gene = genes[gid];
-        score += llr.get(gene);
+        ByteString gene = this.genes[gid];
+        this.score += this.llr.get(gene);
     }
 
     @Override
     public void hiddenGeneDeactivated(int gid)
     {
-        ByteString gene = genes[gid];
-        score -= llr.get(gene);
+        ByteString gene = this.genes[gid];
+        this.score -= this.llr.get(gene);
     }
 
     @Override
@@ -75,51 +75,51 @@ class VariableAlphaBetaScore extends Bayes2GOScore
     {
         long oldPossibilities = getNeighborhoodSize();
 
-        proposalSwitch = -1;
-        proposalT1 = null;
-        proposalT2 = null;
+        this.proposalSwitch = -1;
+        this.proposalT1 = null;
+        this.proposalT2 = null;
 
         long choose = Math.abs(rand) % oldPossibilities;
 
-        if (choose < termsArray.length)
+        if (choose < this.termsArray.length)
         {
             /* on/off */
-            proposalSwitch = (int) choose;
-            switchState(proposalSwitch);
+            this.proposalSwitch = (int) choose;
+            switchState(this.proposalSwitch);
         } else
         {
-            long base = choose - termsArray.length;
+            long base = choose - this.termsArray.length;
 
-            int activeTermPos = (int) (base / numInactiveTerms);
-            int inactiveTermPos = (int) (base % numInactiveTerms);
+            int activeTermPos = (int) (base / this.numInactiveTerms);
+            int inactiveTermPos = (int) (base % this.numInactiveTerms);
 
-            proposalT1 = termsArray[termPartition[activeTermPos + numInactiveTerms]];
-            proposalT2 = termsArray[termPartition[inactiveTermPos]];
+            this.proposalT1 = this.termsArray[this.termPartition[activeTermPos + this.numInactiveTerms]];
+            this.proposalT2 = this.termsArray[this.termPartition[inactiveTermPos]];
 
-            exchange(proposalT1, proposalT2);
+            exchange(this.proposalT1, this.proposalT2);
         }
     }
 
     @Override
     public double getScore()
     {
-        return score + (termsArray.length - numInactiveTerms) * Math.log(p / (1.0 - p));
+        return this.score + (this.termsArray.length - this.numInactiveTerms) * Math.log(this.p / (1.0 - this.p));
     }
 
     @Override
     public void undoProposal()
     {
-        if (proposalSwitch != -1) {
-            switchState(proposalSwitch);
+        if (this.proposalSwitch != -1) {
+            switchState(this.proposalSwitch);
         } else {
-            exchange(proposalT2, proposalT1);
+            exchange(this.proposalT2, this.proposalT1);
         }
     }
 
     @Override
     public long getNeighborhoodSize()
     {
-        return termsArray.length + (termsArray.length - numInactiveTerms) * numInactiveTerms;
+        return this.termsArray.length + (this.termsArray.length - this.numInactiveTerms) * this.numInactiveTerms;
     }
 
 }

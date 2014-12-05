@@ -36,8 +36,8 @@ public class SubsetGenerator
     {
         this.n = n;
         this.m = m;
-        firstSubset = true;
-        subset = new Subset();
+        this.firstSubset = true;
+        this.subset = new Subset();
     }
 
     /**
@@ -48,31 +48,31 @@ public class SubsetGenerator
      */
     public Subset next()
     {
-        if (subset.r == 0)
+        if (this.subset.r == 0)
         {
-            if (firstSubset)
+            if (this.firstSubset)
             {
-                firstSubset = false;
-                return subset;
+                this.firstSubset = false;
+                return this.subset;
             }
 
             /* Special case when subset of an empty set should be generated */
-            if (n == 0)
+            if (this.n == 0)
             {
-                firstSubset = true;
+                this.firstSubset = true;
                 return null;
             }
 
             /* First call of next inside a subset generating phase */
-            subset.j = new int[m];
-            subset.r = 1;
-            return subset;
+            this.subset.j = new int[this.m];
+            this.subset.r = 1;
+            return this.subset;
         }
 
-        int[] j = subset.j;
-        int r = subset.r;
+        int[] j = this.subset.j;
+        int r = this.subset.r;
 
-        if (j[r - 1] < n - 1 && r < m)
+        if (j[r - 1] < this.n - 1 && r < this.m)
         {
             /* extend */
             j[r] = j[r - 1] + 1;
@@ -80,20 +80,20 @@ public class SubsetGenerator
         } else
         {
             /* modified reduce */
-            if (j[r - 1] >= n - 1) {
+            if (j[r - 1] >= this.n - 1) {
                 r--;
             }
 
             if (r == 0)
             {
-                subset.r = 0;
-                firstSubset = true;
+                this.subset.r = 0;
+                this.firstSubset = true;
                 return null;
             }
             j[r - 1] = j[r - 1] + 1;
         }
 
-        subset.r = r;
-        return subset;
+        this.subset.r = r;
+        return this.subset;
     }
 }

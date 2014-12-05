@@ -39,12 +39,12 @@ public class AssociationCounter implements Comparable
 
     public void incrementCount()
     {
-        count++;
+        this.count++;
     }
 
     public void incrementDirectCount()
     {
-        directCount++;
+        this.directCount++;
     }
 
     /** Compare on the basis of total counts (direct and implied). */
@@ -70,16 +70,16 @@ public class AssociationCounter implements Comparable
 
     public int getDirectCount()
     {
-        return directCount;
+        return this.directCount;
     }
 
     public int getCount()
     {
-        return count;
+        return this.count;
     }
 
     public TermID getID()
     {
-        return id;
+        return this.id;
     }
 }

@@ -26,8 +26,8 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
     public PercentageEnrichmentRule()
     {
         super();
-        termPercentages = new HashMap<TermID, Integer>();
-        noisePercentage = 0;
+        this.termPercentages = new HashMap<TermID, Integer>();
+        this.noisePercentage = 0;
     }
 
     /**
@@ -37,7 +37,7 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
      */
     public int getNoisePercentage()
     {
-        return noisePercentage;
+        return this.noisePercentage;
     }
 
     /**
@@ -60,7 +60,7 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
     @Override
     public Iterator<TermID> iterator()
     {
-        return termPercentages.keySet().iterator();
+        return this.termPercentages.keySet().iterator();
     }
 
     /**
@@ -74,7 +74,7 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
         if (perc < 0 || perc > 100) {
             throw (new IllegalArgumentException("noise percentage has to be between 0 and 100"));
         }
-        termPercentages.put(term, perc);
+        this.termPercentages.put(term, perc);
     }
 
     /**
@@ -85,7 +85,7 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
      */
     public int getPercForTerm(TermID term)
     {
-        return termPercentages.get(term);
+        return this.termPercentages.get(term);
     }
 
     @Override
@@ -93,11 +93,11 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
     {
         String str = "";
 
-        for (Entry<TermID, Integer> e : termPercentages.entrySet())
+        for (Entry<TermID, Integer> e : this.termPercentages.entrySet())
         {
             str += e.getKey() + "/" + e.getValue() + " ";
         }
-        str += "noise/" + noisePercentage;
+        str += "noise/" + this.noisePercentage;
 
         return str;
     }

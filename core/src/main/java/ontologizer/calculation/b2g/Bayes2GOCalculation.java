@@ -281,8 +281,9 @@ public class Bayes2GOCalculation implements ICalculation
         GOTermEnumerator populationEnumerator = populationSet.enumerateGOTerms(graph, goAssociations);
         GOTermEnumerator studyEnumerator = studySet.enumerateGOTerms(graph, goAssociations);
 
-        System.out.println("Starting calculation: expectedNumberOfTerms=" + expectedNumberOfTerms + " alpha=" + alpha
-            + " beta=" + beta + "  numberOfPop=" + populationEnumerator.getGenes().size() + " numberOfStudy="
+        System.out.println("Starting calculation: expectedNumberOfTerms=" + this.expectedNumberOfTerms + " alpha="
+            + this.alpha
+            + " beta=" + this.beta + "  numberOfPop=" + populationEnumerator.getGenes().size() + " numberOfStudy="
             + studyEnumerator.getGenes().size());
 
         long start = System.currentTimeMillis();
@@ -314,17 +315,17 @@ public class Bayes2GOCalculation implements ICalculation
     {
         List<TermID> allTerms;
 
-        if (takePopulationAsReference) {
+        if (this.takePopulationAsReference) {
             allTerms = populationEnumerator.getAllAnnotatedTermsAsList();
         } else {
             allTerms = studyEnumerator.getAllAnnotatedTermsAsList();
         }
 
         Random rnd;
-        if (seed != 0)
+        if (this.seed != 0)
         {
-            rnd = new Random(seed);
-            logger.info("Use a random seed of: " + seed);
+            rnd = new Random(this.seed);
+            logger.info("Use a random seed of: " + this.seed);
         } else
         {
             long newSeed = new Random().nextLong();
@@ -397,7 +398,7 @@ public class Bayes2GOCalculation implements ICalculation
 
         BufferedWriter statsFile = null;
         try {
-            if (WRITE_STATS_FILE)
+            if (this.WRITE_STATS_FILE)
             {
                 statsFile = new BufferedWriter(new FileWriter(new File("stats.txt")));
                 statsFile.append("iter\tstep\tacceptProb\taccepted\tscore\n");
@@ -409,7 +410,7 @@ public class Bayes2GOCalculation implements ICalculation
         {
             FixedAlphaBetaScore bayesScore =
                 new FixedAlphaBetaScore(rnd, allTerms, populationEnumerator, studyEnumerator.getGenes());
-            bayesScore.setIntegrateParams(integrateParams);
+            bayesScore.setIntegrateParams(this.integrateParams);
 
             if (doEm)
             {
@@ -429,17 +430,17 @@ public class Bayes2GOCalculation implements ICalculation
                 bayesScore.setMaxBeta(this.beta.getMax());
             }
             bayesScore.setExpectedNumberOfTerms(expectedNumberOfTerms);
-            bayesScore.setUsePrior(usePrior);
+            bayesScore.setUsePrior(this.usePrior);
 
             result.setScore(bayesScore);
 
-            int maxSteps = mcmcSteps;
+            int maxSteps = this.mcmcSteps;
             int burnin = 20000;
             int numAccepts = 0;
             int numRejects = 0;
 
-            if (calculationProgress != null) {
-                calculationProgress.init(maxSteps);
+            if (this.calculationProgress != null) {
+                this.calculationProgress.init(maxSteps);
             }
 
             double score = bayesScore.getScore();
@@ -447,7 +448,7 @@ public class Bayes2GOCalculation implements ICalculation
             logger.info("Score of empty set: " + score);
 
             /* Provide a starting point */
-            if (randomStart)
+            if (this.randomStart)
             {
                 int numberOfTerms =
                     bayesScore.EXPECTED_NUMBER_OF_TERMS[rnd.nextInt(bayesScore.EXPECTED_NUMBER_OF_TERMS.length)];
@@ -488,17 +489,17 @@ public class Bayes2GOCalculation implements ICalculation
                 }
 
                 long now = System.currentTimeMillis();
-                if (now - start > updateReportTime)
+                if (now - start > this.updateReportTime)
                 {
                     logger.info((t * 100 / maxSteps) + "% (score=" + score + " maxScore=" + maxScore + " #terms="
                         + bayesScore.getActiveTerms().size() +
                         " accept/reject=" + String.format("%g", (double) numAccepts / (double) numRejects) +
                         " accept/steps=" + String.format("%g", (double) numAccepts / (double) t) +
-                        " exp=" + expectedNumberOfTerms + " usePrior=" + usePrior + ")");
+                        " exp=" + expectedNumberOfTerms + " usePrior=" + this.usePrior + ")");
                     start = now;
 
-                    if (calculationProgress != null) {
-                        calculationProgress.update(t);
+                    if (this.calculationProgress != null) {
+                        this.calculationProgress.update(t);
                     }
                 }
 

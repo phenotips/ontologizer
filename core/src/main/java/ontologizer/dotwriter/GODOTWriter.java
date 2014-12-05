@@ -83,7 +83,7 @@ public class GODOTWriter
         try
         {
             graph.getGraph().writeDOT(new FileOutputStream(file), nodeSet, new DotAttributesProvider<Term>()
-            {
+                {
                 /* Note that the default direction is assumed to be the opposite direction */
                 private String direction = reverseDirection ? "" : "dir=\"back\"";
 
@@ -165,9 +165,10 @@ public class GODOTWriter
                     }
 
                     String tooltip = "tooltip=\"" + dest.getName() + " " + relationName + " " + src.getName() + "\"";
-                    return "color=" + color + "," + direction + "," + tooltip + (label != null ? ("," + label) : "");
+                    return "color=" + color + "," + this.direction + "," + tooltip
+                        + (label != null ? ("," + label) : "");
                 }
-            });
+                });
         } catch (IOException e)
         {
             logger.severe("Unable to create dot file: " + e.getLocalizedMessage());

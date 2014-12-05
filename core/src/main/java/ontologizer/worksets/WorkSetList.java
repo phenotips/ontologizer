@@ -16,7 +16,7 @@ public class WorkSetList implements Iterable<WorkSet>
     @Override
     public Iterator<WorkSet> iterator()
     {
-        return wsl.iterator();
+        return this.wsl.iterator();
     }
 
     public void add(String name, String obo, String association)
@@ -24,17 +24,17 @@ public class WorkSetList implements Iterable<WorkSet>
         WorkSet ws = new WorkSet(name);
         ws.setOboPath(obo);
         ws.setAssociationPath(association);
-        wsl.add(ws);
+        this.wsl.add(ws);
     }
 
     public void add(WorkSet ws)
     {
-        wsl.add(ws);
+        this.wsl.add(ws);
     }
 
     public WorkSet get(String currentWorkSet)
     {
-        for (WorkSet ws : wsl)
+        for (WorkSet ws : this.wsl)
         {
             if (ws.getName().equalsIgnoreCase(currentWorkSet)) {
                 return ws;
@@ -45,6 +45,6 @@ public class WorkSetList implements Iterable<WorkSet>
 
     public void clear()
     {
-        wsl.clear();
+        this.wsl.clear();
     }
 }

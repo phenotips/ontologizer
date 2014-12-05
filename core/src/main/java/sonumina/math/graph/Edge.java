@@ -25,7 +25,7 @@ public class Edge<Type>
      */
     public final Type getDest()
     {
-        return dest;
+        return this.dest;
     }
 
     /**
@@ -35,7 +35,7 @@ public class Edge<Type>
      */
     public final Type getSource()
     {
-        return source;
+        return this.source;
     }
 
     /**

@@ -43,10 +43,10 @@ abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
      */
     public void addGOTermProperties(String goTermID, Result prop)
     {
-        list.add(prop);
-        Integer integer = new Integer(index);
-        goID2Index.put(goTermID, integer);
-        index++;
+        this.list.add(prop);
+        Integer integer = new Integer(this.index);
+        this.goID2Index.put(goTermID, integer);
+        this.index++;
     }
 
     /**
@@ -56,7 +56,7 @@ abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
      */
     public StudySet getStudySet()
     {
-        return studySet;
+        return this.studySet;
     }
 
     /**
@@ -67,16 +67,16 @@ abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
      */
     public Result getGOTermProperties(String goID)
     {
-        Integer index = goID2Index.get(goID);
+        Integer index = this.goID2Index.get(goID);
         if (index == null) {
             return null;
         }
-        return list.get(index);
+        return this.list.get(index);
     }
 
     @Override
     public Iterator<Result> iterator()
     {
-        return list.iterator();
+        return this.list.iterator();
     }
 }

@@ -30,8 +30,8 @@ public class PermutationGenerator
         {
             throw new IllegalArgumentException("Min 1");
         }
-        a = new int[n];
-        total = getFactorial(n);
+        this.a = new int[n];
+        this.total = getFactorial(n);
         reset();
     }
 
@@ -41,11 +41,11 @@ public class PermutationGenerator
 
     public void reset()
     {
-        for (int i = 0; i < a.length; i++)
+        for (int i = 0; i < this.a.length; i++)
         {
-            a[i] = i;
+            this.a[i] = i;
         }
-        numLeft = new BigInteger(total.toString());
+        this.numLeft = new BigInteger(this.total.toString());
     }
 
     // ------------------------------------------------
@@ -54,7 +54,7 @@ public class PermutationGenerator
 
     public BigInteger getNumLeft()
     {
-        return numLeft;
+        return this.numLeft;
     }
 
     // ------------------------------------
@@ -63,7 +63,7 @@ public class PermutationGenerator
 
     public BigInteger getTotal()
     {
-        return total;
+        return this.total;
     }
 
     // -----------------------------
@@ -72,7 +72,7 @@ public class PermutationGenerator
 
     public boolean hasMore()
     {
-        return numLeft.compareTo(BigInteger.ZERO) == 1;
+        return this.numLeft.compareTo(BigInteger.ZERO) == 1;
     }
 
     // ------------------
@@ -96,18 +96,18 @@ public class PermutationGenerator
     public int[] getNext()
     {
 
-        if (numLeft.equals(total))
+        if (this.numLeft.equals(this.total))
         {
-            numLeft = numLeft.subtract(BigInteger.ONE);
-            return a;
+            this.numLeft = this.numLeft.subtract(BigInteger.ONE);
+            return this.a;
         }
 
         int temp;
 
         // Find largest index j with a[j] < a[j+1]
 
-        int j = a.length - 2;
-        while (a[j] > a[j + 1])
+        int j = this.a.length - 2;
+        while (this.a[j] > this.a[j + 1])
         {
             j--;
         }
@@ -115,34 +115,34 @@ public class PermutationGenerator
         // Find index k such that a[k] is smallest integer
         // greater than a[j] to the right of a[j]
 
-        int k = a.length - 1;
-        while (a[j] > a[k])
+        int k = this.a.length - 1;
+        while (this.a[j] > this.a[k])
         {
             k--;
         }
 
         // Interchange a[j] and a[k]
 
-        temp = a[k];
-        a[k] = a[j];
-        a[j] = temp;
+        temp = this.a[k];
+        this.a[k] = this.a[j];
+        this.a[j] = temp;
 
         // Put tail end of permutation after jth position in increasing order
 
-        int r = a.length - 1;
+        int r = this.a.length - 1;
         int s = j + 1;
 
         while (r > s)
         {
-            temp = a[s];
-            a[s] = a[r];
-            a[r] = temp;
+            temp = this.a[s];
+            this.a[s] = this.a[r];
+            this.a[r] = temp;
             r--;
             s++;
         }
 
-        numLeft = numLeft.subtract(BigInteger.ONE);
-        return a;
+        this.numLeft = this.numLeft.subtract(BigInteger.ONE);
+        return this.a;
 
     }
 

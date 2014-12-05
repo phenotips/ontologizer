@@ -3,7 +3,7 @@ package ontologizer.statistics;
 import java.util.Arrays;
 
 public class WestfallYoungStepDown extends AbstractTestCorrection
-    implements IResampling
+implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -33,10 +33,10 @@ public class WestfallYoungStepDown extends AbstractTestCorrection
         @Override
         public int compareTo(Entry o)
         {
-            if (value < o.value) {
+            if (this.value < o.value) {
                 return -1;
             }
-            if (value == o.value) {
+            if (this.value == o.value) {
                 return 0;
             }
             return 1;
@@ -73,8 +73,8 @@ public class WestfallYoungStepDown extends AbstractTestCorrection
         }
 
         /* Now "permute" */
-        System.out.println("Sampling " + numberOfResamplingSteps + " random study sets\nThis may take a while...");
-        for (int b = 0; b < numberOfResamplingSteps; b++)
+        System.out.println("Sampling " + this.numberOfResamplingSteps + " random study sets\nThis may take a while...");
+        for (int b = 0; b < this.numberOfResamplingSteps; b++)
         {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = pvalues.calculateRandomPValues();
@@ -108,7 +108,7 @@ public class WestfallYoungStepDown extends AbstractTestCorrection
         /* Calculate the adjusted p values */
         for (i = 0; i < m; i++)
         {
-            rawP[r[i]].p_adjusted = ((double) count[i]) / numberOfResamplingSteps;
+            rawP[r[i]].p_adjusted = ((double) count[i]) / this.numberOfResamplingSteps;
         }
         return rawP;
     }
@@ -116,13 +116,13 @@ public class WestfallYoungStepDown extends AbstractTestCorrection
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        numberOfResamplingSteps = n;
+        this.numberOfResamplingSteps = n;
     }
 
     @Override
     public int getNumberOfResamplingSteps()
     {
-        return numberOfResamplingSteps;
+        return this.numberOfResamplingSteps;
     }
 
     @Override

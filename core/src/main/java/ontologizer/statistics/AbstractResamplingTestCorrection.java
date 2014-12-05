@@ -1,7 +1,7 @@
 package ontologizer.statistics;
 
 public abstract class AbstractResamplingTestCorrection extends AbstractTestCorrection
-    implements IResampling
+implements IResampling
 {
     /** Specifies the number of resampling steps */
     protected int numberOfResamplingSteps = 500;
@@ -15,7 +15,7 @@ public abstract class AbstractResamplingTestCorrection extends AbstractTestCorre
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        numberOfResamplingSteps = n;
+        this.numberOfResamplingSteps = n;
     }
 
     /**
@@ -24,7 +24,7 @@ public abstract class AbstractResamplingTestCorrection extends AbstractTestCorre
     @Override
     public int getNumberOfResamplingSteps()
     {
-        return numberOfResamplingSteps;
+        return this.numberOfResamplingSteps;
     }
 
     /**
@@ -34,7 +34,7 @@ public abstract class AbstractResamplingTestCorrection extends AbstractTestCorre
      */
     public void setProgressUpdate(IResamplingProgress newProgress)
     {
-        progress = newProgress;
+        this.progress = newProgress;
     }
 
     /**
@@ -44,15 +44,15 @@ public abstract class AbstractResamplingTestCorrection extends AbstractTestCorre
      */
     protected void initProgress(int max)
     {
-        if (progress != null) {
-            progress.init(max);
+        if (this.progress != null) {
+            this.progress.init(max);
         }
     }
 
     protected void updateProgress(int c)
     {
-        if (progress != null) {
-            progress.update(c);
+        if (this.progress != null) {
+            this.progress.update(c);
         }
     }
 }

@@ -3,7 +3,7 @@ package ontologizer.statistics;
 import java.util.Arrays;
 
 public class FDR extends AbstractTestCorrection
-    implements IResampling
+implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -35,10 +35,10 @@ public class FDR extends AbstractTestCorrection
         @Override
         public int compareTo(Entry o)
         {
-            if (value < o.value) {
+            if (this.value < o.value) {
                 return -1;
             }
-            if (value == o.value) {
+            if (this.value == o.value) {
                 return 0;
             }
             return 1;
@@ -76,10 +76,10 @@ public class FDR extends AbstractTestCorrection
         /*
          * TODO: Probably this could be improved by exploiting the sorted array
          */
-        double[][] pValues = new double[numberOfResamplingSteps][rawP.length];
+        double[][] pValues = new double[this.numberOfResamplingSteps][rawP.length];
 
         /* Now "permute" */
-        for (int b = 0; b < numberOfResamplingSteps; b++)
+        for (int b = 0; b < this.numberOfResamplingSteps; b++)
         {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = pvalues.calculateRandomPValues();
@@ -90,7 +90,7 @@ public class FDR extends AbstractTestCorrection
                 pValues[b][i] = randomRawP[i].p;
             }
 
-            System.out.print("created " + (b + 1) + " samples out of " + numberOfResamplingSteps + "\r");
+            System.out.print("created " + (b + 1) + " samples out of " + this.numberOfResamplingSteps + "\r");
         }
         System.out.println("");
 
@@ -111,7 +111,7 @@ public class FDR extends AbstractTestCorrection
 
             /* The number of rejections of the complete permuted data set */
             int totalRejects = 0;
-            for (int b = 0; b < numberOfResamplingSteps; b++)
+            for (int b = 0; b < this.numberOfResamplingSteps; b++)
             {
                 for (int j = 0; j < m; j++)
                 {
@@ -121,7 +121,7 @@ public class FDR extends AbstractTestCorrection
                 }
             }
             /* How many (falsely) rejections do we expect? */
-            double expectedRejections = ((double) totalRejects) / numberOfResamplingSteps;
+            double expectedRejections = ((double) totalRejects) / this.numberOfResamplingSteps;
 
             // System.out.println("Expecting " + expectedRejections + " rejections using the P-value of " + p);
 
@@ -130,7 +130,7 @@ public class FDR extends AbstractTestCorrection
              */
 
             double fdr = 0.0;
-            for (int b = 0; b < numberOfResamplingSteps; b++)
+            for (int b = 0; b < this.numberOfResamplingSteps; b++)
             {
                 /* number of rejections for a single permutation, this is used as an estimate for V */
                 int rejections = 0;
@@ -148,7 +148,7 @@ public class FDR extends AbstractTestCorrection
             if (Double.isNaN(fdr)) {
                 fdr = 0;
             } else {
-                fdr /= numberOfResamplingSteps;
+                fdr /= this.numberOfResamplingSteps;
             }
 
             // System.out.println("adjusted " + fdr);
@@ -167,13 +167,13 @@ public class FDR extends AbstractTestCorrection
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        numberOfResamplingSteps = n;
+        this.numberOfResamplingSteps = n;
     }
 
     @Override
     public int getNumberOfResamplingSteps()
     {
-        return numberOfResamplingSteps;
+        return this.numberOfResamplingSteps;
     }
 
     @Override

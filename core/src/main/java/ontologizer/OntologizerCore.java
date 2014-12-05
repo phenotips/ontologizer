@@ -122,12 +122,12 @@ public class OntologizerCore
     public OntologizerCore(Arguments args) throws FileNotFoundException, IOException, OBOParserException
     {
         /* Set the desired calculation method or the default */
-        calculation = CalculationRegistry.getCalculationByName(args.calculationName);
-        if (calculation == null) {
-            calculation = CalculationRegistry.getDefault();
+        this.calculation = CalculationRegistry.getCalculationByName(args.calculationName);
+        if (this.calculation == null) {
+            this.calculation = CalculationRegistry.getDefault();
         }
-        if (calculation instanceof Bayes2GOCalculation) {
-            Bayes2GOCalculation b2g = (Bayes2GOCalculation) calculation;
+        if (this.calculation instanceof Bayes2GOCalculation) {
+            Bayes2GOCalculation b2g = (Bayes2GOCalculation) this.calculation;
             b2g.setAlpha(B2GParam.Type.MCMC);
             b2g.setBeta(B2GParam.Type.MCMC);
             b2g.setExpectedNumber(B2GParam.Type.MCMC);
@@ -135,13 +135,13 @@ public class OntologizerCore
         }
 
         /* Set the desired test correction or set the default */
-        testCorrection = TestCorrectionRegistry.getCorrectionByName(args.correctionName);
-        if (testCorrection == null) {
-            testCorrection = TestCorrectionRegistry.getDefault();
+        this.testCorrection = TestCorrectionRegistry.getCorrectionByName(args.correctionName);
+        if (this.testCorrection == null) {
+            this.testCorrection = TestCorrectionRegistry.getDefault();
         }
         /* Empty cache for resampling based MTCs and set number of sampling steps */
-        if (testCorrection instanceof IResampling) {
-            IResampling resampling = (IResampling) testCorrection;
+        if (this.testCorrection instanceof IResampling) {
+            IResampling resampling = (IResampling) this.testCorrection;
             resampling.resetCache();
             if (args.resamplingSteps > 0) {
                 resampling.setNumberOfResamplingSteps(args.resamplingSteps);
@@ -160,24 +160,24 @@ public class OntologizerCore
 
         OBOParser oboParser = new OBOParser(args.goTermsOBOFile);
         System.err.println(oboParser.doParse());
-        goTerms = new TermContainer(oboParser.getTermMap(), oboParser.getFormatVersion(), oboParser.getDate());
+        this.goTerms = new TermContainer(oboParser.getTermMap(), oboParser.getFormatVersion(), oboParser.getDate());
         System.err.println("Building graph");
-        goGraph = new Ontology(goTerms);
+        this.goGraph = new Ontology(this.goTerms);
 
         /* create the study list. A directory or a single file might be given */
         File studyFile = new File(args.studySet);
         if (studyFile.isDirectory())
         {
-            studySetList = new StudySetList(args.studySet, args.suffix);
+            this.studySetList = new StudySetList(args.studySet, args.suffix);
         } else
         {
             /* Create a study list with a dummy name and add the study manually */
-            studySetList = new StudySetList("study");
-            studySetList.addStudySet(StudySetFactory.createFromFile(studyFile, false));
+            this.studySetList = new StudySetList("study");
+            this.studySetList.addStudySet(StudySetFactory.createFromFile(studyFile, false));
         }
 
         /* create the population set TODO: Get rid of the casting */
-        populationSet = (PopulationSet) StudySetFactory.createFromFile(new File(args.populationFile), true);
+        this.populationSet = (PopulationSet) StudySetFactory.createFromFile(new File(args.populationFile), true);
 
         /* Apply the optional gene name mapping given by the supplied filter file */
         if (args.filterFile != null)
@@ -186,9 +186,9 @@ public class OntologizerCore
             GeneFilter filter = new GeneFilter(new File(args.filterFile));
 
             System.err.println("Appling filter");
-            populationSet.applyFilter(filter);
+            this.populationSet.applyFilter(filter);
 
-            for (StudySet studySet : studySetList) {
+            for (StudySet studySet : this.studySetList) {
                 studySet.applyFilter(filter);
             }
         }
@@ -197,10 +197,10 @@ public class OntologizerCore
          * Check now if all study genes are included within the population, if a partiulcar gene is not contained, add
          * it
          */
-        for (ByteString geneName : studySetList.getGeneSet())
+        for (ByteString geneName : this.studySetList.getGeneSet())
         {
-            if (!populationSet.contains(geneName)) {
-                populationSet.addGene(geneName, "");
+            if (!this.populationSet.contains(geneName)) {
+                this.populationSet.addGene(geneName, "");
             }
         }
 
@@ -208,54 +208,56 @@ public class OntologizerCore
          * Parse the GO association file containing GO annotations for genes or gene products. Results are placed in
          * associationparser.
          */
-        AssociationParser ap = new AssociationParser(args.associationFile, goTerms, populationSet.getAllGeneNames(),
-            new IAssociationParserProgress()
-            {
-                private int max;
-
-                private long startTime;
-
-                @Override
-                public void init(int max)
+        AssociationParser ap =
+            new AssociationParser(args.associationFile, this.goTerms, this.populationSet.getAllGeneNames(),
+                new IAssociationParserProgress()
                 {
-                    this.max = max;
-                    this.startTime = System.currentTimeMillis();
-                }
+                    private int max;
 
-                @Override
-                public void update(int current)
-                {
-                    long currentTime = System.currentTimeMillis();
+                    private long startTime;
 
-                    if (currentTime - startTime > 20000)
+                    @Override
+                    public void init(int max)
                     {
-                        /* Show progress */
-                        System.err.print("\033[1A\033[K");
-                        System.err.println("Reading annotation file: "
-                            + String.format("%.1f%%", current / (double) max * 100));
+                        this.max = max;
+                        this.startTime = System.currentTimeMillis();
                     }
-                }
 
-            });
-        goAssociations = new AssociationContainer(ap.getAssociations(), ap.getSynonym2gene(), ap.getDbObject2gene());
+                    @Override
+                    public void update(int current)
+                    {
+                        long currentTime = System.currentTimeMillis();
+
+                        if (currentTime - this.startTime > 20000)
+                        {
+                            /* Show progress */
+                            System.err.print("\033[1A\033[K");
+                            System.err.println("Reading annotation file: "
+                                + String.format("%.1f%%", current / (double) this.max * 100));
+                        }
+                    }
+
+                });
+        this.goAssociations =
+            new AssociationContainer(ap.getAssociations(), ap.getSynonym2gene(), ap.getDbObject2gene());
 
         /*
          * Filter out duplicate genes (i.e. different gene names refering to the same gene)
          */
-        populationSet.filterOutDuplicateGenes(goAssociations);
-        for (StudySet study : studySetList) {
-            study.filterOutDuplicateGenes(goAssociations);
+        this.populationSet.filterOutDuplicateGenes(this.goAssociations);
+        for (StudySet study : this.studySetList) {
+            study.filterOutDuplicateGenes(this.goAssociations);
         }
 
         if (args.filterOutUnannotatedGenes)
         {
             /* Filter out genes within the study without any annotations */
-            for (StudySet study : studySetList) {
-                study.filterOutAssociationlessGenes(goAssociations);
+            for (StudySet study : this.studySetList) {
+                study.filterOutAssociationlessGenes(this.goAssociations);
             }
 
             /* Filter out genes within the population which doesn't have an annotation */
-            populationSet.filterOutAssociationlessGenes(goAssociations);
+            this.populationSet.filterOutAssociationlessGenes(this.goAssociations);
         }
     }
 
@@ -267,11 +269,11 @@ public class OntologizerCore
     public Iterator<EnrichedGOTermsResult> studySetResultIterator()
     {
         /* Create a dummy list in case no results were available */
-        if (studySetResultList == null) {
-            studySetResultList = new StudySetResultList();
+        if (this.studySetResultList == null) {
+            this.studySetResultList = new StudySetResultList();
         }
 
-        return studySetResultList.iterator();
+        return this.studySetResultList.iterator();
     }
 
     /**
@@ -280,13 +282,14 @@ public class OntologizerCore
      */
     public void calculate()
     {
-        assert (populationSet != null);
-        studySetResultList = new StudySetResultList();
+        assert (this.populationSet != null);
+        this.studySetResultList = new StudySetResultList();
 
-        for (StudySet studySet : studySetList)
+        for (StudySet studySet : this.studySetList)
         {
-            studySetResultList.addStudySetResult(
-                calculation.calculateStudySet(goGraph, goAssociations, populationSet, studySet, testCorrection)
+            this.studySetResultList.addStudySetResult(
+                this.calculation.calculateStudySet(this.goGraph, this.goAssociations, this.populationSet, studySet,
+                    this.testCorrection)
                 );
 
             /*
@@ -307,18 +310,19 @@ public class OntologizerCore
      */
     public EnrichedGOTermsResult calculateNextStudy()
     {
-        assert (populationSet != null);
-        if (studySetIter == null) {
-            studySetIter = studySetList.iterator();
+        assert (this.populationSet != null);
+        if (this.studySetIter == null) {
+            this.studySetIter = this.studySetList.iterator();
         }
-        if (!studySetIter.hasNext())
+        if (!this.studySetIter.hasNext())
         {
             return null;
         }
 
-        StudySet studySet = studySetIter.next();
+        StudySet studySet = this.studySetIter.next();
         EnrichedGOTermsResult studySetResult =
-            calculation.calculateStudySet(goGraph, goAssociations, populationSet, studySet, testCorrection);
+            this.calculation.calculateStudySet(this.goGraph, this.goAssociations, this.populationSet, studySet,
+                this.testCorrection);
 
         /*
          * Reset the counter and enumerator items here. It is not necessarily nice to place it here, but for the moment
@@ -330,31 +334,31 @@ public class OntologizerCore
 
     public AssociationContainer getGoAssociations()
     {
-        return goAssociations;
+        return this.goAssociations;
     }
 
     public Ontology getGoGraph()
     {
-        return goGraph;
+        return this.goGraph;
     }
 
     public TermContainer getGoTerms()
     {
-        return goTerms;
+        return this.goTerms;
     }
 
     public PopulationSet getPopulationSet()
     {
-        return populationSet;
+        return this.populationSet;
     }
 
     public String getCalculationName()
     {
-        return calculation.getName();
+        return this.calculation.getName();
     }
 
     public String getTestCorrectionName()
     {
-        return testCorrection.getName();
+        return this.testCorrection.getName();
     }
 }

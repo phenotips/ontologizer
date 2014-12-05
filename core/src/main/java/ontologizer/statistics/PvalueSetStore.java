@@ -22,24 +22,24 @@ public class PvalueSetStore implements Iterable<PValue[]>
      */
     public class PValueSetStoreIterator implements Iterator<PValue[]>
     {
-        private Iterator<HashMap<Integer, Double>> reducedIterator = reducedStoredSets.iterator();
+        private Iterator<HashMap<Integer, Double>> reducedIterator = PvalueSetStore.this.reducedStoredSets.iterator();
 
         @Override
         public boolean hasNext()
         {
-            return reducedIterator.hasNext();
+            return this.reducedIterator.hasNext();
         }
 
         @Override
         public PValue[] next()
         {
-            return inflate_pvals(reducedIterator.next());
+            return inflate_pvals(this.reducedIterator.next());
         }
 
         @Override
         public void remove()
         {
-            reducedIterator.remove();
+            this.reducedIterator.remove();
         }
 
     }
@@ -54,13 +54,13 @@ public class PvalueSetStore implements Iterable<PValue[]>
      */
     public PvalueSetStore(int numberOfResamplingSteps, int setSize)
     {
-        reducedStoredSets = new ArrayList<HashMap<Integer, Double>>(numberOfResamplingSteps);
+        this.reducedStoredSets = new ArrayList<HashMap<Integer, Double>>(numberOfResamplingSteps);
         this.setSize = setSize;
     }
 
     public void add(PValue[] values)
     {
-        reducedStoredSets.add(deflate_pvals(values));
+        this.reducedStoredSets.add(deflate_pvals(values));
     }
 
     private HashMap<Integer, Double> deflate_pvals(PValue[] values)
@@ -78,10 +78,10 @@ public class PvalueSetStore implements Iterable<PValue[]>
 
     private PValue[] inflate_pvals(HashMap<Integer, Double> reducedSet)
     {
-        PValue[] pvals = new PValue[setSize];
+        PValue[] pvals = new PValue[this.setSize];
 
         // initialize array
-        for (int i = 0; i < setSize; i++)
+        for (int i = 0; i < this.setSize; i++)
         {
             pvals[i] = new PValue();
             pvals[i].ignoreAtMTC = true;

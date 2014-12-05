@@ -85,9 +85,9 @@ public class TermID
 
         Prefix newPrefix = new Prefix(stringID, colon);
         if (prefixPool != null) {
-            prefix = prefixPool.map(newPrefix);
+            this.prefix = prefixPool.map(newPrefix);
         } else {
-            prefix = newPrefix;
+            this.prefix = newPrefix;
         }
 
         int parsedId;
@@ -101,7 +101,7 @@ public class TermID
             parsedId = makeIdFromString(parseIdFrom);
             // throw new IllegalArgumentException("Failed to parse the integer part of termid: \"" + stringID + "\"");
         }
-        id = parsedId;
+        this.id = parsedId;
     }
 
     public TermID(ByteString stringID, PrefixPool prefixPool)
@@ -116,15 +116,15 @@ public class TermID
 
         Prefix newPrefix = new Prefix(stringID.substring(0, colon));
         if (prefixPool != null) {
-            prefix = prefixPool.map(newPrefix);
+            this.prefix = prefixPool.map(newPrefix);
         } else {
-            prefix = newPrefix;
+            this.prefix = newPrefix;
         }
 
         try
         {
             int parsedId = ByteString.parseFirstInt(stringID);
-            id = parsedId;
+            this.id = parsedId;
         } catch (NumberFormatException ex)
         {
             throw new IllegalArgumentException("Failed to parse the integer part of termid: \"" + stringID.toString()
@@ -163,9 +163,9 @@ public class TermID
 
         Prefix newPrefix = new Prefix(new ByteString(id, start, colon));
         if (prefixPool != null) {
-            prefix = prefixPool.map(newPrefix);
+            this.prefix = prefixPool.map(newPrefix);
         } else {
-            prefix = newPrefix;
+            this.prefix = newPrefix;
         }
 
         int tid;
@@ -203,7 +203,7 @@ public class TermID
      */
     public Prefix getPrefix()
     {
-        return prefix;
+        return this.prefix;
     }
 
     /**
@@ -215,14 +215,14 @@ public class TermID
         /*
          * Luckily java has support for sprintf() functions as known from ANSI-C since 1.5
          */
-        return String.format("%s:%07d", prefix.toString(), id);
+        return String.format("%s:%07d", this.prefix.toString(), this.id);
     }
 
     @Override
     public int hashCode()
     {
         /* We simply use the Term ID as a hash value neglecting the prefix */
-        return id;
+        return this.id;
     }
 
     @Override
@@ -231,10 +231,10 @@ public class TermID
         if (obj instanceof TermID)
         {
             TermID goTermID = (TermID) obj;
-            if (goTermID.id != id) {
+            if (goTermID.id != this.id) {
                 return false;
             }
-            return goTermID.prefix.equals(prefix);
+            return goTermID.prefix.equals(this.prefix);
         }
         return super.equals(obj);
     }

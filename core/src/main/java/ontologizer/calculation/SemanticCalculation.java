@@ -112,8 +112,8 @@ class IntHashMapForDoubles
         }
 
         this.loadFactor = loadFactor;
-        threshold = (int) (capacity * loadFactor);
-        table = new Entry[capacity];
+        this.threshold = (int) (capacity * loadFactor);
+        this.table = new Entry[capacity];
         init();
     }
 
@@ -134,8 +134,8 @@ class IntHashMapForDoubles
     public IntHashMapForDoubles()
     {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
-        threshold = (int) (DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
-        table = new Entry[DEFAULT_INITIAL_CAPACITY];
+        this.threshold = (int) (DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
+        this.table = new Entry[DEFAULT_INITIAL_CAPACITY];
         init();
     }
 
@@ -179,7 +179,7 @@ class IntHashMapForDoubles
      */
     public int size()
     {
-        return size;
+        return this.size;
     }
 
     /**
@@ -189,7 +189,7 @@ class IntHashMapForDoubles
      */
     public boolean isEmpty()
     {
-        return size == 0;
+        return this.size == 0;
     }
 
     /**
@@ -210,7 +210,7 @@ class IntHashMapForDoubles
     public double get(int key)
     {
         int hash = hash(key);
-        for (Entry e = table[indexFor(hash, table.length)]; e != null; e = e.next)
+        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next)
         {
 
             if (/* e.hash == hash && */e.key == key) {
@@ -229,7 +229,7 @@ class IntHashMapForDoubles
     public boolean containsKey(int key)
     {
         int hash = hash(key);
-        for (Entry e = table[indexFor(hash, table.length)]; e != null; e = e.next)
+        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next)
         {
             if (/* e.hash == hash && */e.key == key) {
                 return true;
@@ -251,8 +251,8 @@ class IntHashMapForDoubles
     public void put(int key, double value)
     {
         int hash = hash(key);
-        int i = indexFor(hash, table.length);
-        for (Entry e = table[i]; e != null; e = e.next)
+        int i = indexFor(hash, this.table.length);
+        for (Entry e = this.table[i]; e != null; e = e.next)
         {
             if (/* e.hash == hash && */e.key == key)
             {
@@ -261,7 +261,7 @@ class IntHashMapForDoubles
             }
         }
 
-        modCount++;
+        this.modCount++;
         addEntry(hash, key, value, i);
     }
 
@@ -275,17 +275,17 @@ class IntHashMapForDoubles
      */
     void resize(int newCapacity)
     {
-        Entry[] oldTable = table;
+        Entry[] oldTable = this.table;
         int oldCapacity = oldTable.length;
         if (oldCapacity == MAXIMUM_CAPACITY) {
-            threshold = Integer.MAX_VALUE;
+            this.threshold = Integer.MAX_VALUE;
             return;
         }
 
         Entry[] newTable = new Entry[newCapacity];
         transfer(newTable);
-        table = newTable;
-        threshold = (int) (newCapacity * loadFactor);
+        this.table = newTable;
+        this.threshold = (int) (newCapacity * this.loadFactor);
     }
 
     /**
@@ -293,7 +293,7 @@ class IntHashMapForDoubles
      */
     void transfer(Entry[] newTable)
     {
-        Entry[] src = table;
+        Entry[] src = this.table;
         int newCapacity = newTable.length;
         for (int j = 0; j < src.length; j++) {
             Entry e = src[j];
@@ -317,12 +317,12 @@ class IntHashMapForDoubles
      */
     public void clear()
     {
-        modCount++;
-        Entry[] tab = table;
+        this.modCount++;
+        Entry[] tab = this.table;
         for (int i = 0; i < tab.length; i++) {
             tab[i] = null;
         }
-        size = 0;
+        this.size = 0;
     }
 
     private static final class Entry
@@ -340,26 +340,26 @@ class IntHashMapForDoubles
          */
         Entry(int h, int k, double v, Entry n)
         {
-            value = v;
-            next = n;
-            key = k;
-            hash = h;
+            this.value = v;
+            this.next = n;
+            this.key = k;
+            this.hash = h;
         }
 
         public final int getKey()
         {
-            return key;
+            return this.key;
         }
 
         public final double getValue()
         {
-            return value;
+            return this.value;
         }
 
         public final double setValue(double newValue)
         {
-            double oldValue = value;
-            value = newValue;
+            double oldValue = this.value;
+            this.value = newValue;
             return oldValue;
         }
     }
@@ -370,11 +370,11 @@ class IntHashMapForDoubles
      */
     void addEntry(int hash, int key, double value, int bucketIndex)
     {
-        Entry e = table[bucketIndex];
+        Entry e = this.table[bucketIndex];
 
-        table[bucketIndex] = new Entry(hash, key, value, e);
-        if (size++ >= threshold) {
-            resize(2 * table.length);
+        this.table[bucketIndex] = new Entry(hash, key, value, e);
+        if (this.size++ >= this.threshold) {
+            resize(2 * this.table.length);
         }
     }
 
@@ -385,9 +385,9 @@ class IntHashMapForDoubles
      */
     void createEntry(int hash, int key, double value, int bucketIndex)
     {
-        Entry e = table[bucketIndex];
-        table[bucketIndex] = new Entry(hash, key, value, e);
-        size++;
+        Entry e = this.table[bucketIndex];
+        this.table[bucketIndex] = new Entry(hash, key, value, e);
+        this.size++;
     }
 }
 
@@ -435,22 +435,22 @@ public class SemanticCalculation
         this.graph = g;
         this.goAssociations = assoc;
 
-        allGenesStudy = new StudySet("population");
-        for (ByteString gene : goAssociations.getAllAnnotatedGenes()) {
-            allGenesStudy.addGene(gene, "");
+        this.allGenesStudy = new StudySet("population");
+        for (ByteString gene : this.goAssociations.getAllAnnotatedGenes()) {
+            this.allGenesStudy.addGene(gene, "");
         }
 
-        enumerator = allGenesStudy.enumerateGOTerms(graph, goAssociations);
-        totalAnnotated = enumerator.getAnnotatedGenes(graph.getRootTerm().getID()).totalAnnotated.size();
+        this.enumerator = this.allGenesStudy.enumerateGOTerms(this.graph, this.goAssociations);
+        this.totalAnnotated = this.enumerator.getAnnotatedGenes(this.graph.getRootTerm().getID()).totalAnnotated.size();
 
-        cache = new IntHashMapForDoubles[g.maximumTermID()];
+        this.cache = new IntHashMapForDoubles[g.maximumTermID()];
 
         /* Making associations non-redundant */
-        associations = new Object[allGenesStudy.getGeneCount()];
+        this.associations = new Object[this.allGenesStudy.getGeneCount()];
         int i = 0;
-        for (ByteString gene : allGenesStudy)
+        for (ByteString gene : this.allGenesStudy)
         {
-            gene2index.put(gene, i);
+            this.gene2index.put(gene, i);
 
             ArrayList<TermID> assocList = assoc.get(gene).getAssociations();
             HashSet<TermID> inducedNodes = new HashSet<TermID>();
@@ -477,15 +477,15 @@ public class SemanticCalculation
             }
 
             /* TODO: Sort terms according to their information content */
-            associations[i] = terms;
+            this.associations[i] = terms;
             i++;
         }
 
-        if (numberOfProcessors > 1)
+        if (this.numberOfProcessors > 1)
         {
-            cacheLock = new ReentrantReadWriteLock();
-            readLock = cacheLock.readLock();
-            writeLock = cacheLock.writeLock();
+            this.cacheLock = new ReentrantReadWriteLock();
+            this.readLock = this.cacheLock.readLock();
+            this.writeLock = this.cacheLock.writeLock();
         }
     }
 
@@ -497,7 +497,7 @@ public class SemanticCalculation
      */
     public double p(TermID id)
     {
-        return (double) enumerator.getAnnotatedGenes(id).totalAnnotatedCount() / totalAnnotated;
+        return (double) this.enumerator.getAnnotatedGenes(id).totalAnnotatedCount() / this.totalAnnotated;
     }
 
     /**
@@ -509,7 +509,7 @@ public class SemanticCalculation
      */
     private double p(TermID t1, TermID t2)
     {
-        Collection<TermID> sharedParents = graph.getSharedParents(t1, t2);
+        Collection<TermID> sharedParents = this.graph.getSharedParents(t1, t2);
         double p = 1.0;
 
         /*
@@ -543,42 +543,42 @@ public class SemanticCalculation
             t1 = s;
         }
 
-        if (cacheLock != null) {
-            readLock.lock();
+        if (this.cacheLock != null) {
+            this.readLock.lock();
         }
 
-        IntHashMapForDoubles map2 = cache[t1.id];
+        IntHashMapForDoubles map2 = this.cache[t1.id];
         if (map2 != null)
         {
             double val = map2.get(t2.id);
             if (!Double.isNaN(val))
             {
-                if (cacheLock != null) {
-                    cacheLock.readLock().unlock();
+                if (this.cacheLock != null) {
+                    this.cacheLock.readLock().unlock();
                 }
                 return val;
             }
         }
 
-        if (cacheLock != null)
+        if (this.cacheLock != null)
         {
             /* Upgrade lock, must unlock the read lock manually before */
-            readLock.unlock();
-            writeLock.lock();
+            this.readLock.unlock();
+            this.writeLock.lock();
         }
 
         /* Create HashMap when needed, but the value is definitively not there */
         if (map2 == null)
         {
             map2 = new IntHashMapForDoubles();
-            cache[t1.id] = map2;
+            this.cache[t1.id] = map2;
         }
 
         double p = -Math.log(p(t1, t2));
         map2.put(t2.id, p);
 
-        if (cacheLock != null) {
-            writeLock.unlock();
+        if (this.cacheLock != null) {
+            this.writeLock.unlock();
         }
 
         return p;
@@ -601,8 +601,8 @@ public class SemanticCalculation
 
         sim = 0.0;
 
-        TermID[] tl1 = (TermID[]) associations[g1];
-        TermID[] tl2 = (TermID[]) associations[g2];
+        TermID[] tl1 = (TermID[]) this.associations[g1];
+        TermID[] tl2 = (TermID[]) this.associations[g2];
 
         /*
          * TODO: Research if we can employ sorting omit some or many of the pairs.
@@ -631,15 +631,15 @@ public class SemanticCalculation
     {
         double sim = 0.0;
 
-        if (!(goAssociations.containsGene(g1))) {
+        if (!(this.goAssociations.containsGene(g1))) {
             return 0;
         }
-        if (!(goAssociations.containsGene(g2))) {
+        if (!(this.goAssociations.containsGene(g2))) {
             return 0;
         }
 
-        List<TermID> tl1 = goAssociations.get(g1).getAssociations();
-        List<TermID> tl2 = goAssociations.get(g2).getAssociations();
+        List<TermID> tl1 = this.goAssociations.get(g1).getAssociations();
+        List<TermID> tl2 = this.goAssociations.get(g2).getAssociations();
 
         for (TermID t1 : tl1)
         {
@@ -704,7 +704,7 @@ public class SemanticCalculation
          */
         public WorkerThread(BlockingQueue<WorkerThread> unemployedQueue, double[][] mat, int[] indices)
         {
-            work = new int[WORK_LENGTH];
+            this.work = new int[WORK_LENGTH];
             this.unemployedQueue = unemployedQueue;
             this.mat = mat;
             this.indices = indices;
@@ -714,27 +714,27 @@ public class SemanticCalculation
         public void run()
         {
             try {
-                unemployedQueue.put(this);
+                this.unemployedQueue.put(this);
 
                 while (true)
                 {
-                    Message msg = messageQueue.take();
+                    Message msg = this.messageQueue.take();
 
                     if (msg instanceof BeginWorkMessage)
                     {
-                        for (int i = 0; i < addPairCount; i += 2)
+                        for (int i = 0; i < this.addPairCount; i += 2)
                         {
-                            int i1 = indices[work[i]];
-                            int i2 = indices[work[i + 1]];
+                            int i1 = this.indices[this.work[i]];
+                            int i2 = this.indices[this.work[i + 1]];
 
                             if (i1 >= 0 || i2 >= 0) {
-                                mat[work[i]][work[i + 1]] = sim(i1, i2);
+                                this.mat[this.work[i]][this.work[i + 1]] = sim(i1, i2);
                             }
                         }
 
-                        pairsDone = addPairCount / 2;
-                        addPairCount = 0;
-                        unemployedQueue.put(this);
+                        this.pairsDone = this.addPairCount / 2;
+                        this.addPairCount = 0;
+                        this.unemployedQueue.put(this);
                     } else
                     {
                         if (msg instanceof FinishMessage) {
@@ -754,10 +754,10 @@ public class SemanticCalculation
          */
         public boolean addPairForWork(int g1, int g2)
         {
-            work[addPairCount] = g1;
-            work[addPairCount + 1] = g2;
-            addPairCount += 2;
-            return addPairCount < WORK_LENGTH;
+            this.work[this.addPairCount] = g1;
+            this.work[this.addPairCount + 1] = g2;
+            this.addPairCount += 2;
+            return this.addPairCount < WORK_LENGTH;
         }
 
         /**
@@ -768,17 +768,17 @@ public class SemanticCalculation
          */
         public void fire() throws InterruptedException
         {
-            messageQueue.put(new BeginWorkMessage());
+            this.messageQueue.put(new BeginWorkMessage());
         }
 
         public int getPairsDone()
         {
-            return pairsDone;
+            return this.pairsDone;
         }
 
         public void finish() throws InterruptedException
         {
-            messageQueue.put(new FinishMessage());
+            this.messageQueue.put(new FinishMessage());
         }
     }
 
@@ -806,13 +806,13 @@ public class SemanticCalculation
         int k = 0;
         for (ByteString g : study)
         {
-            Integer idx = gene2index.get(g);
+            Integer idx = this.gene2index.get(g);
             if (idx == null)
             {
                 /* Maybe we can find the gene via a mapping */
-                Gene2Associations o2a = goAssociations.get(g);
+                Gene2Associations o2a = this.goAssociations.get(g);
                 if (o2a != null) {
-                    idx = gene2index.get(o2a.name());
+                    idx = this.gene2index.get(o2a.name());
                 }
             }
             if (idx != null) {
@@ -823,14 +823,14 @@ public class SemanticCalculation
             k++;
         }
 
-        if (numberOfProcessors > 1)
+        if (this.numberOfProcessors > 1)
         {
             try
             {
                 /* Create and start the worker threads and put them in the queue */
-                WorkerThread[] wt = new WorkerThread[numberOfProcessors];
+                WorkerThread[] wt = new WorkerThread[this.numberOfProcessors];
                 BlockingQueue<WorkerThread> unemployedQueue = new LinkedBlockingQueue<WorkerThread>();
-                for (int j = 0; j < numberOfProcessors; j++)
+                for (int j = 0; j < this.numberOfProcessors; j++)
                 {
                     wt[j] = new WorkerThread(unemployedQueue, mat, indices);
                     wt[j].start();
@@ -862,7 +862,7 @@ public class SemanticCalculation
                     }
                 }
 
-                for (int j = 0; j < numberOfProcessors; j++)
+                for (int j = 0; j < this.numberOfProcessors; j++)
                 {
                     wt[j].finish();
                     wt[j].join();
@@ -905,8 +905,8 @@ public class SemanticCalculation
         sr.mat = mat;
         sr.names = study.getGenes();
         sr.name = study.getName();
-        sr.assoc = goAssociations;
-        sr.g = graph;
+        sr.assoc = this.goAssociations;
+        sr.g = this.graph;
         sr.calculation = this;
 
         long end = System.currentTimeMillis();
@@ -921,16 +921,16 @@ public class SemanticCalculation
         long millis = System.currentTimeMillis();
         int gene = 0;
 
-        for (int i = 0; i < associations.length; i++)
+        for (int i = 0; i < this.associations.length; i++)
         {
-            for (int j = 0; j < associations.length; j++)
+            for (int j = 0; j < this.associations.length; j++)
             {
                 sim(i, j);
             }
             long newMillis = System.currentTimeMillis();
             if (newMillis > millis + 250)
             {
-                System.out.println(gene * 100.0 / allGenesStudy.getGeneCount() + "%");
+                System.out.println(gene * 100.0 / this.allGenesStudy.getGeneCount() + "%");
                 millis = newMillis;
             }
             gene++;

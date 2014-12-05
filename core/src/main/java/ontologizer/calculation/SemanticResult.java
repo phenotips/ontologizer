@@ -33,25 +33,25 @@ public class SemanticResult
 
             PrintWriter out = new PrintWriter(file);
 
-            if (names != null && names.length > 0)
+            if (this.names != null && this.names.length > 0)
             {
-                out.print(names[0]);
-                for (int i = 1; i < names.length; i++)
+                out.print(this.names[0]);
+                for (int i = 1; i < this.names.length; i++)
                 {
                     out.print("\t");
-                    out.print(names[i]);
+                    out.print(this.names[i]);
                 }
 
                 out.println();
 
-                for (int i = 0; i < names.length; i++)
+                for (int i = 0; i < this.names.length; i++)
                 {
-                    out.print(names[i]);
+                    out.print(this.names[i]);
 
-                    for (int j = 0; j < names.length; j++)
+                    for (int j = 0; j < this.names.length; j++)
                     {
                         out.print("\t");
-                        out.print(mat[i][j]);
+                        out.print(this.mat[i][j]);
                     }
 
                     out.println();

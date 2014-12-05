@@ -64,25 +64,25 @@ public class IndependentUniformCalculation implements ICalculation
             @Override
             public int currentStudySetSize()
             {
-                return observedStudySet.getGeneCount();
+                return this.observedStudySet.getGeneCount();
             }
 
             private PValue[] calculatePValues(StudySet studySet)
             {
                 int i = 0;
 
-                PValue p[] = new PValue[graph.getNumberOfTerms()];
+                PValue p[] = new PValue[this.graph.getNumberOfTerms()];
                 TermForTermGOTermProperties myP;
 
-                for (Term goterm : graph)
+                for (Term goterm : this.graph)
                 {
                     String term = goterm.getIDAsString();
 
-                    int goidAnnotatedPopGeneCount = populationSet.getGeneCount();
-                    int goidAnnotatedStudyGeneCount = observedStudySet.getGeneCount();
+                    int goidAnnotatedPopGeneCount = this.populationSet.getGeneCount();
+                    int goidAnnotatedStudyGeneCount = this.observedStudySet.getGeneCount();
 
                     myP = new TermForTermGOTermProperties();
-                    myP.goTerm = graph.getTerm(term);
+                    myP.goTerm = this.graph.getTerm(term);
                     myP.annotatedStudyGenes = goidAnnotatedStudyGeneCount;
                     myP.annotatedPopulationGenes = goidAnnotatedPopGeneCount;
 
@@ -97,13 +97,13 @@ public class IndependentUniformCalculation implements ICalculation
             @Override
             public PValue[] calculateRawPValues()
             {
-                return calculatePValues(observedStudySet);
+                return calculatePValues(this.observedStudySet);
             }
 
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
+                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
         }
 

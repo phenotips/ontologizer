@@ -116,19 +116,19 @@ abstract public class AbstractGraph<VertexType>
         bfs(initial,
             new INeighbourGrabber<VertexType>()
             {
-                @Override
-                public Iterator<VertexType> grabNeighbours(VertexType t)
-                {
-                    /*
-                     * If bfs is done against flow neighbours can be found via the in-going edges otherwise via the
-                     * outgoing edges
-                     */
-                    if (againstFlow) {
-                        return getParentNodes(t);
-                    } else {
-                        return getChildNodes(t);
-                    }
+            @Override
+            public Iterator<VertexType> grabNeighbours(VertexType t)
+            {
+                /*
+                 * If bfs is done against flow neighbours can be found via the in-going edges otherwise via the
+                 * outgoing edges
+                 */
+                if (againstFlow) {
+                    return getParentNodes(t);
+                } else {
+                    return getChildNodes(t);
                 }
+            }
             }, visitor);
     }
 
@@ -256,7 +256,7 @@ abstract public class AbstractGraph<VertexType>
      */
     public HashMap<VertexType, VertexType> getDFSShotcutLinks(VertexType vt, INeighbourGrabber<VertexType> grabber,
         IVisitor<VertexType> visitor)
-    {
+        {
         HashMap<VertexType, VertexType> map = new HashMap<VertexType, VertexType>();
         ArrayList<VertexType> upwardQueue = new ArrayList<VertexType>();
 
@@ -267,7 +267,7 @@ abstract public class AbstractGraph<VertexType>
         }
 
         return map;
-    }
+        }
 
     /**
      * Returns whether there is a path from source to dest.
@@ -287,7 +287,7 @@ abstract public class AbstractGraph<VertexType>
             {
                 if (vertex.equals(dest))
                 {
-                    found = true;
+                    this.found = true;
                     return false;
                 }
                 return true;
@@ -425,7 +425,7 @@ abstract public class AbstractGraph<VertexType>
         final DotAttributesProvider<VertexType> provider, final double nodeSep, final double rankSep)
     {
         DotAttributesProvider<VertexType> newProvider = new DotAttributesProvider<VertexType>()
-        {
+            {
             @Override
             public String getDotGraphAttributes()
             {
@@ -455,8 +455,8 @@ abstract public class AbstractGraph<VertexType>
             {
                 return provider.getDotHeader();
             }
-        };
-        writeDOT(fos, nodeSet, newProvider);
+            };
+            writeDOT(fos, nodeSet, newProvider);
     }
 
     /**

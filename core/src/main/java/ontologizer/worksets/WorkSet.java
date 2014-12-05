@@ -32,17 +32,17 @@ public class WorkSet
      */
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     public String getOboPath()
     {
-        return oboPath;
+        return this.oboPath;
     }
 
     public String getAssociationPath()
     {
-        return associationPath;
+        return this.associationPath;
     }
 
     public void setAssociationPath(String associationPath)
@@ -63,9 +63,9 @@ public class WorkSet
     @Override
     public WorkSet clone()
     {
-        WorkSet ws = new WorkSet(name);
-        ws.associationPath = associationPath;
-        ws.oboPath = oboPath;
+        WorkSet ws = new WorkSet(this.name);
+        ws.associationPath = this.associationPath;
+        ws.oboPath = this.oboPath;
         return ws;
     }
 

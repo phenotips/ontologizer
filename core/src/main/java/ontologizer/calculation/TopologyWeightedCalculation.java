@@ -154,7 +154,7 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
         if (goidAnnotatedStudyGeneCount != 0)
         {
             prop.p =
-                hyperg.phypergeometric((int) Math.ceil(popGeneCount),
+                this.hyperg.phypergeometric((int) Math.ceil(popGeneCount),
                     Math.ceil(goidAnnotatedPopGeneCount) / Math.ceil(popGeneCount),
                     (int) studyGeneCount, (int) goidAnnotatedStudyGeneCount);
         } else

@@ -64,7 +64,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
      */
     public String getCalculationName()
     {
-        return calculationName;
+        return this.calculationName;
     }
 
     /**
@@ -84,7 +84,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
      */
     public String getCorrectionName()
     {
-        return correctionName;
+        return this.correctionName;
     }
 
     public void setCorrectionName(String correctionName)
@@ -97,7 +97,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
      */
     public void writeTable(File file)
     {
-        if (list.isEmpty()) {
+        if (this.list.isEmpty()) {
             return;
         }
 
@@ -108,7 +108,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
             PrintWriter out = new PrintWriter(file);
 
             /* Write out the table header */
-            AbstractGOTermProperties first = list.get(0);
+            AbstractGOTermProperties first = this.list.get(0);
 
             out.write(first.propHeaderToString());
 
@@ -122,8 +122,8 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
             /* Write out table contents */
             for (AbstractGOTermProperties props : propsList)
             {
-                out.println(props.propLineToString(populationGeneCount,
-                    studyGeneCount));
+                out.println(props.propLineToString(this.populationGeneCount,
+                    this.studyGeneCount));
             }
 
             out.flush();
@@ -176,7 +176,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
         /* Build the props Array and count the number significant p values */
         int i = 0;
         int scount = 0;
-        AbstractGOTermProperties propArray[] = new AbstractGOTermProperties[list.size()];
+        AbstractGOTermProperties propArray[] = new AbstractGOTermProperties[this.list.size()];
         for (AbstractGOTermProperties props : this)
         {
             propArray[i++] = props;
@@ -218,8 +218,8 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
                 if (prop != null && counts)
                 {
                     attributes.append(String.format("\\n%d/%d, %d/%d",
-                        prop.annotatedPopulationGenes, populationGeneCount,
-                        prop.annotatedStudyGenes, studyGeneCount));
+                        prop.annotatedPopulationGenes, EnrichedGOTermsResult.this.populationGeneCount,
+                        prop.annotatedStudyGenes, EnrichedGOTermsResult.this.studyGeneCount));
                 }
 
                 /* TODO: tip attribute */
@@ -239,7 +239,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
                         {
                             AbstractGOTermProperties subtermProp = getGOTermProperties(term.getID());
                             if (subtermProp != null && subtermProp.p_adjusted < alpha) {
-                                isExtremal = false;
+                                this.isExtremal = false;
                             }
                             return true;
                         }
@@ -318,7 +318,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
     @Override
     public Iterator<AbstractGOTermProperties> iterator()
     {
-        return list.iterator();
+        return this.list.iterator();
     }
 
     /**
@@ -328,17 +328,17 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
      */
     public StudySet getStudySet()
     {
-        return studySet;
+        return this.studySet;
     }
 
     public int getPopulationGeneCount()
     {
-        return populationGeneCount;
+        return this.populationGeneCount;
     }
 
     public int getStudyGeneCount()
     {
-        return studyGeneCount;
+        return this.studyGeneCount;
     }
 
 }

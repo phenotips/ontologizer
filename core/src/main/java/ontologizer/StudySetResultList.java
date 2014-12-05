@@ -13,17 +13,17 @@ public class StudySetResultList implements Iterable<EnrichedGOTermsResult>
 
     public void addStudySetResult(EnrichedGOTermsResult studySetRes)
     {
-        list.add(studySetRes);
+        this.list.add(studySetRes);
     }
 
     public ArrayList<EnrichedGOTermsResult> getStudySetResults()
     {
-        return list;
+        return this.list;
     }
 
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     public void setName(String name)
@@ -34,11 +34,11 @@ public class StudySetResultList implements Iterable<EnrichedGOTermsResult>
     @Override
     public Iterator<EnrichedGOTermsResult> iterator()
     {
-        return list.iterator();
+        return this.list.iterator();
     }
 
     public int size()
     {
-        return list.size();
+        return this.list.size();
     }
 }

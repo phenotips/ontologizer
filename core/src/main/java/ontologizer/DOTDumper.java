@@ -36,20 +36,21 @@ public class DOTDumper
 
             /* first row */
             attributes.append("<TR><TD>");
-            attributes.append(goTerm.getIDAsString());
+            attributes.append(this.goTerm.getIDAsString());
             attributes.append("<BR/>");
-            attributes.append(goTerm.getName());
+            attributes.append(this.goTerm.getName());
             attributes.append("</TD></TR>");
 
             /* second row (matrix) */
             attributes.append("<TR><TD><TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"2\">");
-            for (int r = 0; r < significant.length; r++)
+            for (int r = 0; r < this.significant.length; r++)
             {
                 attributes.append("<TR>");
-                for (int c = 0; c < significant[r].length; c++)
+                for (int c = 0; c < this.significant[r].length; c++)
                 {
-                    if (significant[r][c]) {
-                        attributes.append("<TD HEIGHT=\"8\" BGCOLOR=\"" + someColors[c + r * significant[r].length]
+                    if (this.significant[r][c]) {
+                        attributes.append("<TD HEIGHT=\"8\" BGCOLOR=\""
+                            + DOTDumper.this.someColors[c + r * this.significant[r].length]
                             + "\"></TD>");
                     } else {
                         attributes.append("<TD></TD>");
@@ -63,7 +64,7 @@ public class DOTDumper
             attributes.append("</TABLE>");
             attributes.append(">");
 
-            return goTerm.getID().id + "[" + attributes + "];";
+            return this.goTerm.getID().id + "[" + attributes + "];";
         }
 
         /**
@@ -74,8 +75,8 @@ public class DOTDumper
          */
         public MultResultNode(Term term, int rows, int cols)
         {
-            goTerm = term;
-            significant = new boolean[rows][cols];
+            this.goTerm = term;
+            this.significant = new boolean[rows][cols];
         }
     }
 
@@ -186,7 +187,7 @@ public class DOTDumper
                 /* For every column in the row place an cell with an unique color */
                 for (c = 0; c < numCols; c++)
                 {
-                    buf.append("<TD WIDTH=\"150\" BGCOLOR=\"" + someColors[c + r * numCols] + "\"></TD>");
+                    buf.append("<TD WIDTH=\"150\" BGCOLOR=\"" + this.someColors[c + r * numCols] + "\"></TD>");
                 }
                 buf.append("</TR>");
             }
@@ -206,9 +207,9 @@ public class DOTDumper
             {
                 TermID destID = node.goTerm.getID();
 
-                for (TermID sourceID : graph.getTermParents(destID))
+                for (TermID sourceID : this.graph.getTermParents(destID))
                 {
-                    Term source = graph.getTerm(sourceID);
+                    Term source = this.graph.getTerm(sourceID);
                     if (nodeMap.containsKey(source)) {
                         out.write(sourceID.id + " -> " + destID.id + ";\n");
                     }
@@ -238,23 +239,23 @@ public class DOTDumper
          */
         public MultResultNodeVisitor(Ontology goGraph, HashMap<Term, MultResultNode> map, int nRows, int nCols)
         {
-            graph = goGraph;
-            nodeMap = map;
-            rows = nRows;
-            cols = nCols;
+            this.graph = goGraph;
+            this.nodeMap = map;
+            this.rows = nRows;
+            this.cols = nCols;
         }
 
         @Override
         public boolean visited(Term term)
         {
-            if (term != null && !nodeMap.containsKey(term))
+            if (term != null && !this.nodeMap.containsKey(term))
             {
                 // TermID rootTerm = new TermID(8150);
                 // if (rootTerm.equals(goTermID) || (!graph.isRootGOTermID(goTermID) &&
                 // graph.existsPath(rootTerm,goTermID)))
                 {
-                    MultResultNode newNode = new MultResultNode(term, rows, cols);
-                    nodeMap.put(term, newNode);
+                    MultResultNode newNode = new MultResultNode(term, this.rows, this.cols);
+                    this.nodeMap.put(term, newNode);
                 }
             }
             return true;
@@ -277,9 +278,9 @@ public class DOTDumper
                 } else {
                     /* add node and potential parents */
                     MultResultNodeVisitor visitor =
-                        new MultResultNodeVisitor(graph, nodeMap, rows, cols);
+                        new MultResultNodeVisitor(this.graph, nodeMap, rows, cols);
 
-                    graph.walkToSource(props.goTerm.getID(), visitor);
+                    this.graph.walkToSource(props.goTerm.getID(), visitor);
 
                     /*
                      * set significance properly, but we have to check before if the term is really contained within the

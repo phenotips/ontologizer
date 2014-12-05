@@ -34,10 +34,10 @@ public class TinyQueue<Type>
      */
     private TinyElement<Type> allocateElement()
     {
-        if (headOfFree != null)
+        if (this.headOfFree != null)
         {
-            TinyElement<Type> te = headOfFree;
-            headOfFree = te.next;
+            TinyElement<Type> te = this.headOfFree;
+            this.headOfFree = te.next;
             te.next = null;
             return te;
         }
@@ -51,8 +51,8 @@ public class TinyQueue<Type>
      */
     private void deallocateElement(TinyElement<Type> t)
     {
-        t.next = headOfFree;
-        headOfFree = t;
+        t.next = this.headOfFree;
+        this.headOfFree = t;
     }
 
     /**
@@ -64,13 +64,13 @@ public class TinyQueue<Type>
     {
         TinyElement<Type> te = allocateElement();
         te.t = t;
-        if (head == null)
+        if (this.head == null)
         {
-            head = tail = te;
+            this.head = this.tail = te;
         } else
         {
-            tail.next = te;
-            tail = te;
+            this.tail.next = te;
+            this.tail = te;
         }
     }
 
@@ -81,10 +81,10 @@ public class TinyQueue<Type>
      */
     public Type poll()
     {
-        TinyElement<Type> te = head;
-        head = te.next;
-        if (head == null) {
-            tail = null;
+        TinyElement<Type> te = this.head;
+        this.head = te.next;
+        if (this.head == null) {
+            this.tail = null;
         }
         deallocateElement(te);
         return te.t;
@@ -95,6 +95,6 @@ public class TinyQueue<Type>
      */
     public boolean isEmpty()
     {
-        return head == null;
+        return this.head == null;
     }
 }

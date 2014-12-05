@@ -6,7 +6,7 @@ public class ValuedItemAttribute extends ItemAttribute
 
     public double getValue()
     {
-        return value;
+        return this.value;
     }
 
     public void setValue(double value)

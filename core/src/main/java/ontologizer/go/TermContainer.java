@@ -30,16 +30,16 @@ public class TermContainer implements Iterable<Term>
 
     public TermContainer(Set<Term> terms, String format, String datum)
     {
-        formatVersion = format;
-        date = datum;
+        this.formatVersion = format;
+        this.date = datum;
 
         /* Build our data structures linked list */
-        termMap = new HashMap<TermID, Term>();
-        termList = new LinkedList<Term>();
+        this.termMap = new HashMap<TermID, Term>();
+        this.termList = new LinkedList<Term>();
         for (Term entry : terms)
         {
-            termMap.put(entry.getID(), entry);
-            termList.add(entry);
+            this.termMap.put(entry.getID(), entry);
+            this.termList.add(entry);
         }
     }
 
@@ -48,17 +48,17 @@ public class TermContainer implements Iterable<Term>
      */
     public int termCount()
     {
-        return termMap.size();
+        return this.termMap.size();
     }
 
     public String getFormatVersion()
     {
-        return formatVersion;
+        return this.formatVersion;
     }
 
     public String getDate()
     {
-        return date;
+        return this.date;
     }
 
     /**
@@ -89,13 +89,13 @@ public class TermContainer implements Iterable<Term>
 
     public Term get(TermID id)
     {
-        return termMap.get(id);
+        return this.termMap.get(id);
     }
 
     public Term get(String id)
     {
         TermID tempID = new TermID(id);
-        return termMap.get(tempID);
+        return this.termMap.get(tempID);
     }
 
     /** The following is intended for debugging purposes. */
@@ -113,7 +113,7 @@ public class TermContainer implements Iterable<Term>
     @Override
     public Iterator<Term> iterator()
     {
-        return termList.iterator();
+        return this.termList.iterator();
     }
 
 }

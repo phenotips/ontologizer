@@ -18,7 +18,7 @@ abstract public class AbstractByteLineScanner
 
     private int availableStart;
 
-    byte[] byteBuf = new byte[2 * BUF_SIZE];
+    byte[] byteBuf = new byte[2 * this.BUF_SIZE];
 
     public AbstractByteLineScanner(InputStream is)
     {
@@ -30,19 +30,19 @@ abstract public class AbstractByteLineScanner
         int read;
         int read_offset = 0;
 
-        outer: while ((read = is.read(byteBuf, read_offset, BUF_SIZE) + read_offset) > read_offset)
+        outer: while ((read = this.is.read(this.byteBuf, read_offset, this.BUF_SIZE) + read_offset) > read_offset)
         {
             int line_start = 0;
             int pos = 0;
 
             while (pos < read)
             {
-                if (byteBuf[pos] == '\n')
+                if (this.byteBuf[pos] == '\n')
                 {
-                    if (!newLine(byteBuf, line_start, pos - line_start))
+                    if (!newLine(this.byteBuf, line_start, pos - line_start))
                     {
-                        availableStart = pos + 1;
-                        available = read - availableStart;
+                        this.availableStart = pos + 1;
+                        this.available = read - this.availableStart;
                         break outer;
                     }
                     line_start = pos + 1;
@@ -50,11 +50,11 @@ abstract public class AbstractByteLineScanner
                 pos++;
             }
 
-            System.arraycopy(byteBuf, line_start, byteBuf, 0, read - line_start);
+            System.arraycopy(this.byteBuf, line_start, this.byteBuf, 0, read - line_start);
             read_offset = read - line_start;
         }
         if (read_offset != 0) {
-            newLine(byteBuf, 0, read_offset);
+            newLine(this.byteBuf, 0, read_offset);
         }
     }
 
@@ -65,7 +65,7 @@ abstract public class AbstractByteLineScanner
      */
     public int available()
     {
-        return available;
+        return this.available;
     }
 
     /**
@@ -75,8 +75,8 @@ abstract public class AbstractByteLineScanner
      */
     public byte[] availableBuffer()
     {
-        byte[] b = new byte[available];
-        System.arraycopy(byteBuf, availableStart, b, 0, available);
+        byte[] b = new byte[this.available];
+        System.arraycopy(this.byteBuf, this.availableStart, b, 0, this.available);
         return b;
     }
 

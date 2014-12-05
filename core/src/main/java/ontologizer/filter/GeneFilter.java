@@ -64,7 +64,7 @@ public class GeneFilter
 
             if (secondStartPos != -1)
             {
-                mapping.put(new ByteString(inputLine.substring(0, firstEndPos)),
+                this.mapping.put(new ByteString(inputLine.substring(0, firstEndPos)),
                     new ByteString(inputLine.substring(secondStartPos)));
             }
         }
@@ -100,6 +100,6 @@ public class GeneFilter
      */
     public ByteString mapGene(ByteString gene)
     {
-        return mapping.get(gene);
+        return this.mapping.get(gene);
     }
 }

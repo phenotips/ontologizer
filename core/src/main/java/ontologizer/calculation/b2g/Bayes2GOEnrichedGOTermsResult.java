@@ -28,6 +28,6 @@ public class Bayes2GOEnrichedGOTermsResult extends EnrichedGOTermsResult
 
     public Bayes2GOScore getScore()
     {
-        return score;
+        return this.score;
     }
 }

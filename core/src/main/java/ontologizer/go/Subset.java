@@ -19,19 +19,19 @@ public class Subset
 
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return name.equals(((Subset) obj).name);
+        return this.name.equals(((Subset) obj).name);
     }
 
     @Override
     public int hashCode()
     {
-        return name.hashCode();
+        return this.name.hashCode();
     }
 
     /**

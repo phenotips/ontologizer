@@ -15,14 +15,14 @@ public final class ByteString
 
     public ByteString(String str)
     {
-        bytes = str.getBytes();
+        this.bytes = str.getBytes();
     }
 
     public ByteString(String str, int length)
     {
-        bytes = new byte[length];
+        this.bytes = new byte[length];
         for (int i = 0; i < length; i++) {
-            bytes[i] = (byte) str.charAt(i);
+            this.bytes[i] = (byte) str.charAt(i);
         }
     }
 
@@ -55,14 +55,14 @@ public final class ByteString
 
     public int length()
     {
-        return bytes.length;
+        return this.bytes.length;
     }
 
     @Override
     public String toString()
     {
         StringBuilder str = new StringBuilder();
-        for (byte b : bytes) {
+        for (byte b : this.bytes) {
             str.append((char) b);
         }
         return str.toString();
@@ -71,12 +71,12 @@ public final class ByteString
     public boolean startsWith(String string)
     {
         int l = string.length();
-        if (bytes.length < l) {
+        if (this.bytes.length < l) {
             return false;
         }
         for (int i = 0; i < l; i++)
         {
-            if ((byte) string.charAt(i) != bytes[i]) {
+            if ((byte) string.charAt(i) != this.bytes[i]) {
                 return false;
             }
         }
@@ -93,7 +93,7 @@ public final class ByteString
     {
         ByteString bs = new ByteString();
         bs.bytes = new byte[endIndex - beginIndex];
-        System.arraycopy(bytes, beginIndex, bs.bytes, 0, endIndex - beginIndex);
+        System.arraycopy(this.bytes, beginIndex, bs.bytes, 0, endIndex - beginIndex);
         return bs;
     }
 
@@ -105,13 +105,13 @@ public final class ByteString
      */
     public boolean isPrefixOf(String string)
     {
-        if (bytes.length > string.length()) {
+        if (this.bytes.length > string.length()) {
             return false;
         }
 
-        for (int i = 0; i < bytes.length; i++)
+        for (int i = 0; i < this.bytes.length; i++)
         {
-            if (bytes[i] != string.charAt(i)) {
+            if (this.bytes[i] != string.charAt(i)) {
                 return false;
             }
         }
@@ -129,7 +129,7 @@ public final class ByteString
         int bytesW = 0;
         for (int i = from; i < to; i++)
         {
-            byte b = bytes[i];
+            byte b = this.bytes[i];
             if (b == ' ' || b == '\t' || b == '\n' || b == '\r') {
                 continue;
             }
@@ -148,18 +148,18 @@ public final class ByteString
     public int indexOf(ByteString string)
     {
         byte[] stringBytes = string.bytes;
-        for (int i = 0; i < bytes.length; i++)
+        for (int i = 0; i < this.bytes.length; i++)
         {
-            if (i + stringBytes.length > bytes.length) {
+            if (i + stringBytes.length > this.bytes.length) {
                 return -1;
             }
 
-            if (stringBytes[0] == bytes[i])
+            if (stringBytes[0] == this.bytes[i])
             {
                 int j;
                 for (j = 1; j < stringBytes.length; j++)
                 {
-                    if (stringBytes[j] != bytes[j + i]) {
+                    if (stringBytes[j] != this.bytes[j + i]) {
                         break;
                     }
                 }
@@ -174,18 +174,18 @@ public final class ByteString
     public int indexOf(String string)
     {
         byte[] stringBytes = string.getBytes();
-        for (int i = 0; i < bytes.length; i++)
+        for (int i = 0; i < this.bytes.length; i++)
         {
-            if (i + stringBytes.length > bytes.length) {
+            if (i + stringBytes.length > this.bytes.length) {
                 return -1;
             }
 
-            if (stringBytes[0] == bytes[i])
+            if (stringBytes[0] == this.bytes[i])
             {
                 int j;
                 for (j = 1; j < stringBytes.length; j++)
                 {
-                    if (stringBytes[j] != bytes[j + i]) {
+                    if (stringBytes[j] != this.bytes[j + i]) {
                         break;
                     }
                 }
@@ -203,12 +203,12 @@ public final class ByteString
         if (obj instanceof ByteString)
         {
             ByteString bStr = (ByteString) obj;
-            if (bStr.bytes.length != bytes.length) {
+            if (bStr.bytes.length != this.bytes.length) {
                 return false;
             }
-            for (int i = 0; i < bytes.length; i++)
+            for (int i = 0; i < this.bytes.length; i++)
             {
-                if (bytes[i] != bStr.bytes[i]) {
+                if (this.bytes[i] != bStr.bytes[i]) {
                     return false;
                 }
             }
@@ -217,12 +217,12 @@ public final class ByteString
         if (obj instanceof String)
         {
             String str = (String) obj;
-            if (str.length() != bytes.length) {
+            if (str.length() != this.bytes.length) {
                 return false;
             }
-            for (int i = 0; i < bytes.length; i++)
+            for (int i = 0; i < this.bytes.length; i++)
             {
-                if (str.charAt(i) != bytes[i]) {
+                if (str.charAt(i) != this.bytes[i]) {
                     return false;
                 }
             }
@@ -235,7 +235,7 @@ public final class ByteString
     public int hashCode()
     {
         int hashVal = 0;
-        for (byte b : bytes) {
+        for (byte b : this.bytes) {
             hashVal = 31 * hashVal + b;
         }
         return hashVal;
@@ -248,17 +248,17 @@ public final class ByteString
 
         ArrayList<ByteString> bl = new ArrayList<ByteString>();
 
-        for (to = 0; to < bytes.length; to++)
+        for (to = 0; to < this.bytes.length; to++)
         {
-            if (bytes[to] == (byte) c)
+            if (this.bytes[to] == (byte) c)
             {
-                ByteString bs = new ByteString(bytes, from, to);
+                ByteString bs = new ByteString(this.bytes, from, to);
                 bl.add(bs);
                 from = to + 1;
             }
         }
 
-        ByteString bs = new ByteString(bytes, from, to);
+        ByteString bs = new ByteString(this.bytes, from, to);
         bl.add(bs);
 
         ByteString[] bsArray = new ByteString[bl.size()];

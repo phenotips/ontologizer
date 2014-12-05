@@ -31,10 +31,10 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
         @Override
         public int compareTo(Entry o)
         {
-            if (value < o.value) {
+            if (this.value < o.value) {
                 return -1;
             }
-            if (value == o.value) {
+            if (this.value == o.value) {
                 return 0;
             }
             return 1;
@@ -62,19 +62,19 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
         Arrays.sort(sortedRawPValues);
 
         /* this will hold the minima of the sampled p-values */
-        double[] sampledMinP = new double[numberOfResamplingSteps];
+        double[] sampledMinP = new double[this.numberOfResamplingSteps];
 
         int studySetSize = pvalues.currentStudySetSize();
 
-        if (sampledMinPPerSize.containsKey(studySetSize)) { // we have samples
+        if (this.sampledMinPPerSize.containsKey(studySetSize)) { // we have samples
             System.out.println("Using available samples for study set size " + studySetSize);
-            sampledMinP = sampledMinPPerSize.get(studySetSize);
+            sampledMinP = this.sampledMinPPerSize.get(studySetSize);
         } else { // we have to sample
             System.out.println("Sampling for study set size " + studySetSize + "\nThis may take a while...");
 
-            initProgress(numberOfResamplingSteps);
+            initProgress(this.numberOfResamplingSteps);
 
-            for (int b = 0; b < numberOfResamplingSteps; b++) {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
                 /* create random sample */
                 PValue[] randomRawP = pvalues.calculateRandomPValues();
 
@@ -89,12 +89,12 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
                 }
 
                 updateProgress(b);
-                System.out.print("created " + b + " samples out of " + numberOfResamplingSteps + "\r");
+                System.out.print("created " + b + " samples out of " + this.numberOfResamplingSteps + "\r");
             }
             /* sort sampled minimal p-values according to size */
             Arrays.sort(sampledMinP);
 
-            sampledMinPPerSize.put(studySetSize, sampledMinP);
+            this.sampledMinPPerSize.put(studySetSize, sampledMinP);
         }
 
         /*
@@ -107,7 +107,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
 
         for (i = 0; i < m; i++) {
             count[i] = lastcount;
-            while (samplesConsidered < numberOfResamplingSteps
+            while (samplesConsidered < this.numberOfResamplingSteps
                 && sampledMinP[samplesConsidered] <= sortedRawPValues[i].value) {
                 count[i]++;
                 samplesConsidered++;
@@ -118,7 +118,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
         /* Calculate the adjusted p values */
         for (i = 0; i < m; i++)
         {
-            rawP[sortedRawPValues[i].index].p_adjusted = ((double) count[i]) / numberOfResamplingSteps;
+            rawP[sortedRawPValues[i].index].p_adjusted = ((double) count[i]) / this.numberOfResamplingSteps;
         }
         return rawP;
     }
@@ -126,7 +126,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
     @Override
     public void resetCache()
     {
-        sampledMinPPerSize = new HashMap<Integer, double[]>();
+        this.sampledMinPPerSize = new HashMap<Integer, double[]>();
     }
 
     @Override

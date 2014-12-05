@@ -43,11 +43,11 @@ public class AssociationContainer implements Iterable<Gene2Associations>
         ArrayList<Association> assocs, HashMap<ByteString, ByteString> s2g,
         HashMap<ByteString, ByteString> dbo2g)
     {
-        synonym2gene = s2g;
-        dbObject2gene = dbo2g;
+        this.synonym2gene = s2g;
+        this.dbObject2gene = dbo2g;
 
-        totalAnnotations = 0;
-        gene2assocs = new HashMap<ByteString, Gene2Associations>();
+        this.totalAnnotations = 0;
+        this.gene2assocs = new HashMap<ByteString, Gene2Associations>();
 
         for (Association a : assocs) {
             addAssociation(a);
@@ -61,11 +61,11 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public AssociationContainer()
     {
-        synonym2gene = new HashMap<ByteString, ByteString>();
-        dbObject2gene = new HashMap<ByteString, ByteString>();
-        gene2assocs = new HashMap<ByteString, Gene2Associations>();
+        this.synonym2gene = new HashMap<ByteString, ByteString>();
+        this.dbObject2gene = new HashMap<ByteString, ByteString>();
+        this.gene2assocs = new HashMap<ByteString, Gene2Associations>();
 
-        totalAnnotations = 0;
+        this.totalAnnotations = 0;
     }
 
     /**
@@ -75,11 +75,11 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public void addAssociation(Association a)
     {
-        totalAnnotations++;
+        this.totalAnnotations++;
         Gene2Associations g2a = null;
-        if (gene2assocs.containsKey(a.getObjectSymbol()))
+        if (this.gene2assocs.containsKey(a.getObjectSymbol()))
         {
-            g2a = gene2assocs.get(a.getObjectSymbol());
+            g2a = this.gene2assocs.get(a.getObjectSymbol());
             g2a.add(a); // Add the Association to existing g2a
         } else
         {
@@ -87,7 +87,7 @@ public class AssociationContainer implements Iterable<Gene2Associations>
             // for this gene.
             g2a = new Gene2Associations(a.getObjectSymbol());
             g2a.add(a);
-            gene2assocs.put(a.getObjectSymbol(), g2a);
+            this.gene2assocs.put(a.getObjectSymbol(), g2a);
         }
     }
 
@@ -97,11 +97,11 @@ public class AssociationContainer implements Iterable<Gene2Associations>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("*****\n---AssociationContainer---\n*****\n");
-        sb.append("Total annotations: " + totalAnnotations + "\n");
-        sb.append("Number of genes with associations: " + gene2assocs.size()
+        sb.append("Total annotations: " + this.totalAnnotations + "\n");
+        sb.append("Number of genes with associations: " + this.gene2assocs.size()
             + "\n");
-        sb.append("Number of synonyms: " + synonym2gene.size() + "\n");
-        sb.append("Number of dbo -> genename mappings: " + dbObject2gene.size()
+        sb.append("Number of synonyms: " + this.synonym2gene.size() + "\n");
+        sb.append("Number of dbo -> genename mappings: " + this.dbObject2gene.size()
             + "\n");
         return sb.toString();
     }
@@ -116,16 +116,16 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public Gene2Associations get(ByteString geneName)
     {
-        Gene2Associations g2a = gene2assocs.get(geneName);
+        Gene2Associations g2a = this.gene2assocs.get(geneName);
         if (g2a == null)
         {
-            ByteString dbObject = dbObject2gene.get(geneName);
-            g2a = gene2assocs.get(dbObject);
+            ByteString dbObject = this.dbObject2gene.get(geneName);
+            g2a = this.gene2assocs.get(dbObject);
         }
         if (g2a == null)
         {
-            ByteString synonym = synonym2gene.get(geneName);
-            g2a = gene2assocs.get(synonym);
+            ByteString synonym = this.synonym2gene.get(geneName);
+            g2a = this.gene2assocs.get(synonym);
         }
         return g2a;
     }
@@ -138,7 +138,7 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public boolean isObjectSymbol(ByteString name)
     {
-        return gene2assocs.containsKey(name);
+        return this.gene2assocs.containsKey(name);
     }
 
     /**
@@ -149,7 +149,7 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public boolean isObjectID(ByteString name)
     {
-        return dbObject2gene.containsKey(name);
+        return this.dbObject2gene.containsKey(name);
     }
 
     /**
@@ -160,7 +160,7 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public boolean isSynonym(ByteString name)
     {
-        return synonym2gene.containsKey(name);
+        return this.synonym2gene.containsKey(name);
     }
 
     /**
@@ -171,7 +171,7 @@ public class AssociationContainer implements Iterable<Gene2Associations>
      */
     public Set<ByteString> getAllAnnotatedGenes()
     {
-        return gene2assocs.keySet();
+        return this.gene2assocs.keySet();
     }
 
     public boolean containsGene(ByteString g1)
@@ -182,6 +182,6 @@ public class AssociationContainer implements Iterable<Gene2Associations>
     @Override
     public Iterator<Gene2Associations> iterator()
     {
-        return gene2assocs.values().iterator();
+        return this.gene2assocs.values().iterator();
     }
 }

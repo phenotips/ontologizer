@@ -30,8 +30,8 @@ public class Gene2Associations implements Iterable<Association>
 
     public Gene2Associations(ByteString name)
     {
-        associations = new ArrayList<Association>();
-        gene = name;
+        this.associations = new ArrayList<Association>();
+        this.gene = name;
     }
 
     /**
@@ -42,19 +42,19 @@ public class Gene2Associations implements Iterable<Association>
     public void add(Association a)
     {
         /* Only add, if association is really associated with the gene */
-        if (gene.equals(a.getObjectSymbol()))
+        if (this.gene.equals(a.getObjectSymbol()))
         {
             if (containsID(a.getTermID())) {
                 return;
             }
 
-            associations.add(a);
+            this.associations.add(a);
         }
     }
 
     public ByteString name()
     {
-        return gene;
+        return this.gene;
     }
 
     /**
@@ -64,7 +64,7 @@ public class Gene2Associations implements Iterable<Association>
     public ArrayList<TermID> getAssociations()
     {
         ArrayList<TermID> a = new ArrayList<TermID>();
-        Iterator<Association> it = associations.iterator();
+        Iterator<Association> it = this.associations.iterator();
         while (it.hasNext())
         {
             Association assoc = it.next();
@@ -79,7 +79,7 @@ public class Gene2Associations implements Iterable<Association>
     @Override
     public Iterator<Association> iterator()
     {
-        return associations.iterator();
+        return this.associations.iterator();
     }
 
     /**
@@ -90,7 +90,7 @@ public class Gene2Associations implements Iterable<Association>
      */
     public boolean containsID(TermID tid)
     {
-        for (Association assoc : associations)
+        for (Association assoc : this.associations)
         {
             if (assoc.getTermID().equals(tid)) {
                 return true;

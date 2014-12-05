@@ -35,11 +35,11 @@ public class FullStringIndex<T>
         {
             while (true)
             {
-                pos++;
-                if (pos >= stringList.size()) {
+                this.pos++;
+                if (this.pos >= FullStringIndex.this.stringList.size()) {
                     return false;
                 }
-                if (stringList.get(pos).contains(str)) {
+                if (FullStringIndex.this.stringList.get(this.pos).contains(this.str)) {
                     return true;
                 }
             }
@@ -48,7 +48,7 @@ public class FullStringIndex<T>
         @Override
         public T next()
         {
-            return objectList.get(pos);
+            return FullStringIndex.this.objectList.get(this.pos);
         }
 
         @Override
@@ -65,8 +65,8 @@ public class FullStringIndex<T>
      */
     public void add(String string, T o)
     {
-        stringList.add(string.toLowerCase());
-        objectList.add(o);
+        this.stringList.add(string.toLowerCase());
+        this.objectList.add(o);
     }
 
     /**
@@ -74,8 +74,8 @@ public class FullStringIndex<T>
      */
     public void clear()
     {
-        stringList.clear();
-        objectList.clear();
+        this.stringList.clear();
+        this.objectList.clear();
     }
 
     /**
@@ -85,7 +85,7 @@ public class FullStringIndex<T>
      */
     public int size()
     {
-        return stringList.size();
+        return this.stringList.size();
     }
 
     /**
@@ -97,12 +97,12 @@ public class FullStringIndex<T>
     public Iterable<T> contains(final String string)
     {
         return new Iterable<T>()
-        {
+            {
             @Override
             public Iterator<T> iterator()
             {
                 return new StringIterator(string.toLowerCase());
             }
-        };
+            };
     }
 }

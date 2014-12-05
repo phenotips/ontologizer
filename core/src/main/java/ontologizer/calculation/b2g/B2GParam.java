@@ -28,22 +28,22 @@ abstract public class B2GParam
 
     public Type getType()
     {
-        return type;
+        return this.type;
     }
 
     public boolean isFixed()
     {
-        return type == Type.FIXED;
+        return this.type == Type.FIXED;
     }
 
     public boolean isMCMC()
     {
-        return type == Type.MCMC;
+        return this.type == Type.MCMC;
     }
 
     public boolean isEM()
     {
-        return type == Type.EM;
+        return this.type == Type.EM;
     }
 
     public void setType(Type type)

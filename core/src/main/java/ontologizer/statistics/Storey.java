@@ -25,10 +25,10 @@ public class Storey implements ITestCorrectionOld
         @Override
         public int compareTo(Entry o)
         {
-            if (value < o.value) {
+            if (this.value < o.value) {
                 return -1;
             }
-            if (value == o.value) {
+            if (this.value == o.value) {
                 return 0;
             }
             return 1;

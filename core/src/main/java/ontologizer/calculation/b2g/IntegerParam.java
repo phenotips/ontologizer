@@ -29,7 +29,7 @@ class IntegerParam extends B2GParam
 
     int getValue()
     {
-        return val;
+        return this.val;
     }
 
     void setValue(int newVal)
@@ -42,7 +42,7 @@ class IntegerParam extends B2GParam
     public String toString()
     {
         if (isFixed()) {
-            return String.format("%d", val);
+            return String.format("%d", this.val);
         }
         return getType().toString();
     }

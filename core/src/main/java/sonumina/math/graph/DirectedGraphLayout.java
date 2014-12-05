@@ -76,9 +76,9 @@ public class DirectedGraphLayout<T>
         this.positionCallback = positionCallback;
         this.slimGraph = new SlimDirectedGraphView<T>(graph);
 
-        attrs = new Attr[graph.getNumberOfVertices()];
+        this.attrs = new Attr[graph.getNumberOfVertices()];
         for (int i = 0; i < graph.getNumberOfVertices(); i++) {
-            attrs[i] = new Attr();
+            this.attrs[i] = new Attr();
         }
 
         /* Find the roots */
@@ -96,7 +96,7 @@ public class DirectedGraphLayout<T>
         for (T root : rootList)
         {
             graph.singleSourceLongestPath(root, new DirectedGraph.IDistanceVisitor<T>()
-            {
+                {
                 @Override
                 public boolean visit(T n, List<T> path, int distance)
                 {
@@ -104,43 +104,44 @@ public class DirectedGraphLayout<T>
                      * Note that we could have more than one root, for which the distance could be different. We
                      * remember the largest distance.
                      */
-                    if (distance > attrs[slimGraph.getVertexIndex(n)].distanceToRoot) {
-                        attrs[slimGraph.getVertexIndex(n)].distanceToRoot = distance;
+                    if (distance > DirectedGraphLayout.this.attrs[DirectedGraphLayout.this.slimGraph.getVertexIndex(n)].distanceToRoot) {
+                        DirectedGraphLayout.this.attrs[DirectedGraphLayout.this.slimGraph.getVertexIndex(n)].distanceToRoot =
+                            distance;
                     }
-                    if (distance > maxDistanceToRoot) {
-                        maxDistanceToRoot = distance;
+                    if (distance > DirectedGraphLayout.this.maxDistanceToRoot) {
+                        DirectedGraphLayout.this.maxDistanceToRoot = distance;
                     }
                     return true;
                 }
-            });
+                });
         }
     }
 
     private void layout(final int horizSpace, final int vertSpace)
     {
-        if (graph.getNumberOfVertices() == 0) {
+        if (this.graph.getNumberOfVertices() == 0) {
             return;
         }
 
         /* Determine the dimension of each node */
         final Dimension dim = new Dimension();
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
-            dimensionCallback.get(slimGraph.getVertex(i), dim);
+            Attr a = this.attrs[i];
+            this.dimensionCallback.get(this.slimGraph.getVertex(i), dim);
             a.width = dim.width;
             a.height = dim.height;
         }
 
         /* Determine the heights of each level and the width of each level as well as the number of objects per level */
-        int[] levelHeight = new int[maxDistanceToRoot + 1];
-        int[] levelWidth = new int[maxDistanceToRoot + 1];
-        int[] levelCounts = new int[maxDistanceToRoot + 1];
+        int[] levelHeight = new int[this.maxDistanceToRoot + 1];
+        int[] levelWidth = new int[this.maxDistanceToRoot + 1];
+        int[] levelCounts = new int[this.maxDistanceToRoot + 1];
 
         int maxLevelWidth = -1;
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             if (a.height > levelHeight[a.distanceToRoot]) {
                 levelHeight[a.distanceToRoot] = a.height;
             }
@@ -149,11 +150,11 @@ public class DirectedGraphLayout<T>
         }
 
         /* Now assign level nodes */
-        int[][] levelNodes = new int[maxDistanceToRoot + 1][];
-        int[] levelCounter = new int[maxDistanceToRoot + 1]; /* An index counter per level */
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        int[][] levelNodes = new int[this.maxDistanceToRoot + 1][];
+        int[] levelCounter = new int[this.maxDistanceToRoot + 1]; /* An index counter per level */
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             if (levelNodes[a.distanceToRoot] == null) {
                 levelNodes[a.distanceToRoot] = new int[levelCounts[a.distanceToRoot]];
             }
@@ -161,7 +162,7 @@ public class DirectedGraphLayout<T>
         }
 
         /* Determine max width of any level */
-        for (int i = 0; i <= maxDistanceToRoot; i++)
+        for (int i = 0; i <= this.maxDistanceToRoot; i++)
         {
             levelWidth[i] += horizSpace * levelCounts[i];
             if (levelWidth[i] > maxLevelWidth) {
@@ -170,31 +171,31 @@ public class DirectedGraphLayout<T>
         }
 
         /* Determine the vertical position of each level */
-        int[] levelYPos = new int[maxDistanceToRoot + 1];
+        int[] levelYPos = new int[this.maxDistanceToRoot + 1];
         for (int i = 1; i < levelYPos.length; i++) {
             levelYPos[i] = levelYPos[i - 1] + levelHeight[i - 1] + vertSpace;
         }
 
         /* Assign ypos */
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             a.layoutPosY = levelYPos[a.distanceToRoot];
         }
 
         /* Distribute x rank of nodes for each level */
-        int[] levelCurXRank = new int[maxDistanceToRoot + 1];
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        int[] levelCurXRank = new int[this.maxDistanceToRoot + 1];
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             a.horizontalRank = levelCurXRank[a.distanceToRoot]++;
         }
 
         /* Assign initial xpos */
-        int[] levelCurXPos = new int[maxDistanceToRoot + 1];
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        int[] levelCurXPos = new int[this.maxDistanceToRoot + 1];
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             a.layoutPosX = levelCurXPos[a.distanceToRoot];
             levelCurXPos[a.distanceToRoot] += a.width + horizSpace;
         }
@@ -203,11 +204,11 @@ public class DirectedGraphLayout<T>
 
         /* Build node queue */
         LinkedList<T> nodeQueue = new LinkedList<T>();
-        for (int l = 0; l <= maxDistanceToRoot; l++)
+        for (int l = 0; l <= this.maxDistanceToRoot; l++)
         {
             for (int j = 0; j < levelNodes[l].length; j++)
             {
-                nodeQueue.add(slimGraph.getVertex(levelNodes[l][j]));
+                nodeQueue.add(this.slimGraph.getVertex(levelNodes[l][j]));
             }
         }
 
@@ -231,8 +232,8 @@ public class DirectedGraphLayout<T>
             while (queueIter.hasNext())
             {
                 T n = queueIter.next();
-                int vi = slimGraph.getVertexIndex(n);
-                Attr na = attrs[vi];
+                int vi = this.slimGraph.getVertexIndex(n);
+                Attr na = this.attrs[vi];
 
                 int horizRank = na.horizontalRank;
                 int vertRank = na.distanceToRoot;
@@ -243,8 +244,8 @@ public class DirectedGraphLayout<T>
                     minX = 0;
                 } else {
                     minX =
-                        attrs[levelNodes[vertRank][horizRank - 1]].layoutPosX
-                            + attrs[levelNodes[vertRank][horizRank - 1]].width + horizSpace;
+                        this.attrs[levelNodes[vertRank][horizRank - 1]].layoutPosX
+                        + this.attrs[levelNodes[vertRank][horizRank - 1]].width + horizSpace;
                 }
 
                 /* Determine the maximal x position of this node. This is aligned to the left border of the node */
@@ -252,7 +253,7 @@ public class DirectedGraphLayout<T>
                 if (horizRank == levelNodes[vertRank].length - 1) {
                     maxX = maxLevelWidth - na.width;
                 } else {
-                    maxX = attrs[levelNodes[vertRank][horizRank + 1]].layoutPosX - horizSpace - na.width;
+                    maxX = this.attrs[levelNodes[vertRank][horizRank + 1]].layoutPosX - horizSpace - na.width;
                 }
 
                 /* Remember the current pos */
@@ -260,14 +261,14 @@ public class DirectedGraphLayout<T>
 
                 /* Calculate the sum of all horizontal positions (for determination of the mean) */
                 int sumX = 0;
-                for (int p : slimGraph.vertexParents[vi]) {
-                    sumX += getEdgeX(attrs[p]);
+                for (int p : this.slimGraph.vertexParents[vi]) {
+                    sumX += getEdgeX(this.attrs[p]);
                 }
-                for (int c : slimGraph.vertexChildren[vi]) {
-                    sumX += getEdgeX(attrs[c]);
+                for (int c : this.slimGraph.vertexChildren[vi]) {
+                    sumX += getEdgeX(this.attrs[c]);
                 }
 
-                int cnt = slimGraph.vertexParents[vi].length + slimGraph.vertexChildren[vi].length;
+                int cnt = this.slimGraph.vertexParents[vi].length + this.slimGraph.vertexChildren[vi].length;
 
                 na.layoutPosX = Math.min(maxX, Math.max(minX, sumX / cnt - na.width / 2));
 
@@ -296,7 +297,7 @@ public class DirectedGraphLayout<T>
 
             if (bestNode != null)
             {
-                attrs[slimGraph.getVertexIndex(bestNode)].layoutPosX = bestLayoutPosX;
+                this.attrs[this.slimGraph.getVertexIndex(bestNode)].layoutPosX = bestLayoutPosX;
                 currentScore = bestScore;
                 onlyAcceptImprovements = true;
             } else
@@ -316,9 +317,9 @@ public class DirectedGraphLayout<T>
         /* Calculate area */
         int width = 0;
         int height = 0;
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
+            Attr a = this.attrs[i];
             if (a.layoutPosX + a.width > width) {
                 width = a.layoutPosX + a.width - 1;
             }
@@ -326,13 +327,13 @@ public class DirectedGraphLayout<T>
                 height = a.layoutPosY + a.height - 1;
             }
         }
-        positionCallback.setSize(width, height);
+        this.positionCallback.setSize(width, height);
 
         /* Emit positions */
-        for (int i = 0; i < slimGraph.getNumberOfVertices(); i++)
+        for (int i = 0; i < this.slimGraph.getNumberOfVertices(); i++)
         {
-            Attr a = attrs[i];
-            positionCallback.set(slimGraph.getVertex(i), a.layoutPosX, a.layoutPosY);
+            Attr a = this.attrs[i];
+            this.positionCallback.set(this.slimGraph.getVertex(i), a.layoutPosX, a.layoutPosY);
         }
     }
 
@@ -347,14 +348,14 @@ public class DirectedGraphLayout<T>
     private int scoreLayout()
     {
         int length = 0;
-        for (int j = 0; j < slimGraph.getNumberOfVertices(); j++)
+        for (int j = 0; j < this.slimGraph.getNumberOfVertices(); j++)
         {
-            Attr na = attrs[j];
+            Attr na = this.attrs[j];
             int e1x = getEdgeX(na);
 
-            for (int p : slimGraph.vertexParents[j])
+            for (int p : this.slimGraph.vertexParents[j])
             {
-                Attr ap = attrs[p];
+                Attr ap = this.attrs[p];
                 int e2x = getEdgeX(ap);
                 length += Math.abs(e1x - e2x);
             }

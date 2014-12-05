@@ -24,7 +24,7 @@ public abstract class AbstractItemParser
             @Override
             public void newEntry(ByteString itemName, ItemAttribute itemAttribute)
             {
-                item2Attributes.put(itemName, itemAttribute);
+                AbstractItemParser.this.item2Attributes.put(itemName, itemAttribute);
                 if (callback != null) {
                     callback.newEntry(itemName, itemAttribute);
                 }
@@ -40,6 +40,6 @@ public abstract class AbstractItemParser
 
     public HashMap<ByteString, ItemAttribute> getItem2Attributes()
     {
-        return item2Attributes;
+        return this.item2Attributes;
     }
 }

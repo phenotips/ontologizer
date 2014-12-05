@@ -12,7 +12,7 @@ public class ChiSquareGOTermProperties extends AbstractGOTermProperties
     public int df;
 
     private static final String[] propertyNames = new String[] {
-    "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "nchildren", "df", "chisquare", "p"
+        "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "nchildren", "df", "chisquare", "p"
     };
 
     @Override
@@ -33,23 +33,23 @@ public class ChiSquareGOTermProperties extends AbstractGOTermProperties
         switch (propNumber)
         {
             case 0:
-                return goTerm.getIDAsString();
+                return this.goTerm.getIDAsString();
             case 1:
                 return null; /* population gene count */
             case 2:
-                return Integer.toString(annotatedPopulationGenes);
+                return Integer.toString(this.annotatedPopulationGenes);
             case 3:
                 return null; /* study gene count */
             case 4:
-                return Integer.toString(annotatedStudyGenes);
+                return Integer.toString(this.annotatedStudyGenes);
             case 5:
-                return Integer.toString(nchildren);
+                return Integer.toString(this.nchildren);
             case 6:
-                return Integer.toString(df);
+                return Integer.toString(this.df);
             case 7:
-                return Double.toString(chisquare);
+                return Double.toString(this.chisquare);
             case 8:
-                return Double.toString(p);
+                return Double.toString(this.p);
         }
         return null;
     }

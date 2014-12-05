@@ -25,26 +25,26 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
         @Override
         public boolean hasNext()
         {
-            return (returnedCount < addCount);
+            return (this.returnedCount < PvalueSetStoreSecondVersion.this.addCount);
         }
 
         @Override
         public PValue[] next()
         {
             // return inflate_pvals(reducedIterator.next());
-            int endLast = pvalSetSizes[returnedCount];
-            int endThis = pvalSetSizes[returnedCount + 1];
+            int endLast = PvalueSetStoreSecondVersion.this.pvalSetSizes[this.returnedCount];
+            int endThis = PvalueSetStoreSecondVersion.this.pvalSetSizes[this.returnedCount + 1];
             int sizeThis = endThis - endLast;
             double[] pvalRet = new double[sizeThis];
             int[] pvalIndicesRet = new int[sizeThis];
 
             for (int i = endLast; i < endThis; i++) {
-                pvalRet[i - endLast] = pvals[i];
-                pvalIndicesRet[i - endLast] = pvalIndices[i];
+                pvalRet[i - endLast] = PvalueSetStoreSecondVersion.this.pvals[i];
+                pvalIndicesRet[i - endLast] = PvalueSetStoreSecondVersion.this.pvalIndices[i];
             }
 
             deflatedPVals defPvals = new deflatedPVals(pvalRet, pvalIndicesRet);
-            returnedCount++;
+            this.returnedCount++;
 
             return inflate_pvals(defPvals);
         }
@@ -85,7 +85,7 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
 
         public double[] getDefPVals()
         {
-            return defPVals;
+            return this.defPVals;
         }
 
         public void setDefPVals(double[] defPVals)
@@ -95,7 +95,7 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
 
         public int[] getDefPValsIndices()
         {
-            return defPValsIndices;
+            return this.defPValsIndices;
         }
 
         public void setDefPValsIndices(int[] defPValsIndices)
@@ -140,7 +140,7 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
         double[] addDefPValues = addDefP.getDefPVals();
         int[] addDefPIndices = addDefP.getDefPValsIndices();
 
-        int oldLength = pvals.length;
+        int oldLength = this.pvals.length;
         int newLength = oldLength + addDefPValues.length;
 
         // the arrays to hold the extended data
@@ -149,8 +149,8 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
 
         // copying the old values
         for (int i = 0; i < oldLength; i++) {
-            newPvals[i] = pvals[i];
-            newPvalIndices[i] = pvalIndices[i];
+            newPvals[i] = this.pvals[i];
+            newPvalIndices[i] = this.pvalIndices[i];
         }
 
         // adding new values
@@ -159,10 +159,10 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
             newPvalIndices[i] = addDefPIndices[i - oldLength];
         }
 
-        pvals = newPvals;
-        pvalIndices = newPvalIndices;
-        pvalSetSizes[addCount + 1] = newLength;
-        addCount++;
+        this.pvals = newPvals;
+        this.pvalIndices = newPvalIndices;
+        this.pvalSetSizes[this.addCount + 1] = newLength;
+        this.addCount++;
     }
 
     private deflatedPVals deflate_pvals(PValue[] values)
@@ -197,10 +197,10 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
 
     private PValue[] inflate_pvals(deflatedPVals reducedSet)
     {
-        PValue[] pvals = new PValue[setSize];
+        PValue[] pvals = new PValue[this.setSize];
 
         // initialize array
-        for (int i = 0; i < setSize; i++)
+        for (int i = 0; i < this.setSize; i++)
         {
             pvals[i] = new PValue();
             pvals[i].ignoreAtMTC = true;

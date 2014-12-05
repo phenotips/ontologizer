@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class WestfallYoungStepDownCachedOld extends AbstractTestCorrection
-    implements IResampling
+implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -36,10 +36,10 @@ public class WestfallYoungStepDownCachedOld extends AbstractTestCorrection
         @Override
         public int compareTo(Entry o)
         {
-            if (value < o.value) {
+            if (this.value < o.value) {
                 return -1;
             }
-            if (value == o.value) {
+            if (this.value == o.value) {
                 return 0;
             }
             return 1;
@@ -78,24 +78,24 @@ public class WestfallYoungStepDownCachedOld extends AbstractTestCorrection
         int studySetSize = pvalueCalc.currentStudySetSize();
 
         /* holds the sampled random p values for the current study set size */
-        PValue[][] randomSampledPValues = new PValue[numberOfResamplingSteps][m];
+        PValue[][] randomSampledPValues = new PValue[this.numberOfResamplingSteps][m];
 
-        if (sampledPValuesPerSize.containsKey(studySetSize)) {
+        if (this.sampledPValuesPerSize.containsKey(studySetSize)) {
             System.out.println("Using available samples for study set size " + studySetSize);
-            randomSampledPValues = sampledPValuesPerSize.get(studySetSize);
+            randomSampledPValues = this.sampledPValuesPerSize.get(studySetSize);
         } else {
             System.out.println("Sampling for study set size " + studySetSize + "\nThis may take a while...");
-            for (int b = 0; b < numberOfResamplingSteps; b++) {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
                 /* Compute raw p values of "permuted" data */
                 randomSampledPValues[b] = pvalueCalc.calculateRandomPValues();
 
-                System.out.print("created " + b + " samples out of " + numberOfResamplingSteps + "\r");
+                System.out.print("created " + b + " samples out of " + this.numberOfResamplingSteps + "\r");
             }
-            sampledPValuesPerSize.put(studySetSize, randomSampledPValues);
+            this.sampledPValuesPerSize.put(studySetSize, randomSampledPValues);
         }
 
         /* Now "permute" */
-        for (int b = 0; b < numberOfResamplingSteps; b++)
+        for (int b = 0; b < this.numberOfResamplingSteps; b++)
         {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = randomSampledPValues[b];
@@ -124,7 +124,7 @@ public class WestfallYoungStepDownCachedOld extends AbstractTestCorrection
         /* Calculate the adjusted p values */
         for (i = 0; i < m; i++)
         {
-            rawP[r[i]].p_adjusted = ((double) count[i]) / numberOfResamplingSteps;
+            rawP[r[i]].p_adjusted = ((double) count[i]) / this.numberOfResamplingSteps;
         }
         return rawP;
     }
@@ -132,25 +132,25 @@ public class WestfallYoungStepDownCachedOld extends AbstractTestCorrection
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        if (n != numberOfResamplingSteps)
+        if (n != this.numberOfResamplingSteps)
         {
-            numberOfResamplingSteps = n;
+            this.numberOfResamplingSteps = n;
 
             /* Clear the cache */
-            sampledPValuesPerSize = new HashMap<Integer, PValue[][]>();
+            this.sampledPValuesPerSize = new HashMap<Integer, PValue[][]>();
         }
     }
 
     @Override
     public int getNumberOfResamplingSteps()
     {
-        return numberOfResamplingSteps;
+        return this.numberOfResamplingSteps;
     }
 
     @Override
     public void resetCache()
     {
-        sampledPValuesPerSize = new HashMap<Integer, PValue[][]>();
+        this.sampledPValuesPerSize = new HashMap<Integer, PValue[][]>();
     }
 
     @Override

@@ -26,12 +26,12 @@ public class ItemEnumerator implements Iterable<ByteString>
 
     public ArrayList<TermID> getTermsAnnotatedToTheItem(ByteString item)
     {
-        return items2Terms.get(item);
+        return this.items2Terms.get(item);
     }
 
     public ArrayList<TermID> getTermsDirectlyAnnotatedToTheItem(ByteString item)
     {
-        return items2DirectTerms.get(item);
+        return this.items2DirectTerms.get(item);
     }
 
     /**
@@ -42,7 +42,7 @@ public class ItemEnumerator implements Iterable<ByteString>
     public ArrayList<TermID> getAllTermIDs()
     {
         LinkedHashSet<TermID> allTermIDs = new LinkedHashSet<TermID>();
-        for (ArrayList<TermID> tids : items2Terms.values()) {
+        for (ArrayList<TermID> tids : this.items2Terms.values()) {
             allTermIDs.addAll(tids);
         }
         return new ArrayList<TermID>(allTermIDs);
@@ -101,12 +101,12 @@ public class ItemEnumerator implements Iterable<ByteString>
     {
         StringBuilder builder = new StringBuilder();
 
-        for (ByteString gene : items2Terms.keySet())
+        for (ByteString gene : this.items2Terms.keySet())
         {
             builder.append(gene);
             builder.append(": ");
 
-            for (TermID tid : items2Terms.get(gene))
+            for (TermID tid : this.items2Terms.get(gene))
             {
                 builder.append(tid.toString());
                 builder.append(",");
@@ -120,6 +120,6 @@ public class ItemEnumerator implements Iterable<ByteString>
     @Override
     public Iterator<ByteString> iterator()
     {
-        return items2Terms.keySet().iterator();
+        return this.items2Terms.keySet().iterator();
     }
 }

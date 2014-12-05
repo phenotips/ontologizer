@@ -40,12 +40,12 @@ public class OBOParserException extends Exception
 
     public String getLine()
     {
-        return line;
+        return this.line;
     }
 
     public int getLineNum()
     {
-        return linenum;
+        return this.linenum;
     }
 
     @Override
@@ -53,14 +53,14 @@ public class OBOParserException extends Exception
     {
         String loc;
 
-        if (linenum >= 0) {
-            loc = filename + ":" + linenum;
+        if (this.linenum >= 0) {
+            loc = this.filename + ":" + this.linenum;
         } else {
-            loc = filename;
+            loc = this.filename;
         }
 
-        if (line != null) {
-            return loc + " obo parser error: " + getMessage() + " in \"" + line + "\".";
+        if (this.line != null) {
+            return loc + " obo parser error: " + getMessage() + " in \"" + this.line + "\".";
         }
         return loc + " obo parser error: " + getMessage() + ".";
     }

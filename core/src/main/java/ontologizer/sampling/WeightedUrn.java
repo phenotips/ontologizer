@@ -50,7 +50,7 @@ public class WeightedUrn<E>
         LinkedList<E> denominatorList = new LinkedList<E>(this.denominatorObjects);
 
         while ((restInNumerator + restInDenominator) > 0 && n > 0) {
-            double sampleCutoff = (restInNumerator * ratio) / (restInNumerator * ratio + restInDenominator);
+            double sampleCutoff = (restInNumerator * this.ratio) / (restInNumerator * this.ratio + restInDenominator);
 
             if (Math.random() < sampleCutoff) {
                 int which = (int) (Math.random() * restInNumerator);

@@ -85,12 +85,12 @@ public class KSubsetSampler<T>
 
         for (int i = this.nObj - 1; i >= this.nObj - k; i--)
         {
-            int choose = rnd.nextInt(i);
+            int choose = this.rnd.nextInt(i);
 
-            T item = objects.get(choose);
+            T item = this.objects.get(choose);
             sample.add(item);
-            objects.set(choose, objects.get(i));
-            objects.set(i, item);
+            this.objects.set(choose, this.objects.get(i));
+            this.objects.set(i, item);
         }
 
         return sample;
@@ -107,7 +107,7 @@ public class KSubsetSampler<T>
      */
     public HashSet<ArrayList<T>> sampleManyOrderedWithoutReplacement(int k,
         int n) throws Exception
-    {
+        {
         HashSet<ArrayList<T>> samples = new HashSet<ArrayList<T>>();
 
         if (k == 0)
@@ -118,8 +118,8 @@ public class KSubsetSampler<T>
             return samples;
         }
 
-        double logRejectProb = Math.log(n) - hyperg.logfact(this.nObj)
-            + hyperg.logfact(this.nObj - k);
+        double logRejectProb = Math.log(n) - this.hyperg.logfact(this.nObj)
+            + this.hyperg.logfact(this.nObj - k);
 
         ArrayList<T> nextSample;
 
@@ -151,5 +151,5 @@ public class KSubsetSampler<T>
         }
 
         return samples;
-    }
+        }
 }

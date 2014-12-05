@@ -8,8 +8,8 @@ import ontologizer.types.ByteString;
 public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
 {
     private static final String[] propertyNames = new String[] {
-    "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "is.trivial", "p",
-    "p.adjusted", "p.min"
+        "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "is.trivial", "p",
+        "p.adjusted", "p.min"
     };
 
     /** Number of genes annotated to family (term and parents) in population set. */
@@ -36,27 +36,27 @@ public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
         switch (propNumber)
         {
             case 0:
-                return goTerm.getIDAsString();
+                return this.goTerm.getIDAsString();
             case 1:
                 return null; /* population gene count */
             case 2:
-                return Integer.toString(annotatedPopulationGenes);
+                return Integer.toString(this.annotatedPopulationGenes);
             case 3:
                 return null; /* study gene count */
             case 4:
-                return Integer.toString(annotatedStudyGenes);
+                return Integer.toString(this.annotatedStudyGenes);
             case 5:
-                return Integer.toString(popFamilyGenes);
+                return Integer.toString(this.popFamilyGenes);
             case 6:
-                return Integer.toString(studyFamilyGenes);
+                return Integer.toString(this.studyFamilyGenes);
             case 7:
-                return Boolean.toString(ignoreAtMTC);
+                return Boolean.toString(this.ignoreAtMTC);
             case 8:
-                return Double.toString(p);
+                return Double.toString(this.p);
             case 9:
-                return Double.toString(p_adjusted);
+                return Double.toString(this.p_adjusted);
             case 10:
-                return Double.toString(p_min);
+                return Double.toString(this.p_min);
         }
         return null;
     }
@@ -87,7 +87,7 @@ public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
      */
     public double getWeight(ByteString gene)
     {
-        Double w = weight.get(gene);
+        Double w = this.weight.get(gene);
         if (w == null) {
             return 1;
         }
@@ -102,7 +102,7 @@ public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
      */
     public void setWeight(ByteString gene, double w)
     {
-        weight.put(gene, w);
+        this.weight.put(gene, w);
     }
 
 }

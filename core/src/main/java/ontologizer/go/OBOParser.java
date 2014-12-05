@@ -198,22 +198,23 @@ public class OBOParser
      */
     private void enterNewTerm()
     {
-        if (currentStanza != null)
+        if (this.currentStanza != null)
         {
             /* Ignore typedefs */
-            if (currentStanza == Stanza.TYPEDEF) {
+            if (this.currentStanza == Stanza.TYPEDEF) {
                 return;
             }
 
             /* If no name is defined use the id as a name */
-            if (currentName == null && currentID != null) {
-                currentName = currentID.toString();
+            if (this.currentName == null && this.currentID != null) {
+                this.currentName = this.currentID.toString();
             }
 
-            if (currentID == null || currentName == null)
+            if (this.currentID == null || this.currentName == null)
             {
-                logger.warning("Error parsing stanza: " + currentStanza.toString() + " currentID: " + currentID
-                    + ", currentName: " + currentName);
+                logger.warning("Error parsing stanza: " + this.currentStanza.toString() + " currentID: "
+                    + this.currentID
+                    + ", currentName: " + this.currentName);
 
                 resetCurrentStanza();
                 return;
@@ -221,19 +222,19 @@ public class OBOParser
             }
 
             /* Create a Term object and put it in the HashMap terms. */
-            Term t = new Term(currentID, currentName, currentNamespace, currentParents);
-            t.setObsolete(currentObsolete);
-            t.setDefinition(currentDefintion);
-            t.setAlternatives(currentAlternatives);
-            t.setEquivalents(currentEquivalents);
-            t.setSubsets(currentSubsets);
-            t.setSynonyms(currentSynonyms);
-            t.setIntersections(currentIntersections);
-            t.setXrefs(currentXrefs);
-            terms.add(t);
+            Term t = new Term(this.currentID, this.currentName, this.currentNamespace, this.currentParents);
+            t.setObsolete(this.currentObsolete);
+            t.setDefinition(this.currentDefintion);
+            t.setAlternatives(this.currentAlternatives);
+            t.setEquivalents(this.currentEquivalents);
+            t.setSubsets(this.currentSubsets);
+            t.setSynonyms(this.currentSynonyms);
+            t.setIntersections(this.currentIntersections);
+            t.setXrefs(this.currentXrefs);
+            this.terms.add(t);
 
             /* Statistics */
-            numberOfRelations += currentParents.size();
+            this.numberOfRelations += this.currentParents.size();
         }
 
         resetCurrentStanza();
@@ -242,18 +243,18 @@ public class OBOParser
     private void resetCurrentStanza()
     {
         /* Now reset... */
-        currentID = null;
-        currentName = null;
-        currentNamespace = null;
-        currentDefintion = null;
-        currentObsolete = false;
-        currentParents.clear();
-        currentAlternatives.clear();
-        currentEquivalents.clear();
-        currentSubsets.clear();
-        currentSynonyms.clear();
-        currentIntersections.clear();
-        currentXrefs.clear();
+        this.currentID = null;
+        this.currentName = null;
+        this.currentNamespace = null;
+        this.currentDefintion = null;
+        this.currentObsolete = false;
+        this.currentParents.clear();
+        this.currentAlternatives.clear();
+        this.currentEquivalents.clear();
+        this.currentSubsets.clear();
+        this.currentSynonyms.clear();
+        this.currentIntersections.clear();
+        this.currentXrefs.clear();
     }
 
     /**
@@ -280,7 +281,7 @@ public class OBOParser
     {
         long startMillis = System.currentTimeMillis();
 
-        FileInputStream fis = new FileInputStream(filename);
+        FileInputStream fis = new FileInputStream(this.filename);
         InputStream is;
 
         try
@@ -289,7 +290,7 @@ public class OBOParser
         } catch (IOException exp)
         {
             fis.close();
-            is = fis = new FileInputStream(filename);
+            is = fis = new FileInputStream(this.filename);
         }
 
         final FileChannel fc = fis.getChannel();
@@ -357,16 +358,16 @@ public class OBOParser
 
             private final byte[][] termKeywords =
             {
-            ID_KEYWORD,
-            NAME_KEYWORD,
-            IS_A_KEYWORD,
-            RELATIONSHIP_KEYWORD,
-            SYNONYM_KEYWORD,
-            DEF_KEYWORD,
-            NAMESPACE_KEYWORD,
-            EQUIVALENT_TO_KEYWORD,
-            IS_OBSOLETE_KEYWORD,
-            XREF_KEYWORD
+                this.ID_KEYWORD,
+                this.NAME_KEYWORD,
+                this.IS_A_KEYWORD,
+                this.RELATIONSHIP_KEYWORD,
+                this.SYNONYM_KEYWORD,
+                this.DEF_KEYWORD,
+                this.NAMESPACE_KEYWORD,
+                this.EQUIVALENT_TO_KEYWORD,
+                this.IS_OBSOLETE_KEYWORD,
+                this.XREF_KEYWORD
             };
 
             class StringEdge extends Edge<Integer>
@@ -382,7 +383,7 @@ public class OBOParser
 
                 public String getL()
                 {
-                    return l;
+                    return this.l;
                 }
             }
 
@@ -532,7 +533,7 @@ public class OBOParser
                 Integer next = followEdge(tree, current, c);
                 if (next == null)
                 {
-                    next = new Integer(currentVertexIndex++);
+                    next = new Integer(this.currentVertexIndex++);
                     tree.addVertex(next);
                     StringEdge se = new StringEdge(current, next, ((char) c) + "");
                     tree.addEdge(se);
@@ -550,7 +551,7 @@ public class OBOParser
                 Integer root = new Integer(0);
                 tree.addVertex(root);
 
-                for (byte[] keyword : termKeywords) {
+                for (byte[] keyword : this.termKeywords) {
                     /* First level is the length of the keyword */
                     Integer current = insertEdge(tree, root, (byte) keyword.length);
 
@@ -565,14 +566,14 @@ public class OBOParser
                 writeCode(root, tree, 0, 0, "");
 
                 tree.writeDOT(new PrintStream(System.out), new DotAttributesProvider<Integer>()
-                {
+                    {
                     @Override
                     public String getDotEdgeAttributes(Integer src, Integer dest)
                     {
 
                         return "label=\"" + ((StringEdge) tree.getEdge(src, dest)).getL() + "\"";
                     }
-                });
+                    });
 
                 System.exit(-1);
             }
@@ -600,10 +601,10 @@ public class OBOParser
                 {
                     try {
                         long newMillis = System.currentTimeMillis();
-                        if (newMillis - millis > 250)
+                        if (newMillis - this.millis > 250)
                         {
-                            progress.update((int) fc.position(), currentTerm);
-                            millis = newMillis;
+                            progress.update((int) fc.position(), this.currentTerm);
+                            this.millis = newMillis;
                         }
                     } catch (IOException e) {
                     }
@@ -620,8 +621,8 @@ public class OBOParser
             private void expandMultilibeBuf(byte[] buf, int start, int len)
             {
                 int oldlen;
-                if (multilineBuf != null) {
-                    oldlen = multilineBuf.length;
+                if (this.multilineBuf != null) {
+                    oldlen = this.multilineBuf.length;
                 } else {
                     oldlen = 0;
                 }
@@ -629,10 +630,10 @@ public class OBOParser
                 byte[] newMultilineBuf = new byte[oldlen + len];
 
                 if (oldlen != 0) {
-                    System.arraycopy(multilineBuf, 0, newMultilineBuf, 0, oldlen);
+                    System.arraycopy(this.multilineBuf, 0, newMultilineBuf, 0, oldlen);
                 }
                 System.arraycopy(buf, start, newMultilineBuf, oldlen, len);
-                multilineBuf = newMultilineBuf;
+                this.multilineBuf = newMultilineBuf;
             }
 
             /**
@@ -642,7 +643,7 @@ public class OBOParser
              */
             private String getLineContens()
             {
-                return new ByteString(line, start, start + len).toString();
+                return new ByteString(this.line, this.start, this.start + this.len).toString();
             }
 
             final private byte toLower(byte c)
@@ -684,7 +685,7 @@ public class OBOParser
             @Override
             public boolean newLine(byte[] buf, int start, int len)
             {
-                linenum++;
+                this.linenum++;
                 updateProgress();
 
                 if (len == 0) {
@@ -697,14 +698,14 @@ public class OBOParser
                     return true;
                 }
 
-                if (multilineBuf != null)
+                if (this.multilineBuf != null)
                 {
                     expandMultilibeBuf(buf, start, len);
-                    buf = multilineBuf;
+                    buf = this.multilineBuf;
                     start = 0;
-                    len = multilineBuf.length;
+                    len = this.multilineBuf.length;
                 }
-                multilineBuf = null;
+                this.multilineBuf = null;
 
                 /* Skip any comments */
                 if (buf[start] == '!') {
@@ -728,27 +729,27 @@ public class OBOParser
                 if (buf[start] == '[')
                 {
                     enterNewTerm();
-                    currentTerm++;
+                    this.currentTerm++;
 
                     if (buf[start + len - 1] != ']')
                     {
-                        exception = new OBOParserException("Unclosed stanza", getLineContens(), linenum);
+                        this.exception = new OBOParserException("Unclosed stanza", getLineContens(), this.linenum);
                         return false;
                     }
 
                     start++;
                     len -= 2;
 
-                    if (equalsIgnoreCase(line, start, len, TERM_KEYWORD)) {
-                        currentStanza = Stanza.TERM;
-                    } else if (equalsIgnoreCase(line, start, len, TYPEDEF_KEYWORD)) {
-                        currentStanza = Stanza.TYPEDEF;
+                    if (equalsIgnoreCase(this.line, start, len, this.TERM_KEYWORD)) {
+                        OBOParser.this.currentStanza = Stanza.TERM;
+                    } else if (equalsIgnoreCase(this.line, start, len, this.TYPEDEF_KEYWORD)) {
+                        OBOParser.this.currentStanza = Stanza.TYPEDEF;
                     } else
                     {
-                        exception = new OBOParserException("Unknown stanza type", getLineContens(), linenum);
+                        this.exception = new OBOParserException("Unknown stanza type", getLineContens(), this.linenum);
                         return false;
                     }
-                    currentTerm++;
+                    this.currentTerm++;
                 } else
                 {
                     /* Find colon */
@@ -787,10 +788,10 @@ public class OBOParser
                     int keyLen = keyEnd - start;
                     int valueLen = start + len - valueStart;
 
-                    if (currentStanza == null) {
-                        readHeaderValue(line, keyStart, keyLen, valueStart, valueLen);
-                    } else if (currentStanza == Stanza.TERM) {
-                        readTermValue(line, keyStart, keyLen, valueStart, valueLen);
+                    if (OBOParser.this.currentStanza == null) {
+                        readHeaderValue(this.line, keyStart, keyLen, valueStart, valueLen);
+                    } else if (OBOParser.this.currentStanza == Stanza.TERM) {
+                        readTermValue(this.line, keyStart, keyLen, valueStart, valueLen);
                     }
                 }
                 return true;
@@ -807,17 +808,17 @@ public class OBOParser
              */
             private void readHeaderValue(byte[] buf, int keyStart, int keyLen, int valueStart, int valueLen)
             {
-                if (equalsIgnoreCase(buf, keyStart, keyLen, FORMAT_VERSION_KEYWORD))
+                if (equalsIgnoreCase(buf, keyStart, keyLen, this.FORMAT_VERSION_KEYWORD))
                 {
-                    format_version = new String(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, DATE_KEYWORD))
+                    OBOParser.this.format_version = new String(buf, valueStart, valueLen);
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.DATE_KEYWORD))
                 {
-                    date = new String(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, SUBSETDEF_KEYWORD))
+                    OBOParser.this.date = new String(buf, valueStart, valueLen);
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.SUBSETDEF_KEYWORD))
                 {
                     Subset s = Subset.createFromString(new String(buf, valueStart, valueLen));
-                    if (!subsets.containsKey(s.getName())) {
-                        subsets.put(s.getName(), s);
+                    if (!OBOParser.this.subsets.containsKey(s.getName())) {
+                        OBOParser.this.subsets.put(s.getName(), s);
                     }
                 }
             }
@@ -832,7 +833,7 @@ public class OBOParser
              */
             private TermID readTermID(byte[] buf, int valueStart, int valueLen)
             {
-                return termIDPool.map(new TermID(buf, valueStart, valueLen, prefixPool));
+                return OBOParser.this.termIDPool.map(new TermID(buf, valueStart, valueLen, OBOParser.this.prefixPool));
             }
 
             /**
@@ -920,20 +921,21 @@ public class OBOParser
 
             private void parse_id(byte[] buf, int valueStart, int valueLen)
             {
-                currentID = readTermID(buf, valueStart, valueLen);
-                if ((options & SETNAMEEQUALTOID) != 0) {
-                    currentName = currentID.toString();
+                OBOParser.this.currentID = readTermID(buf, valueStart, valueLen);
+                if ((OBOParser.this.options & SETNAMEEQUALTOID) != 0) {
+                    OBOParser.this.currentName = OBOParser.this.currentID.toString();
                 }
             }
 
             private void parse_name(byte[] buf, int valueStart, int valueLen)
             {
-                currentName = new String(buf, valueStart, valueLen);
+                OBOParser.this.currentName = new String(buf, valueStart, valueLen);
             }
 
             private void parse_is_a(byte[] buf, int valueStart, int valueLen)
             {
-                currentParents.add(new ParentTermID(readTermID(buf, valueStart, valueLen), TermRelation.IS_A));
+                OBOParser.this.currentParents.add(new ParentTermID(readTermID(buf, valueStart, valueLen),
+                    TermRelation.IS_A));
             }
 
             private void parse_relationship(byte[] buf, int valueStart, int valueLen)
@@ -955,24 +957,25 @@ public class OBOParser
                     idEnd = valueStart + valueLen;
                 }
 
-                if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, PART_OF_KEYWORD)) {
+                if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, this.PART_OF_KEYWORD)) {
                     type = TermRelation.PART_OF_A;
-                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, REGULATES_KEYWORD)) {
+                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, this.REGULATES_KEYWORD)) {
                     type = TermRelation.REGULATES;
-                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, NEGATIVELY_REGULATES_KEYWORD)) {
+                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, this.NEGATIVELY_REGULATES_KEYWORD)) {
                     type = TermRelation.POSITIVELY_REGULATES;
-                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, POSITIVELY_REGULATES_KEYWORD)) {
+                } else if (equalsIgnoreCase(buf, typeStart, typeEnd - typeStart, this.POSITIVELY_REGULATES_KEYWORD)) {
                     type = TermRelation.NEGATIVELY_REGULATES;
                 } else {
                     type = TermRelation.UNKOWN;
                 }
 
-                currentParents.add(new ParentTermID(readTermID(buf, idStart, idEnd - idStart + 1), type));
+                OBOParser.this.currentParents
+                    .add(new ParentTermID(readTermID(buf, idStart, idEnd - idStart + 1), type));
             }
 
             private void parse_synonym(byte[] buf, int valueStart, int valueLen)
             {
-                if ((options & IGNORE_SYNONYMS) == 0)
+                if ((OBOParser.this.options & IGNORE_SYNONYMS) == 0)
                 {
                     int synonymStart = findUnescaped(buf, valueStart, valueLen, '\"');
                     if (synonymStart == -1) {
@@ -984,13 +987,13 @@ public class OBOParser
                         return;
                     }
 
-                    currentSynonyms.add(new String(buf, synonymStart, synonymEnd - synonymStart));
+                    OBOParser.this.currentSynonyms.add(new String(buf, synonymStart, synonymEnd - synonymStart));
                 }
             }
 
             private void parse_def(byte[] buf, int valueStart, int valueLen)
             {
-                if ((options & PARSE_DEFINITIONS) != 0)
+                if ((OBOParser.this.options & PARSE_DEFINITIONS) != 0)
                 {
                     /* TODO: Refactor with the above */
                     int defStart = findUnescaped(buf, valueStart, valueLen, '\"');
@@ -1003,8 +1006,8 @@ public class OBOParser
                         return;
                     }
 
-                    if (temp == null || temp.length < defEnd - defStart + 1) {
-                        temp = new byte[defEnd - defStart + 1];
+                    if (this.temp == null || this.temp.length < defEnd - defStart + 1) {
+                        this.temp = new byte[defEnd - defStart + 1];
                     }
                     int len = 0;
                     for (int i = defStart; i < defEnd; i++)
@@ -1012,53 +1015,48 @@ public class OBOParser
                         if (buf[i] == '\\') {
                             continue;
                         }
-                        temp[len++] = buf[i];
+                        this.temp[len++] = buf[i];
                     }
-                    currentDefintion = new String(temp, 0, len);
+                    OBOParser.this.currentDefintion = new String(this.temp, 0, len);
                 }
             }
 
             private void parse_namespace(byte[] buf, int valueStart, int valueLen)
             {
                 String newNamespace = new String(buf, valueStart, valueLen);
-                Namespace namespace = namespaces.get(newNamespace);
+                Namespace namespace = OBOParser.this.namespaces.get(newNamespace);
                 if (namespace == null)
                 {
                     namespace = new Namespace(newNamespace);
-                    namespaces.put(newNamespace, namespace);
+                    OBOParser.this.namespaces.put(newNamespace, namespace);
                 }
 
-                currentNamespace = namespace;
+                OBOParser.this.currentNamespace = namespace;
             }
 
             private void parse_equivalent_to(byte[] buf, int valueStart, int valueLen)
             {
-                currentEquivalents.add(readTermID(buf, valueStart, valueLen));
+                OBOParser.this.currentEquivalents.add(readTermID(buf, valueStart, valueLen));
             }
 
             private void parse_is_obsolete(byte[] buf, int valueStart, int valueLen)
             {
-                currentObsolete = equalsIgnoreCase(buf, valueStart, valueLen, TRUE_KEYWORD);
+                OBOParser.this.currentObsolete = equalsIgnoreCase(buf, valueStart, valueLen, this.TRUE_KEYWORD);
             }
 
             private void parse_alt_id(byte[] buf, int valueStart, int valueLen)
             {
-                currentAlternatives.add(readTermID(buf, valueStart, valueLen));
+                OBOParser.this.currentAlternatives.add(readTermID(buf, valueStart, valueLen));
             }
 
             private void parse_xref(byte[] buf, int valueStart, int valueLen)
             {
-                if ((options & PARSE_XREFS) != 0)
+                if ((OBOParser.this.options & PARSE_XREFS) != 0)
                 {
                     /*
-                     * Parse xrefs, e.g.
-                     *  (1st form) ICD-10:Q20.4  or
-                     *  (2nd form) UMLS:C0426891 "Broad thumb"
-                     *
-                     * We refer to the part before the colon as db, the part after the colon as id, and the stuff between
-                     * the quotation marks as name.
-                     *
-                     * Also see http://www.geneontology.org/GO.format.obo-1_2.shtml#S.2.2.3
+                     * Parse xrefs, e.g. (1st form) ICD-10:Q20.4 or (2nd form) UMLS:C0426891 "Broad thumb" We refer to
+                     * the part before the colon as db, the part after the colon as id, and the stuff between the
+                     * quotation marks as name. Also see http://www.geneontology.org/GO.format.obo-1_2.shtml#S.2.2.3
                      */
 
                     int dbStart = valueStart;
@@ -1095,7 +1093,7 @@ public class OBOParser
                     String xrefDb = new String(buf, dbStart, dbEnd - dbStart);
                     String xrefId = new String(buf, idStart, idEnd - idStart);
 
-                    currentXrefs.add(new TermXref(xrefDb, xrefId, xrefName));
+                    OBOParser.this.currentXrefs.add(new TermXref(xrefDb, xrefId, xrefName));
                 }
             }
 
@@ -1110,37 +1108,40 @@ public class OBOParser
              */
             private void readTermValue(byte[] buf, int keyStart, int keyLen, int valueStart, int valueLen)
             {
-                if (equalsIgnoreCase(buf, keyStart, keyLen, ID_KEYWORD))
+                if (equalsIgnoreCase(buf, keyStart, keyLen, this.ID_KEYWORD))
                 {
                     parse_id(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, NAME_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.NAME_KEYWORD))
                 {
                     parse_name(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, IS_A_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.IS_A_KEYWORD))
                 {
                     parse_is_a(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, RELATIONSHIP_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.RELATIONSHIP_KEYWORD))
                 {
                     parse_relationship(buf, valueStart, valueLen);
-                } else if ((options & IGNORE_SYNONYMS) == 0 && equalsIgnoreCase(buf, keyStart, keyLen, SYNONYM_KEYWORD))
+                } else if ((OBOParser.this.options & IGNORE_SYNONYMS) == 0
+                    && equalsIgnoreCase(buf, keyStart, keyLen, this.SYNONYM_KEYWORD))
                 {
                     parse_synonym(buf, valueStart, valueLen);
-                } else if ((options & PARSE_DEFINITIONS) != 0 && equalsIgnoreCase(buf, keyStart, keyLen, DEF_KEYWORD))
+                } else if ((OBOParser.this.options & PARSE_DEFINITIONS) != 0
+                    && equalsIgnoreCase(buf, keyStart, keyLen, this.DEF_KEYWORD))
                 {
                     parse_def(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, NAMESPACE_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.NAMESPACE_KEYWORD))
                 {
                     parse_namespace(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, EQUIVALENT_TO_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.EQUIVALENT_TO_KEYWORD))
                 {
                     parse_equivalent_to(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, IS_OBSOLETE_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.IS_OBSOLETE_KEYWORD))
                 {
                     parse_is_obsolete(buf, valueStart, valueLen);
-                } else if (equalsIgnoreCase(buf, keyStart, keyLen, ALT_ID_KEYWORD))
+                } else if (equalsIgnoreCase(buf, keyStart, keyLen, this.ALT_ID_KEYWORD))
                 {
                     parse_alt_id(buf, valueStart, valueLen);
-                } else if (((options & PARSE_XREFS) != 0) && equalsIgnoreCase(buf, keyStart, keyLen, XREF_KEYWORD))
+                } else if (((OBOParser.this.options & PARSE_XREFS) != 0)
+                    && equalsIgnoreCase(buf, keyStart, keyLen, this.XREF_KEYWORD))
                 {
                     parse_xref(buf, valueStart, valueLen);
                 }
@@ -1159,19 +1160,19 @@ public class OBOParser
         }
         fis.close();
 
-        logger.info("Got " + terms.size() + " terms and " + numberOfRelations + " relations in "
+        logger.info("Got " + this.terms.size() + " terms and " + this.numberOfRelations + " relations in "
             + (System.currentTimeMillis() - startMillis) + " ms");
         return this.getParseDiagnostics();
     }
 
     public String getFormatVersion()
     {
-        return format_version;
+        return this.format_version;
     }
 
     public String getDate()
     {
-        return date;
+        return this.date;
     }
 
     /**

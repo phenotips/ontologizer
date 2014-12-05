@@ -24,7 +24,7 @@ public class ItemAttribute
     public ItemAttribute merge(ItemAttribute attr)
     {
         ItemAttribute newAttribute = new ItemAttribute(attr);
-        newAttribute.description = description + "; " + attr.description;
+        newAttribute.description = this.description + "; " + attr.description;
         return newAttribute;
     }
 
@@ -39,10 +39,10 @@ public class ItemAttribute
         if (attr.description == null) {
             return false;
         }
-        if (description == null) {
+        if (this.description == null) {
             return true;
         }
-        if (attr.description.length() > description.length()) {
+        if (attr.description.length() > this.description.length()) {
             return true;
         }
         return false;

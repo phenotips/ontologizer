@@ -37,7 +37,7 @@ public class TermXref
     @Override
     public int hashCode()
     {
-        return database.hashCode() + xrefId.hashCode();
+        return this.database.hashCode() + this.xrefId.hashCode();
     }
 
     @Override
@@ -60,17 +60,17 @@ public class TermXref
 
     public String getDatabase()
     {
-        return database;
+        return this.database;
     }
 
     public String getXrefId()
     {
-        return xrefId;
+        return this.xrefId;
     }
 
     public String getXrefName()
     {
-        return xrefName;
+        return this.xrefName;
     }
 
     /**
@@ -84,13 +84,13 @@ public class TermXref
     {
         StringBuffer returnString = new StringBuffer();
 
-        returnString.append(database);
+        returnString.append(this.database);
         returnString.append(" - ");
-        returnString.append(xrefId);
+        returnString.append(this.xrefId);
 
-        if (xrefName != null) {
+        if (this.xrefName != null) {
             returnString.append(" - ");
-            returnString.append(xrefName);
+            returnString.append(this.xrefName);
         }
 
         return returnString.toString();
