@@ -3,176 +3,195 @@ package ontologizer.statistics;
 import java.util.Arrays;
 
 public class FDR extends AbstractTestCorrection
-						   implements IResampling
+    implements IResampling
 {
-	/** Specifies the number of resampling steps */
-	private int numberOfResamplingSteps = 1000;
-	
-	public String getDescription()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /** Specifies the number of resampling steps */
+    private int numberOfResamplingSteps = 1000;
 
-	public String getName()
-	{
-		return "FDR";
-	}
+    @Override
+    public String getDescription()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/**
-	 * 
-	 * @author Sebastian Bauer
-	 *
-	 * Class models a double value entry and its index of
-	 * a source array.
-	 *
-	 */
-	private class Entry implements Comparable<Entry>
-	{
-		public String goTermID;
-		public double value;
-		public int index;
+    @Override
+    public String getName()
+    {
+        return "FDR";
+    }
 
-		public int compareTo(Entry o)
-		{
-			if (value < o.value) return -1;
-			if (value == o.value) return 0;
-			return 1;
-		}
-	};
+    /**
+     * @author Sebastian Bauer Class models a double value entry and its index of a source array.
+     */
+    private class Entry implements Comparable<Entry>
+    {
+        public String goTermID;
 
-	public PValue[] adjustPValues(IPValueCalculation pvalues)
-	{
-		int i;
+        public double value;
 
-		/* Calculate raw P-values */
-		PValue [] rawP = pvalues.calculateRawPValues();
+        public int index;
 
-		/* Sort the raw P-values and remember their original index */
-		int m = rawP.length;
-		int r[] = new int[m];
-		Entry [] sortedRawPValues = new Entry[m];
+        @Override
+        public int compareTo(Entry o)
+        {
+            if (value < o.value) {
+                return -1;
+            }
+            if (value == o.value) {
+                return 0;
+            }
+            return 1;
+        }
+    };
 
-		for (i=0;i<m;i++)
-		{
-			sortedRawPValues[i] = new Entry();
-			sortedRawPValues[i].value = rawP[i].p;
-			sortedRawPValues[i].index = i;
-		}
-		Arrays.sort(sortedRawPValues);
+    @Override
+    public PValue[] adjustPValues(IPValueCalculation pvalues)
+    {
+        int i;
 
-		/* Build up r (i.e. the rank), this info is redundant but using
-		 * r is more convenient. */
-		for (i=0;i<m;i++)
-			r[i] = sortedRawPValues[i].index;
+        /* Calculate raw P-values */
+        PValue[] rawP = pvalues.calculateRawPValues();
 
-		/* TODO: Probably this could be improved by exploiting
-		 * the sorted array */
-		double [][] pValues = new double[numberOfResamplingSteps][rawP.length];
+        /* Sort the raw P-values and remember their original index */
+        int m = rawP.length;
+        int r[] = new int[m];
+        Entry[] sortedRawPValues = new Entry[m];
 
-		/* Now "permute" */
-		for (int b=0; b < numberOfResamplingSteps; b++)
-		{
-			/* Compute raw p values of "permuted" data */
-			PValue [] randomRawP = pvalues.calculateRandomPValues();
+        for (i = 0; i < m; i++)
+        {
+            sortedRawPValues[i] = new Entry();
+            sortedRawPValues[i].value = rawP[i].p;
+            sortedRawPValues[i].index = i;
+        }
+        Arrays.sort(sortedRawPValues);
 
-			assert(randomRawP.length == rawP.length);
+        /*
+         * Build up r (i.e. the rank), this info is redundant but using r is more convenient.
+         */
+        for (i = 0; i < m; i++) {
+            r[i] = sortedRawPValues[i].index;
+        }
 
-			for (i=0;i<m;i++)
-				pValues[b][i] = randomRawP[i].p;
+        /*
+         * TODO: Probably this could be improved by exploiting the sorted array
+         */
+        double[][] pValues = new double[numberOfResamplingSteps][rawP.length];
 
-			System.out.print("created " + (b+1) + " samples out of " + numberOfResamplingSteps + "\r");	
-		}
-		System.out.println("");
-		
-		/* For every P-value determine the adjusted P-value (but TODO: optimze!!!) */
-		for (i=0;i<m;i++)
-		{
-			/* The p-value which is being currently adjusted */
-			double p = rawP[i].p;
+        /* Now "permute" */
+        for (int b = 0; b < numberOfResamplingSteps; b++)
+        {
+            /* Compute raw p values of "permuted" data */
+            PValue[] randomRawP = pvalues.calculateRandomPValues();
 
-			/* The number of rejections observed within the dataset using p as rejection level */
-			int observedRejections = 0;
-			for (int j=0; j < m; j++)
-			{
-				if (rawP[j].p < p)
-					observedRejections++;
-			}
-			
-			/* The number of rejections of the complete permuted data set */
-			int totalRejects = 0;
-			for (int b=0; b < numberOfResamplingSteps; b++)
-			{
-				for (int j=0; j < m; j++)
-				{
-					if (pValues[b][j] < p)
-						totalRejects++;
-				}
-			}
-			/* How many (falsely) rejections do we expect? */
-			double expectedRejections = ((double)totalRejects) / numberOfResamplingSteps;
+            assert (randomRawP.length == rawP.length);
 
-//			System.out.println("Expecting " + expectedRejections + " rejections using the P-value of " + p);
-			
-			/* Calculate the fdr now using the formula:
-			 * 
-			 * sum_{all samples i} = v_i / (v_i + R - ev)
-			 */
+            for (i = 0; i < m; i++) {
+                pValues[b][i] = randomRawP[i].p;
+            }
 
-			double fdr = 0.0;
-			for (int b=0; b < numberOfResamplingSteps; b++)
-			{
-				/* number of rejections for a single permutation, this is used as an estimate for V */
-				int rejections = 0;
+            System.out.print("created " + (b + 1) + " samples out of " + numberOfResamplingSteps + "\r");
+        }
+        System.out.println("");
 
-				for (int j=0; j < m; j++)
-				{
-					if (pValues[b][j] < p)
-						rejections++;
-				}
+        /* For every P-value determine the adjusted P-value (but TODO: optimze!!!) */
+        for (i = 0; i < m; i++)
+        {
+            /* The p-value which is being currently adjusted */
+            double p = rawP[i].p;
 
-				fdr += (double)rejections/(rejections + observedRejections -  expectedRejections);
-			}
+            /* The number of rejections observed within the dataset using p as rejection level */
+            int observedRejections = 0;
+            for (int j = 0; j < m; j++)
+            {
+                if (rawP[j].p < p) {
+                    observedRejections++;
+                }
+            }
 
-			if (Double.isNaN(fdr)) fdr = 0;
-			else fdr /= numberOfResamplingSteps; 
+            /* The number of rejections of the complete permuted data set */
+            int totalRejects = 0;
+            for (int b = 0; b < numberOfResamplingSteps; b++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (pValues[b][j] < p) {
+                        totalRejects++;
+                    }
+                }
+            }
+            /* How many (falsely) rejections do we expect? */
+            double expectedRejections = ((double) totalRejects) / numberOfResamplingSteps;
 
-			//System.out.println("adjusted " + fdr);
-			//System.out.print("fdr " + fdr + " for p-value " + p + "\r");
-			System.out.print("corrected " + i + " out of " + m + " p-values (fdr " + fdr + ", p-value " + p + ")\r");
+            // System.out.println("Expecting " + expectedRejections + " rejections using the P-value of " + p);
 
-			rawP[i].p_adjusted = fdr;
-		}
+            /*
+             * Calculate the fdr now using the formula: sum_{all samples i} = v_i / (v_i + R - ev)
+             */
 
-		Arrays.sort(rawP);
-		//enforcePValueMonotony(rawP);
-		
-		return rawP;
-	}
+            double fdr = 0.0;
+            for (int b = 0; b < numberOfResamplingSteps; b++)
+            {
+                /* number of rejections for a single permutation, this is used as an estimate for V */
+                int rejections = 0;
 
-	public void setNumberOfResamplingSteps(int n)
-	{
-		numberOfResamplingSteps = n;
-	}
+                for (int j = 0; j < m; j++)
+                {
+                    if (pValues[b][j] < p) {
+                        rejections++;
+                    }
+                }
 
-	public int getNumberOfResamplingSteps()
-	{
-		return numberOfResamplingSteps;
-	}
+                fdr += rejections / (rejections + observedRejections - expectedRejections);
+            }
 
-	public void resetCache()
-	{
-		// no cache, nothing to do here
-		
-	}
+            if (Double.isNaN(fdr)) {
+                fdr = 0;
+            } else {
+                fdr /= numberOfResamplingSteps;
+            }
 
-	public int getSizeTolerance()
-	{
-		return 0;
-	}
+            // System.out.println("adjusted " + fdr);
+            // System.out.print("fdr " + fdr + " for p-value " + p + "\r");
+            System.out.print("corrected " + i + " out of " + m + " p-values (fdr " + fdr + ", p-value " + p + ")\r");
 
-	public void setSizeTolerance(int t)
-	{
-		
-	}
+            rawP[i].p_adjusted = fdr;
+        }
+
+        Arrays.sort(rawP);
+        // enforcePValueMonotony(rawP);
+
+        return rawP;
+    }
+
+    @Override
+    public void setNumberOfResamplingSteps(int n)
+    {
+        numberOfResamplingSteps = n;
+    }
+
+    @Override
+    public int getNumberOfResamplingSteps()
+    {
+        return numberOfResamplingSteps;
+    }
+
+    @Override
+    public void resetCache()
+    {
+        // no cache, nothing to do here
+
+    }
+
+    @Override
+    public int getSizeTolerance()
+    {
+        return 0;
+    }
+
+    @Override
+    public void setSizeTolerance(int t)
+    {
+
+    }
 }

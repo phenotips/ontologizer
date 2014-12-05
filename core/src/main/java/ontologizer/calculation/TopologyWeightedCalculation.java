@@ -8,8 +8,8 @@ import ontologizer.association.AssociationContainer;
 import ontologizer.enumeration.GOTermEnumerator;
 import ontologizer.enumeration.GOTermEnumerator.GOTermAnnotatedGenes;
 import ontologizer.go.Ontology;
-import ontologizer.go.TermID;
 import ontologizer.go.Ontology.GOLevels;
+import ontologizer.go.TermID;
 import ontologizer.set.PopulationSet;
 import ontologizer.set.StudySet;
 import ontologizer.statistics.AbstractTestCorrection;
@@ -17,206 +17,236 @@ import ontologizer.types.ByteString;
 
 public class TopologyWeightedCalculation extends AbstractHypergeometricCalculation
 {
-	static final double SIGNIFICANCE_LEVEL = 0.01;
+    static final double SIGNIFICANCE_LEVEL = 0.01;
 
-	private void computeTermSig(PopulationSet populationSet, StudySet studySet, Ontology graph, TermID u, Set<TermID> children, EnrichedGOTermsResult studySetResult, GOTermEnumerator studyTermEnumerator, GOTermEnumerator populationTermEnumerator)
-	{
-		if (graph.isRootTerm(u)) return;
+    private void computeTermSig(PopulationSet populationSet, StudySet studySet, Ontology graph, TermID u,
+        Set<TermID> children, EnrichedGOTermsResult studySetResult, GOTermEnumerator studyTermEnumerator,
+        GOTermEnumerator populationTermEnumerator)
+    {
+        if (graph.isRootTerm(u)) {
+            return;
+        }
 
-		/* Execute Fisher */
-		TopologyWeightGOTermProperties prop = wFisher(populationSet, studySet, graph, u, studySetResult, studyTermEnumerator, populationTermEnumerator);
+        /* Execute Fisher */
+        TopologyWeightGOTermProperties prop =
+            wFisher(populationSet, studySet, graph, u, studySetResult, studyTermEnumerator, populationTermEnumerator);
 
-		if (children == null || children.size() == 0) return;
+        if (children == null || children.size() == 0) {
+            return;
+        }
 
-		HashMap<TermID,Double> weights = new HashMap<TermID,Double>();
-		HashSet<TermID> sigChildren = new HashSet<TermID>();
-		for (TermID child : children)
-		{
-			TopologyWeightGOTermProperties childProp = (TopologyWeightGOTermProperties)studySetResult.getGOTermProperties(child);
-			double w = sigRatio(childProp.p, prop.p);
-			weights.put(child,w);
-			if (w > 1) sigChildren.add(child);
-		}
+        HashMap<TermID, Double> weights = new HashMap<TermID, Double>();
+        HashSet<TermID> sigChildren = new HashSet<TermID>();
+        for (TermID child : children)
+        {
+            TopologyWeightGOTermProperties childProp =
+                (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(child);
+            double w = sigRatio(childProp.p, prop.p);
+            weights.put(child, w);
+            if (w > 1) {
+                sigChildren.add(child);
+            }
+        }
 
-		if (sigChildren.size() == 0)
-		{
-			/* Case 1: U is the most significant term in the family */
-			for (TermID child : children)
-			{
-				TopologyWeightGOTermProperties childProp = (TopologyWeightGOTermProperties)studySetResult.getGOTermProperties(child);
-				double w = weights.get(child);
+        if (sigChildren.size() == 0)
+        {
+            /* Case 1: U is the most significant term in the family */
+            for (TermID child : children)
+            {
+                TopologyWeightGOTermProperties childProp =
+                    (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(child);
+                double w = weights.get(child);
 
-				/* Readjust the weight for every gene annotated to the child */
-				GOTermAnnotatedGenes childAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
-				for (ByteString gene : childAnnotatedGenes.totalAnnotated)
-					childProp.setWeight(gene, childProp.getWeight(gene) * w);
+                /* Readjust the weight for every gene annotated to the child */
+                GOTermAnnotatedGenes childAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
+                for (ByteString gene : childAnnotatedGenes.totalAnnotated) {
+                    childProp.setWeight(gene, childProp.getWeight(gene) * w);
+                }
 
-				/* Recalculate the child's significance */
-				wFisher(populationSet, studySet, graph, child, studySetResult, studyTermEnumerator, populationTermEnumerator);
-			}
-			return;
-		}
-		
-		/* Case 2: At least one child is more significant than u */
-		for (TermID child : sigChildren)
-		{
-			double w = weights.get(child);
+                /* Recalculate the child's significance */
+                wFisher(populationSet, studySet, graph, child, studySetResult, studyTermEnumerator,
+                    populationTermEnumerator);
+            }
+            return;
+        }
 
-			Set<TermID> upper = graph.getTermsOfInducedGraph(graph.getRootTerm().getID(), u);
-			upper.remove(u);
-			upper.remove(graph.getRootTerm().getID());
+        /* Case 2: At least one child is more significant than u */
+        for (TermID child : sigChildren)
+        {
+            double w = weights.get(child);
 
-			for (TermID up : upper)
-			{
-				ensureGOTermPropertiesExistence(graph, up, studySetResult, studyTermEnumerator, populationTermEnumerator);
+            Set<TermID> upper = graph.getTermsOfInducedGraph(graph.getRootTerm().getID(), u);
+            upper.remove(u);
+            upper.remove(graph.getRootTerm().getID());
 
-				TopologyWeightGOTermProperties upProp = (TopologyWeightGOTermProperties)studySetResult.getGOTermProperties(up);
+            for (TermID up : upper)
+            {
+                ensureGOTermPropertiesExistence(graph, up, studySetResult, studyTermEnumerator,
+                    populationTermEnumerator);
 
-				GOTermAnnotatedGenes upAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(up);
+                TopologyWeightGOTermProperties upProp =
+                    (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(up);
 
-				for (ByteString gene : upAnnotatedGenes.totalAnnotated)
-					upProp.setWeight(gene, upProp.getWeight(gene) / w);
-			}
-		}
+                GOTermAnnotatedGenes upAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(up);
 
-		HashSet<TermID> newChildren = new HashSet<TermID>();
-		for (TermID t : children)
-		{
-			if (!sigChildren.contains(t))
-				newChildren.add(t);
-		}
-	}
+                for (ByteString gene : upAnnotatedGenes.totalAnnotated) {
+                    upProp.setWeight(gene, upProp.getWeight(gene) / w);
+                }
+            }
+        }
 
-	/**
-	 * Perform the weighted fisher test.
-	 * 
-	 * @param populationSet
-	 * @param studySet
-	 * @param graph
-	 * @param u
-	 * @param studySetResult
-	 * @param studyTermEnumerator
-	 * @param populationTermEnumerator
-	 * @return
-	 */
-	private TopologyWeightGOTermProperties wFisher(PopulationSet populationSet,
-			StudySet studySet, Ontology graph, TermID u,
-			EnrichedGOTermsResult studySetResult,
-			GOTermEnumerator studyTermEnumerator,
-			GOTermEnumerator populationTermEnumerator)
-	{
+        HashSet<TermID> newChildren = new HashSet<TermID>();
+        for (TermID t : children)
+        {
+            if (!sigChildren.contains(t)) {
+                newChildren.add(t);
+            }
+        }
+    }
 
-		TopologyWeightGOTermProperties prop = ensureGOTermPropertiesExistence(
-				graph, u, studySetResult, studyTermEnumerator,
-				populationTermEnumerator);
+    /**
+     * Perform the weighted fisher test.
+     *
+     * @param populationSet
+     * @param studySet
+     * @param graph
+     * @param u
+     * @param studySetResult
+     * @param studyTermEnumerator
+     * @param populationTermEnumerator
+     * @return
+     */
+    private TopologyWeightGOTermProperties wFisher(PopulationSet populationSet,
+        StudySet studySet, Ontology graph, TermID u,
+        EnrichedGOTermsResult studySetResult,
+        GOTermEnumerator studyTermEnumerator,
+        GOTermEnumerator populationTermEnumerator)
+    {
 
-		GOTermAnnotatedGenes populationAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
-		GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(u);
+        TopologyWeightGOTermProperties prop = ensureGOTermPropertiesExistence(
+            graph, u, studySetResult, studyTermEnumerator,
+            populationTermEnumerator);
 
-		double goidAnnotatedPopGeneCount = 0;
-		double goidAnnotatedStudyGeneCount = 0;
-		double popGeneCount = 0;
-		double studyGeneCount = 0;
+        GOTermAnnotatedGenes populationAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
+        GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(u);
 
-		for (ByteString gene : populationAnnotatedGenes.totalAnnotated)
-			goidAnnotatedPopGeneCount += prop.getWeight(gene);
-		
-		for (ByteString gene : studyAnnotatedGenes.totalAnnotated)
-			goidAnnotatedStudyGeneCount += prop.getWeight(gene);
+        double goidAnnotatedPopGeneCount = 0;
+        double goidAnnotatedStudyGeneCount = 0;
+        double popGeneCount = 0;
+        double studyGeneCount = 0;
 
-		for (ByteString gene : populationSet)
-			popGeneCount += prop.getWeight(gene);
+        for (ByteString gene : populationAnnotatedGenes.totalAnnotated) {
+            goidAnnotatedPopGeneCount += prop.getWeight(gene);
+        }
 
-		for (ByteString gene : studySet)
-			studyGeneCount += prop.getWeight(gene);
+        for (ByteString gene : studyAnnotatedGenes.totalAnnotated) {
+            goidAnnotatedStudyGeneCount += prop.getWeight(gene);
+        }
 
-		if (goidAnnotatedStudyGeneCount != 0)
-		{
-			prop.p = hyperg.phypergeometric((int)Math.ceil(popGeneCount), Math.ceil(goidAnnotatedPopGeneCount) / Math.ceil(popGeneCount),
-					(int)studyGeneCount, (int)goidAnnotatedStudyGeneCount);
-		} else
-		{
-			prop.p = 1;
-			prop.p_min = 1.0;
-		}
-		prop.p_adjusted = prop.p;
-		return prop;
-	}
+        for (ByteString gene : populationSet) {
+            popGeneCount += prop.getWeight(gene);
+        }
 
-	private TopologyWeightGOTermProperties ensureGOTermPropertiesExistence(
-			Ontology graph, TermID u, EnrichedGOTermsResult studySetResult,
-			GOTermEnumerator studyTermEnumerator,
-			GOTermEnumerator populationTermEnumerator)
-	{
-		TopologyWeightGOTermProperties prop = (TopologyWeightGOTermProperties)studySetResult.getGOTermProperties(u);
-		if (prop == null)
-		{
-			GOTermAnnotatedGenes populationAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
-			GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(u);
+        for (ByteString gene : studySet) {
+            studyGeneCount += prop.getWeight(gene);
+        }
 
-			prop = new TopologyWeightGOTermProperties();
-			prop.goTerm = graph.getTerm(u);
-			prop.annotatedStudyGenes = studyAnnotatedGenes.totalAnnotatedCount();
-			prop.annotatedPopulationGenes = populationAnnotatedGenes.totalAnnotatedCount();
-			studySetResult.addGOTermProperties(prop);
-		}
-		return prop;
-	}
-	
-	private double sigRatio(double a, double b)
-	{
-		return b/a;
-	}
+        if (goidAnnotatedStudyGeneCount != 0)
+        {
+            prop.p =
+                hyperg.phypergeometric((int) Math.ceil(popGeneCount),
+                    Math.ceil(goidAnnotatedPopGeneCount) / Math.ceil(popGeneCount),
+                    (int) studyGeneCount, (int) goidAnnotatedStudyGeneCount);
+        } else
+        {
+            prop.p = 1;
+            prop.p_min = 1.0;
+        }
+        prop.p_adjusted = prop.p;
+        return prop;
+    }
 
-	public EnrichedGOTermsResult calculateStudySet(Ontology graph,
-			AssociationContainer goAssociations, PopulationSet populationSet,
-			StudySet studySet, AbstractTestCorrection testCorrection)
-	{
-		EnrichedGOTermsResult studySetResult = new EnrichedGOTermsResult(graph, goAssociations, studySet, populationSet.getGeneCount());
-		studySetResult.setCalculationName(this.getName());
-		studySetResult.setCorrectionName(testCorrection.getName());
+    private TopologyWeightGOTermProperties ensureGOTermPropertiesExistence(
+        Ontology graph, TermID u, EnrichedGOTermsResult studySetResult,
+        GOTermEnumerator studyTermEnumerator,
+        GOTermEnumerator populationTermEnumerator)
+    {
+        TopologyWeightGOTermProperties prop = (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(u);
+        if (prop == null)
+        {
+            GOTermAnnotatedGenes populationAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
+            GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(u);
 
-		GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(graph,goAssociations);
-		GOTermEnumerator populationTermEnumerator = populationSet.enumerateGOTerms(graph,goAssociations);
+            prop = new TopologyWeightGOTermProperties();
+            prop.goTerm = graph.getTerm(u);
+            prop.annotatedStudyGenes = studyAnnotatedGenes.totalAnnotatedCount();
+            prop.annotatedPopulationGenes = populationAnnotatedGenes.totalAnnotatedCount();
+            studySetResult.addGOTermProperties(prop);
+        }
+        return prop;
+    }
 
-		Set<TermID> allAnnotatedTerms = studyTermEnumerator.getAllAnnotatedTermsAsSet();
-		GOLevels levels = graph.getGOLevels(allAnnotatedTerms);
+    private double sigRatio(double a, double b)
+    {
+        return b / a;
+    }
 
-		for (int i=levels.getMaxLevel();i>=0;i--)
-		{
-			Set<TermID> terms = levels.getLevelTermSet(i);
+    @Override
+    public EnrichedGOTermsResult calculateStudySet(Ontology graph,
+        AssociationContainer goAssociations, PopulationSet populationSet,
+        StudySet studySet, AbstractTestCorrection testCorrection)
+    {
+        EnrichedGOTermsResult studySetResult =
+            new EnrichedGOTermsResult(graph, goAssociations, studySet, populationSet.getGeneCount());
+        studySetResult.setCalculationName(this.getName());
+        studySetResult.setCorrectionName(testCorrection.getName());
 
-			for (TermID t : terms)
-			{
-				Set<TermID> descs = graph.getTermChildren(t);
-				Set<TermID> annotatedDescs = new HashSet<TermID>();
-				for (TermID d : descs)
-				{
-					if (allAnnotatedTerms.contains(d))
-						annotatedDescs.add(d);
-				}
-				
-				computeTermSig(populationSet, studySet, graph, t, annotatedDescs, studySetResult, studyTermEnumerator, populationTermEnumerator);
-			}
-		}
+        GOTermEnumerator studyTermEnumerator = studySet.enumerateGOTerms(graph, goAssociations);
+        GOTermEnumerator populationTermEnumerator = populationSet.enumerateGOTerms(graph, goAssociations);
 
-		return studySetResult;
-	}
+        Set<TermID> allAnnotatedTerms = studyTermEnumerator.getAllAnnotatedTermsAsSet();
+        GOLevels levels = graph.getGOLevels(allAnnotatedTerms);
 
-	public String getDescription()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+        for (int i = levels.getMaxLevel(); i >= 0; i--)
+        {
+            Set<TermID> terms = levels.getLevelTermSet(i);
 
-	public String getName()
-	{
-		return "Topology-Weighted";
-	}
+            for (TermID t : terms)
+            {
+                Set<TermID> descs = graph.getTermChildren(t);
+                Set<TermID> annotatedDescs = new HashSet<TermID>();
+                for (TermID d : descs)
+                {
+                    if (allAnnotatedTerms.contains(d)) {
+                        annotatedDescs.add(d);
+                    }
+                }
 
-	public boolean supportsTestCorrection()
-	{
-		return false;
-	}
+                computeTermSig(populationSet, studySet, graph, t, annotatedDescs, studySetResult, studyTermEnumerator,
+                    populationTermEnumerator);
+            }
+        }
+
+        return studySetResult;
+    }
+
+    @Override
+    public String getDescription()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Topology-Weighted";
+    }
+
+    @Override
+    public boolean supportsTestCorrection()
+    {
+        return false;
+    }
 
 }

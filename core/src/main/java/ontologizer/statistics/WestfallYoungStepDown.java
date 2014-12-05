@@ -3,131 +3,144 @@ package ontologizer.statistics;
 import java.util.Arrays;
 
 public class WestfallYoungStepDown extends AbstractTestCorrection
-						   implements IResampling
+    implements IResampling
 {
-	/** Specifies the number of resampling steps */
-	private int numberOfResamplingSteps = 1000;
-	
-	public String getDescription()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /** Specifies the number of resampling steps */
+    private int numberOfResamplingSteps = 1000;
 
-	public String getName()
-	{
-		return "Westfall-Young-Step-Down";
-	}
+    @Override
+    public String getDescription()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/**
-	 * 
-	 * @author Sebastian Bauer
-	 *
-	 * Class models a double value entry and its index of
-	 * a source array.
-	 *
-	 */
-	private class Entry implements Comparable<Entry>
-	{
-		public double value;
-		public int index;
+    @Override
+    public String getName()
+    {
+        return "Westfall-Young-Step-Down";
+    }
 
-		public int compareTo(Entry o)
-		{
-			if (value < o.value) return -1;
-			if (value == o.value) return 0;
-			return 1;
-		}
-	};
+    /**
+     * @author Sebastian Bauer Class models a double value entry and its index of a source array.
+     */
+    private class Entry implements Comparable<Entry>
+    {
+        public double value;
 
-	public PValue[] adjustPValues(IPValueCalculation pvalues)
-	{
-		int i;
+        public int index;
 
-		/* Calculate raw P-values */
-		PValue [] rawP = pvalues.calculateRawPValues();
+        @Override
+        public int compareTo(Entry o)
+        {
+            if (value < o.value) {
+                return -1;
+            }
+            if (value == o.value) {
+                return 0;
+            }
+            return 1;
+        }
+    };
 
-		double [] q = new double[rawP.length];
-		int [] count = new int[rawP.length];
+    @Override
+    public PValue[] adjustPValues(IPValueCalculation pvalues)
+    {
+        int i;
 
-		/* Sort the raw P-values and remember their original index */
-		int m = rawP.length;
-		int r[] = new int[m];
-		Entry [] sortedRawPValues = new Entry[m];
+        /* Calculate raw P-values */
+        PValue[] rawP = pvalues.calculateRawPValues();
 
-		for (i=0;i<m;i++)
-		{
-			sortedRawPValues[i] = new Entry();
-			sortedRawPValues[i].value = rawP[i].p;
-			sortedRawPValues[i].index = i;
-		}
-		Arrays.sort(sortedRawPValues);
+        double[] q = new double[rawP.length];
+        int[] count = new int[rawP.length];
 
-		/* build up r, this info is redundant but using r is more convenient */
-		for (i=0;i<m;i++)
-			r[i] = sortedRawPValues[i].index;
+        /* Sort the raw P-values and remember their original index */
+        int m = rawP.length;
+        int r[] = new int[m];
+        Entry[] sortedRawPValues = new Entry[m];
 
-		/* Now "permute" */
-		System.out.println("Sampling " + numberOfResamplingSteps + " random study sets\nThis may take a while...");
-		for (int b=0; b < numberOfResamplingSteps; b++)
-		{
-			/* Compute raw p values of "permuted" data */
-			PValue [] randomRawP = pvalues.calculateRandomPValues();
+        for (i = 0; i < m; i++)
+        {
+            sortedRawPValues[i] = new Entry();
+            sortedRawPValues[i].value = rawP[i].p;
+            sortedRawPValues[i].index = i;
+        }
+        Arrays.sort(sortedRawPValues);
 
-			assert(randomRawP.length == rawP.length);
+        /* build up r, this info is redundant but using r is more convenient */
+        for (i = 0; i < m; i++) {
+            r[i] = sortedRawPValues[i].index;
+        }
 
-			/* Compute the successive minima of raw p values */
-			q[m-1] = randomRawP[r[m-1]].p;
-			for (i=m-2;i>=0;i--)
-				q[i] = Math.min(q[i+1],randomRawP[r[i]].p);
+        /* Now "permute" */
+        System.out.println("Sampling " + numberOfResamplingSteps + " random study sets\nThis may take a while...");
+        for (int b = 0; b < numberOfResamplingSteps; b++)
+        {
+            /* Compute raw p values of "permuted" data */
+            PValue[] randomRawP = pvalues.calculateRandomPValues();
 
-			/* Count up */
-			for (i=0;i<m;i++)
-			{
-				if (q[i] <= rawP[r[i]].p) // = sortedRawPValues[i].value
-					count[i]++;
-			}
-			
-			System.out.print(b + "\r");
-		}
-		System.out.println("Done!");
-		
-		/* Enforce monotony contraints */
-		int c = count[0];
-		for (i=1;i<m;i++)
-			c = count[i] = Math.max(1,Math.max(c,count[i]));
+            assert (randomRawP.length == rawP.length);
 
-		/* Calculate the adjusted p values */
-		for (i=0;i<m;i++)
-		{
-			rawP[r[i]].p_adjusted = ((double)count[i])/numberOfResamplingSteps;
-		}
-		return rawP;
-	}
+            /* Compute the successive minima of raw p values */
+            q[m - 1] = randomRawP[r[m - 1]].p;
+            for (i = m - 2; i >= 0; i--) {
+                q[i] = Math.min(q[i + 1], randomRawP[r[i]].p);
+            }
 
-	public void setNumberOfResamplingSteps(int n)
-	{
-		numberOfResamplingSteps = n;
-	}
+            /* Count up */
+            for (i = 0; i < m; i++)
+            {
+                if (q[i] <= rawP[r[i]].p) {
+                    count[i]++;
+                }
+            }
 
-	public int getNumberOfResamplingSteps()
-	{
-		return numberOfResamplingSteps;
-	}
+            System.out.print(b + "\r");
+        }
+        System.out.println("Done!");
 
-	public void resetCache()
-	{
-		// no cache here, nothing to do
-		
-	}
+        /* Enforce monotony contraints */
+        int c = count[0];
+        for (i = 1; i < m; i++) {
+            c = count[i] = Math.max(1, Math.max(c, count[i]));
+        }
 
-	public int getSizeTolerance()
-	{
-		return 0;
-	}
+        /* Calculate the adjusted p values */
+        for (i = 0; i < m; i++)
+        {
+            rawP[r[i]].p_adjusted = ((double) count[i]) / numberOfResamplingSteps;
+        }
+        return rawP;
+    }
 
-	public void setSizeTolerance(int t)
-	{
-		
-	}
+    @Override
+    public void setNumberOfResamplingSteps(int n)
+    {
+        numberOfResamplingSteps = n;
+    }
+
+    @Override
+    public int getNumberOfResamplingSteps()
+    {
+        return numberOfResamplingSteps;
+    }
+
+    @Override
+    public void resetCache()
+    {
+        // no cache here, nothing to do
+
+    }
+
+    @Override
+    public int getSizeTolerance()
+    {
+        return 0;
+    }
+
+    @Override
+    public void setSizeTolerance(int t)
+    {
+
+    }
 }

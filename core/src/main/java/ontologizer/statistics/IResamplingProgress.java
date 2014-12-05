@@ -5,6 +5,7 @@ package ontologizer.statistics;
  */
 public interface IResamplingProgress
 {
-	void init(int max);
-	void update(int current);
+    void init(int max);
+
+    void update(int current);
 }

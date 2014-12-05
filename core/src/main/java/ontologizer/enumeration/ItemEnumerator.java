@@ -11,112 +11,115 @@ import ontologizer.types.ByteString;
 
 /**
  * Stores which items are annotated to which terms.
- * 
+ *
  * @author Sebastian Bauer
  */
 public class ItemEnumerator implements Iterable<ByteString>
 {
-	private ItemEnumerator() { }
-	
-	private HashMap<ByteString,ArrayList<TermID>> items2Terms;
-	private HashMap<ByteString,ArrayList<TermID>> items2DirectTerms;
+    private ItemEnumerator()
+    {
+    }
 
-	public ArrayList<TermID> getTermsAnnotatedToTheItem(ByteString item)
-	{
-		return items2Terms.get(item);
-	}
-	
-	public ArrayList<TermID> getTermsDirectlyAnnotatedToTheItem(ByteString item)
-	{
-		return items2DirectTerms.get(item);
-	}
+    private HashMap<ByteString, ArrayList<TermID>> items2Terms;
 
-	/**
-	 * Returns all used term ids.
-	 * 
-	 * @return
-	 */
-	public ArrayList<TermID> getAllTermIDs()
-	{
-		LinkedHashSet<TermID> allTermIDs = new LinkedHashSet<TermID>();
-		for (ArrayList<TermID> tids : items2Terms.values())
-			allTermIDs.addAll(tids);
-		return new ArrayList<TermID>(allTermIDs);
-	}
+    private HashMap<ByteString, ArrayList<TermID>> items2DirectTerms;
 
-	/**
-	 * Create an item enumerator from a term enumerator. 
-	 * 
-	 * @param termEnumerator
-	 * @return
-	 */
-	public static ItemEnumerator createFromTermEnumerator(GOTermEnumerator termEnumerator)
-	{
-		HashMap<ByteString,ArrayList<TermID>> items2Terms = new HashMap<ByteString,ArrayList<TermID>>();
-		HashMap<ByteString,ArrayList<TermID>> items2DirectTerms = new HashMap<ByteString,ArrayList<TermID>>();
+    public ArrayList<TermID> getTermsAnnotatedToTheItem(ByteString item)
+    {
+        return items2Terms.get(item);
+    }
 
-		for (TermID tid : termEnumerator)
-		{
-			GOTermAnnotatedGenes genes = termEnumerator.getAnnotatedGenes(tid);
+    public ArrayList<TermID> getTermsDirectlyAnnotatedToTheItem(ByteString item)
+    {
+        return items2DirectTerms.get(item);
+    }
 
-			for (ByteString g : genes.totalAnnotated)
-			{
-				ArrayList<TermID> al = items2Terms.get(g);
-				if (al == null)
-				{
-					al = new ArrayList<TermID>();
-					items2Terms.put(g, al);
-				}
+    /**
+     * Returns all used term ids.
+     *
+     * @return
+     */
+    public ArrayList<TermID> getAllTermIDs()
+    {
+        LinkedHashSet<TermID> allTermIDs = new LinkedHashSet<TermID>();
+        for (ArrayList<TermID> tids : items2Terms.values()) {
+            allTermIDs.addAll(tids);
+        }
+        return new ArrayList<TermID>(allTermIDs);
+    }
 
-				al.add(tid);
-			}
-			
-			for (ByteString g : genes.directAnnotated)
-			{
-				ArrayList<TermID> al = items2DirectTerms.get(g);
-				if (al == null)
-				{
-					al = new ArrayList<TermID>();
-					items2DirectTerms.put(g, al);
-				}
+    /**
+     * Create an item enumerator from a term enumerator.
+     *
+     * @param termEnumerator
+     * @return
+     */
+    public static ItemEnumerator createFromTermEnumerator(GOTermEnumerator termEnumerator)
+    {
+        HashMap<ByteString, ArrayList<TermID>> items2Terms = new HashMap<ByteString, ArrayList<TermID>>();
+        HashMap<ByteString, ArrayList<TermID>> items2DirectTerms = new HashMap<ByteString, ArrayList<TermID>>();
 
-				al.add(tid);
-			}
+        for (TermID tid : termEnumerator)
+        {
+            GOTermAnnotatedGenes genes = termEnumerator.getAnnotatedGenes(tid);
 
-		}
-		
-		ItemEnumerator itemEnum = new ItemEnumerator();
-		itemEnum.items2Terms = items2Terms;
-		itemEnum.items2DirectTerms = items2DirectTerms;
-		
-		return itemEnum;
-	}
-	
-	@Override
-	public String toString()
-	{
-		StringBuilder builder = new StringBuilder();
-		
-		for (ByteString gene : items2Terms.keySet())
-		{
-			builder.append(gene);
-			builder.append(": ");
+            for (ByteString g : genes.totalAnnotated)
+            {
+                ArrayList<TermID> al = items2Terms.get(g);
+                if (al == null)
+                {
+                    al = new ArrayList<TermID>();
+                    items2Terms.put(g, al);
+                }
 
-			for (TermID tid : items2Terms.get(gene))
-			{
-				builder.append(tid.toString());
-				builder.append(",");
-			}
-			builder.append("\n");
-		}
+                al.add(tid);
+            }
 
-		return builder.toString();
-	}
+            for (ByteString g : genes.directAnnotated)
+            {
+                ArrayList<TermID> al = items2DirectTerms.get(g);
+                if (al == null)
+                {
+                    al = new ArrayList<TermID>();
+                    items2DirectTerms.put(g, al);
+                }
 
-	public Iterator<ByteString> iterator()
-	{
-		return items2Terms.keySet().iterator();
-	}
+                al.add(tid);
+            }
+
+        }
+
+        ItemEnumerator itemEnum = new ItemEnumerator();
+        itemEnum.items2Terms = items2Terms;
+        itemEnum.items2DirectTerms = items2DirectTerms;
+
+        return itemEnum;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        for (ByteString gene : items2Terms.keySet())
+        {
+            builder.append(gene);
+            builder.append(": ");
+
+            for (TermID tid : items2Terms.get(gene))
+            {
+                builder.append(tid.toString());
+                builder.append(",");
+            }
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    @Override
+    public Iterator<ByteString> iterator()
+    {
+        return items2Terms.keySet().iterator();
+    }
 }
-
-

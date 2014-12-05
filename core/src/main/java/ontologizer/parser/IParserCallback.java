@@ -4,5 +4,5 @@ import ontologizer.types.ByteString;
 
 public interface IParserCallback
 {
-	public void newEntry(ByteString gene, ItemAttribute attribute);
+    public void newEntry(ByteString gene, ItemAttribute attribute);
 }

@@ -7,178 +7,188 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Based upon algorithm decribed in "Statistical significance for
- * genomewide studies"
+ * Based upon algorithm decribed in "Statistical significance for genomewide studies"
  *
  * @author Sebastian Bauer
  */
 public class Storey implements ITestCorrectionOld
 {
-	/**
-	 * 
-	 * @author Sebastian Bauer
-	 *
-	 * Class models a double value entry and its index of
-	 * a source array.
-	 *
-	 */
-	private class Entry implements Comparable<Entry>
-	{
-		public double value;
-		public int index;
+    /**
+     * @author Sebastian Bauer Class models a double value entry and its index of a source array.
+     */
+    private class Entry implements Comparable<Entry>
+    {
+        public double value;
 
-		public int compareTo(Entry o)
-		{
-			if (value < o.value) return -1;
-			if (value == o.value) return 0;
-			return 1;
-		}
-	};
+        public int index;
 
-	public double[] correctPValues(double[] pValues, double alpha)
-	{
-		double [] qValues;		/* Resulting array of qvalues */
-		double [] rank;			/* Rank of the pvalues (ranks will start from 1) */
-		Entry [] sortedPValues; /* sorted PValues associated with their index */
- 
-		int m; /* number of tests */
-		int i;
+        @Override
+        public int compareTo(Entry o)
+        {
+            if (value < o.value) {
+                return -1;
+            }
+            if (value == o.value) {
+                return 0;
+            }
+            return 1;
+        }
+    };
 
-		m = pValues.length;
-		qValues = new double[pValues.length];
-		rank = new double[pValues.length];
+    @Override
+    public double[] correctPValues(double[] pValues, double alpha)
+    {
+        double[] qValues; /* Resulting array of qvalues */
+        double[] rank; /* Rank of the pvalues (ranks will start from 1) */
+        Entry[] sortedPValues; /* sorted PValues associated with their index */
 
-		/* Create sortedPValues Array */
-		sortedPValues = new Entry[m];
-		for (i=0;i<m;i++)
-			sortedPValues[i] = new Entry();
+        int m; /* number of tests */
+        int i;
 
-		for (i=0;i<m;i++)
-		{
-			sortedPValues[i].index = i;
-			sortedPValues[i].value = pValues[i];
-		}
-		Arrays.sort(sortedPValues);
+        m = pValues.length;
+        qValues = new double[pValues.length];
+        rank = new double[pValues.length];
 
-		/* Now fill the rank array by using the additional stored
-		 * index within an sortedPValue entry */
-		i = 0;
-		while (i<m)
-		{
-			int end = i + 1;
+        /* Create sortedPValues Array */
+        sortedPValues = new Entry[m];
+        for (i = 0; i < m; i++) {
+            sortedPValues[i] = new Entry();
+        }
 
-			double curValue = sortedPValues[i].value;
-			double curRank =  i + 1;
+        for (i = 0; i < m; i++)
+        {
+            sortedPValues[i].index = i;
+            sortedPValues[i].value = pValues[i];
+        }
+        Arrays.sort(sortedPValues);
 
-			while ((end < m) && (curValue == sortedPValues[end].value))
-			{
-				curRank += end + 1;
-				end++;
-			}
+        /*
+         * Now fill the rank array by using the additional stored index within an sortedPValue entry
+         */
+        i = 0;
+        while (i < m)
+        {
+            int end = i + 1;
 
-			/* now average the rank */
-			curRank /= end - i;
-			
-			for (;i<end;i++)
-				rank[sortedPValues[i].index] = curRank;
+            double curValue = sortedPValues[i].value;
+            double curRank = i + 1;
 
-			/* Note that i=end and end is at least i+1 */
-		}
+            while ((end < m) && (curValue == sortedPValues[end].value))
+            {
+                curRank += end + 1;
+                end++;
+            }
 
-		/* Calculate the pi0 value */
-		double pi0 = calculatePI0(sortedPValues);
+            /* now average the rank */
+            curRank /= end - i;
 
-		for (i=0;i<m;i++)
-		{
-			/* Calculate q value and overwrite p value */
-			qValues[i] = pi0 * m * pValues[i] / rank[i]; 
-		}
+            for (; i < end; i++) {
+                rank[sortedPValues[i].index] = curRank;
+            }
 
-		/* TODO: qvalue <- pi0*m*p/(v*(1-(1-p)^m)) for the r
-		        remark <- c(remark, "The robust version of the q-value was calculated. See Storey JD (2002) JRSS-B 64: 479-498.")
-*/
+            /* Note that i=end and end is at least i+1 */
+        }
 
-		/* "Fix" the values */
-		qValues[sortedPValues[m-1].index] = Math.min(qValues[sortedPValues[m-1].index],1);
-		for (i=m-2;i>=0;i--)
-			qValues[sortedPValues[i].index] = Math.min(qValues[sortedPValues[i].index],qValues[sortedPValues[i+1].index]);
+        /* Calculate the pi0 value */
+        double pi0 = calculatePI0(sortedPValues);
 
-		return qValues;
-	}
+        for (i = 0; i < m; i++)
+        {
+            /* Calculate q value and overwrite p value */
+            qValues[i] = pi0 * m * pValues[i] / rank[i];
+        }
 
-	/**
-	 * Calculates the pi0 value (= m0/m i.e. the proportion of true
-	 * null hypothesis and all null hypothesis) 
-	 * 
-	 * @param sortedPValues
-	 *        specifies the p values which must be sorted increasingly.
-	 *
-	 * @return
-	 */
-	private double calculatePI0(Entry[] sortedPValues)
-	{
-		double [] pi = new double[96];
-		double lamda = 0.00;
-		int i;
-		int m = sortedPValues.length;
+        /*
+         * TODO: qvalue <- pi0*m*p/(v*(1-(1-p)^m)) for the r remark <- c(remark,
+         * "The robust version of the q-value was calculated. See Storey JD (2002) JRSS-B 64: 479-498.")
+         */
 
-		System.out.println("------------ " + m);
-		for (i=0;i<pi.length;i++)
-		{
-			int count = 0;
-			
-			/* TODO: Since the array is sorted and lamda is increasing
-			 * this can be optimized */
-			for (int j=0;j<m;j++)
-			{
-				if (sortedPValues[j].value > lamda)
-					count++;
-			}
-			
-			pi[i] = count / (m*(1 - lamda));
+        /* "Fix" the values */
+        qValues[sortedPValues[m - 1].index] = Math.min(qValues[sortedPValues[m - 1].index], 1);
+        for (i = m - 2; i >= 0; i--) {
+            qValues[sortedPValues[i].index] =
+                Math.min(qValues[sortedPValues[i].index], qValues[sortedPValues[i + 1].index]);
+        }
 
-			System.out.println("lamda = " + lamda + " " + count + " " + pi[i]);
-			lamda += 0.01;
-		}
+        return qValues;
+    }
 
-		/* We estimate 1 for now */
-		return 1;
-	}
+    /**
+     * Calculates the pi0 value (= m0/m i.e. the proportion of true null hypothesis and all null hypothesis)
+     *
+     * @param sortedPValues specifies the p values which must be sorted increasingly.
+     * @return
+     */
+    private double calculatePI0(Entry[] sortedPValues)
+    {
+        double[] pi = new double[96];
+        double lamda = 0.00;
+        int i;
+        int m = sortedPValues.length;
 
-	public String getDescription()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+        System.out.println("------------ " + m);
+        for (i = 0; i < pi.length; i++)
+        {
+            int count = 0;
 
-	public String getName()
-	{
-		return "Storey (QValues)";
-	}
+            /*
+             * TODO: Since the array is sorted and lamda is increasing this can be optimized
+             */
+            for (int j = 0; j < m; j++)
+            {
+                if (sortedPValues[j].value > lamda) {
+                    count++;
+                }
+            }
 
-	public static void main(String[] args) throws IOException
-	{
-		ITestCorrectionOld corr = new Storey();
-		FileReader file = new FileReader("/home/sba/R/multtest/pvalues.txt");
-		BufferedReader reader = new BufferedReader(file);
-		ArrayList<Double> list = new ArrayList<Double>();
-		String line;
-		double [] pValues;
-		double [] correctedPValues;
+            pi[i] = count / (m * (1 - lamda));
 
-		for (int linenum = 1; (line = reader.readLine()) != null; linenum++)
-			list.add(Double.parseDouble(line));
+            System.out.println("lamda = " + lamda + " " + count + " " + pi[i]);
+            lamda += 0.01;
+        }
 
-		pValues = new double[list.size()];
-		for (int i = 0;i<list.size();i++)
-			pValues[i] = list.get(i);
+        /* We estimate 1 for now */
+        return 1;
+    }
 
-		correctedPValues = corr.correctPValues(pValues,0.05);
-		Arrays.sort(correctedPValues);
-		
-		for (int i = 0;i<list.size();i++)
-		{
-			System.out.println(correctedPValues[i]);
-		}
-	}
+    @Override
+    public String getDescription()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Storey (QValues)";
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        ITestCorrectionOld corr = new Storey();
+        FileReader file = new FileReader("/home/sba/R/multtest/pvalues.txt");
+        BufferedReader reader = new BufferedReader(file);
+        ArrayList<Double> list = new ArrayList<Double>();
+        String line;
+        double[] pValues;
+        double[] correctedPValues;
+
+        for (int linenum = 1; (line = reader.readLine()) != null; linenum++) {
+            list.add(Double.parseDouble(line));
+        }
+
+        pValues = new double[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            pValues[i] = list.get(i);
+        }
+
+        correctedPValues = corr.correctPValues(pValues, 0.05);
+        Arrays.sort(correctedPValues);
+
+        for (int i = 0; i < list.size(); i++)
+        {
+            System.out.println(correctedPValues[i]);
+        }
+    }
 }

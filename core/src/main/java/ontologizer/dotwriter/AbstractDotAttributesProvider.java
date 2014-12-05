@@ -9,27 +9,29 @@ package ontologizer.dotwriter;
 import ontologizer.go.TermID;
 
 /**
- * Default implementation of the interface providing attributes for dot graph. 
+ * Default implementation of the interface providing attributes for dot graph.
  *
  * @author Sebastian Bauer
  */
 public class AbstractDotAttributesProvider implements IDotAttributesProvider
 {
-	/** Returns the dot attributes for the given term. */
-	public  String getDotNodeAttributes(TermID id)
-	{
-		return null;
-	}
+    /** Returns the dot attributes for the given term. */
+    @Override
+    public String getDotNodeAttributes(TermID id)
+    {
+        return null;
+    }
 
-	/**
-	 * Returns the dot attributes for the given edge.
-	 *  
-	 * @param id1
-	 * @param id2
-	 * @return
-	 */
-	public String getDotEdgeAttributes(TermID id1, TermID id2)
-	{
-		return null;
-	}
+    /**
+     * Returns the dot attributes for the given edge.
+     *
+     * @param id1
+     * @param id2
+     * @return
+     */
+    @Override
+    public String getDotEdgeAttributes(TermID id1, TermID id2)
+    {
+        return null;
+    }
 }

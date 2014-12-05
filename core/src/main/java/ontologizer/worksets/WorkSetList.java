@@ -11,38 +11,40 @@ import java.util.Iterator;
 
 public class WorkSetList implements Iterable<WorkSet>
 {
-	private ArrayList<WorkSet> wsl = new ArrayList<WorkSet>();
+    private ArrayList<WorkSet> wsl = new ArrayList<WorkSet>();
 
-	public Iterator<WorkSet> iterator()
-	{
-		return wsl.iterator();
-	}
-	
-	public void add(String name, String obo, String association)
-	{
-		WorkSet ws = new WorkSet(name);
-		ws.setOboPath(obo);
-		ws.setAssociationPath(association);
-		wsl.add(ws);
-	}
+    @Override
+    public Iterator<WorkSet> iterator()
+    {
+        return wsl.iterator();
+    }
 
-	public void add(WorkSet ws)
-	{
-		wsl.add(ws);
-	}
+    public void add(String name, String obo, String association)
+    {
+        WorkSet ws = new WorkSet(name);
+        ws.setOboPath(obo);
+        ws.setAssociationPath(association);
+        wsl.add(ws);
+    }
 
-	public WorkSet get(String currentWorkSet)
-	{
-		for (WorkSet ws : wsl)
-		{
-			if (ws.getName().equalsIgnoreCase(currentWorkSet))
-				return ws;
-		}
-		return null;
-	}
-	
-	public void clear()
-	{
-		wsl.clear();
-	}
+    public void add(WorkSet ws)
+    {
+        wsl.add(ws);
+    }
+
+    public WorkSet get(String currentWorkSet)
+    {
+        for (WorkSet ws : wsl)
+        {
+            if (ws.getName().equalsIgnoreCase(currentWorkSet)) {
+                return ws;
+            }
+        }
+        return null;
+    }
+
+    public void clear()
+    {
+        wsl.clear();
+    }
 }

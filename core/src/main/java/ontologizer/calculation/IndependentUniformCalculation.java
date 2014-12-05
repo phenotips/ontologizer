@@ -10,128 +10,131 @@ import ontologizer.statistics.IPValueCalculation;
 import ontologizer.statistics.PValue;
 
 /**
- * 
- * This is not a significance test, but a dummy class which independently
- * samples uniform p-values for each term. I think I can use it to write a test
- * for the Westfall-Young MTC.
- * 
+ * This is not a significance test, but a dummy class which independently samples uniform p-values for each term. I
+ * think I can use it to write a test for the Westfall-Young MTC.
+ *
  * @author Steffen Grossmann
  */
 public class IndependentUniformCalculation implements ICalculation
 {
-	public String getName()
-	{
-		return "Independent-Uniform";
-	}
+    @Override
+    public String getName()
+    {
+        return "Independent-Uniform";
+    }
 
-	public String getDescription()
-	{
-		return "No description yet";
-	}
+    @Override
+    public String getDescription()
+    {
+        return "No description yet";
+    }
 
-	/**
-	 * Start calculation based on fisher exact test of the given study.
-	 * 
-	 * @param graph
-	 * @param goAssociations
-	 * @param populationSet
-	 * @param studySet
-	 * 
-	 * @return
-	 */
-	public EnrichedGOTermsResult calculateStudySet(Ontology graph,
-			AssociationContainer goAssociations, PopulationSet populationSet,
-			StudySet studySet, AbstractTestCorrection testCorrection)
-	{
-		EnrichedGOTermsResult studySetResult = new EnrichedGOTermsResult(graph, goAssociations, studySet, populationSet.getGeneCount());
-		studySetResult.setCalculationName(this.getName());
-		studySetResult.setCorrectionName(testCorrection.getName());
+    /**
+     * Start calculation based on fisher exact test of the given study.
+     *
+     * @param graph
+     * @param goAssociations
+     * @param populationSet
+     * @param studySet
+     * @return
+     */
+    @Override
+    public EnrichedGOTermsResult calculateStudySet(Ontology graph,
+        AssociationContainer goAssociations, PopulationSet populationSet,
+        StudySet studySet, AbstractTestCorrection testCorrection)
+    {
+        EnrichedGOTermsResult studySetResult =
+            new EnrichedGOTermsResult(graph, goAssociations, studySet, populationSet.getGeneCount());
+        studySetResult.setCalculationName(this.getName());
+        studySetResult.setCorrectionName(testCorrection.getName());
 
-		/**
-		 * 
-		 * This class hides all the details about how the p values are
-		 * calculated from the multiple test correction.
-		 * 
-		 * @author Sebastian Bauer
-		 * 
-		 */
-		class SinglePValuesCalculation implements IPValueCalculation
-		{
-			public PopulationSet populationSet;
-			public StudySet observedStudySet;
+        /**
+         * This class hides all the details about how the p values are calculated from the multiple test correction.
+         *
+         * @author Sebastian Bauer
+         */
+        class SinglePValuesCalculation implements IPValueCalculation
+        {
+            public PopulationSet populationSet;
 
-			public Ontology graph;
+            public StudySet observedStudySet;
 
-			public int currentStudySetSize()
-			{
-				return observedStudySet.getGeneCount();
-			}
+            public Ontology graph;
 
-			private PValue[] calculatePValues(StudySet studySet)
-			{
-				int i = 0;
+            @Override
+            public int currentStudySetSize()
+            {
+                return observedStudySet.getGeneCount();
+            }
 
-				PValue p[] = new PValue[graph.getNumberOfTerms()];
-				TermForTermGOTermProperties myP;
+            private PValue[] calculatePValues(StudySet studySet)
+            {
+                int i = 0;
 
-				for (Term goterm : graph)
-				{
-					String term = goterm.getIDAsString();
-						
-					int goidAnnotatedPopGeneCount = populationSet.getGeneCount();
-					int goidAnnotatedStudyGeneCount = observedStudySet.getGeneCount();
+                PValue p[] = new PValue[graph.getNumberOfTerms()];
+                TermForTermGOTermProperties myP;
 
-					myP = new TermForTermGOTermProperties();
-					myP.goTerm = graph.getTerm(term);
-					myP.annotatedStudyGenes = goidAnnotatedStudyGeneCount;
-					myP.annotatedPopulationGenes = goidAnnotatedPopGeneCount;
+                for (Term goterm : graph)
+                {
+                    String term = goterm.getIDAsString();
 
-					myP.p = Math.random();
-					myP.p_min = 0.0;
+                    int goidAnnotatedPopGeneCount = populationSet.getGeneCount();
+                    int goidAnnotatedStudyGeneCount = observedStudySet.getGeneCount();
 
-					p[i++] = myP;
-				}
-				return p;
-			}
+                    myP = new TermForTermGOTermProperties();
+                    myP.goTerm = graph.getTerm(term);
+                    myP.annotatedStudyGenes = goidAnnotatedStudyGeneCount;
+                    myP.annotatedPopulationGenes = goidAnnotatedPopGeneCount;
 
-			public PValue[] calculateRawPValues()
-			{
-				return calculatePValues(observedStudySet);
-			}
+                    myP.p = Math.random();
+                    myP.p_min = 0.0;
 
-			public PValue[] calculateRandomPValues()
-			{
-				return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
-			}
-		}
+                    p[i++] = myP;
+                }
+                return p;
+            }
 
-		SinglePValuesCalculation pValueCalculation = new SinglePValuesCalculation();
-		pValueCalculation.graph = graph;
-		pValueCalculation.populationSet = populationSet;
-		pValueCalculation.observedStudySet = studySet;
-		PValue p[] = testCorrection.adjustPValues(pValueCalculation);
+            @Override
+            public PValue[] calculateRawPValues()
+            {
+                return calculatePValues(observedStudySet);
+            }
 
-		/*
-		 * Add the results to the result list and filter out terms with no
-		 * annotated genes.
-		 */
-		for (int i = 0; i < p.length; i++)
-		{
-			/* Entries are SingleGOTermProperties */
-			TermForTermGOTermProperties prop = (TermForTermGOTermProperties) p[i];
+            @Override
+            public PValue[] calculateRandomPValues()
+            {
+                return calculatePValues(populationSet.generateRandomStudySet(observedStudySet.getGeneCount()));
+            }
+        }
 
-			/* Within the result ignore terms without any annotation */
-			if (prop.annotatedStudyGenes == 0)
-				continue;
+        SinglePValuesCalculation pValueCalculation = new SinglePValuesCalculation();
+        pValueCalculation.graph = graph;
+        pValueCalculation.populationSet = populationSet;
+        pValueCalculation.observedStudySet = studySet;
+        PValue p[] = testCorrection.adjustPValues(pValueCalculation);
 
-			studySetResult.addGOTermProperties(prop);
-		}
+        /*
+         * Add the results to the result list and filter out terms with no annotated genes.
+         */
+        for (PValue element : p) {
+            /* Entries are SingleGOTermProperties */
+            TermForTermGOTermProperties prop = (TermForTermGOTermProperties) element;
 
-		return studySetResult;
-	}
-	
-	public boolean supportsTestCorrection() {
-		return true;
-	}
+            /* Within the result ignore terms without any annotation */
+            if (prop.annotatedStudyGenes == 0) {
+                continue;
+            }
+
+            studySetResult.addGOTermProperties(prop);
+        }
+
+        return studySetResult;
+    }
+
+    @Override
+    public boolean supportsTestCorrection()
+    {
+        return true;
+    }
 
 }

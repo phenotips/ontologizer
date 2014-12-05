@@ -11,54 +11,57 @@ import ontologizer.types.ByteString;
 
 public class SemanticResult
 {
-	private static Logger logger = Logger.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
+    private static Logger logger = Logger.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
 
-	public Ontology g;
-	public AssociationContainer assoc;
+    public Ontology g;
 
-	public ByteString [] names;
-	public double [][] mat;
-	public String name;
+    public AssociationContainer assoc;
 
-	public SemanticCalculation calculation;
+    public ByteString[] names;
 
-	public void writeTable(File file)
-	{
-		try
-		{
-			logger.info("Writing to \"" + file.getCanonicalPath() + "\".");
+    public double[][] mat;
 
-			PrintWriter out = new PrintWriter(file);
+    public String name;
 
-			if (names != null && names.length>0)
-			{
-				out.print(names[0]);
-				for (int i=1;i<names.length;i++)
-				{
-					out.print("\t");
-					out.print(names[i]);
-				}
-				
-				out.println();
-				
-				for (int i=0;i<names.length;i++)
-				{
-					out.print(names[i]);
-					
-					for (int j=0;j<names.length;j++)
-					{
-						out.print("\t");
-						out.print(mat[i][j]);
-					}
+    public SemanticCalculation calculation;
 
-					out.println();
-				}
-			}
-			
-			out.close();
-		} catch (IOException e)
-		{
-		}
+    public void writeTable(File file)
+    {
+        try
+        {
+            logger.info("Writing to \"" + file.getCanonicalPath() + "\".");
 
-	}
+            PrintWriter out = new PrintWriter(file);
+
+            if (names != null && names.length > 0)
+            {
+                out.print(names[0]);
+                for (int i = 1; i < names.length; i++)
+                {
+                    out.print("\t");
+                    out.print(names[i]);
+                }
+
+                out.println();
+
+                for (int i = 0; i < names.length; i++)
+                {
+                    out.print(names[i]);
+
+                    for (int j = 0; j < names.length; j++)
+                    {
+                        out.print("\t");
+                        out.print(mat[i][j]);
+                    }
+
+                    out.println();
+                }
+            }
+
+            out.close();
+        } catch (IOException e)
+        {
+        }
+
+    }
 }

@@ -7,36 +7,38 @@ import ontologizer.calculation.EnrichedGOTermsResult;
 
 public class StudySetResultList implements Iterable<EnrichedGOTermsResult>
 {
-	private String name = new String();
-	private ArrayList<EnrichedGOTermsResult> list = new ArrayList<EnrichedGOTermsResult>();
-	
-	public void addStudySetResult(EnrichedGOTermsResult studySetRes)
-	{
-		list.add(studySetRes);
-	}
-	
-	public ArrayList<EnrichedGOTermsResult> getStudySetResults()
-	{
-		return list;
-	}
+    private String name = new String();
 
-	public String getName()
-	{
-		return name;
-	}
+    private ArrayList<EnrichedGOTermsResult> list = new ArrayList<EnrichedGOTermsResult>();
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+    public void addStudySetResult(EnrichedGOTermsResult studySetRes)
+    {
+        list.add(studySetRes);
+    }
 
-	public Iterator<EnrichedGOTermsResult> iterator()
-	{
-		return list.iterator();
-	}
-	
-	public int size()
-	{
-		return list.size();
-	}
+    public ArrayList<EnrichedGOTermsResult> getStudySetResults()
+    {
+        return list;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    @Override
+    public Iterator<EnrichedGOTermsResult> iterator()
+    {
+        return list.iterator();
+    }
+
+    public int size()
+    {
+        return list.size();
+    }
 }
