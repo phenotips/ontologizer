@@ -1,7 +1,7 @@
 package ontologizer.gui.swt.support;
 
 /*************************************************************
- $Id: GraphCanvas.java 150 2007-09-14 14:54:47Z sba $
+ $Id$
  
  This class is copyright 2006 by Sebastian Bauer and released
  under the terms of the CPL.		
