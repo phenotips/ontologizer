@@ -28,8 +28,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-
-  <build>
-    <testSourceDirectory>src</testSourceDirectory>
-  </build>
 </project>

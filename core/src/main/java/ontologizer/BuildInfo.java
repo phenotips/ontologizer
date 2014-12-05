@@ -26,7 +26,7 @@ public class BuildInfo
 		if (infoExtracted)
 			return;
 		
-		ResourceBundle properties = ResourceBundle.getBundle("ontologizer");
+	    ResourceBundle properties = ResourceBundle.getBundle("ontologizer");
 		revisionNumber = properties.getString("build.revision");
 		date = properties.getString("build.date");
 		copyright = copyright.substring(0, copyright.indexOf('-')) + '-' + date.substring(0, date.indexOf('-'));
