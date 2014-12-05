@@ -7,6 +7,13 @@
   <version>2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <scm>
+    <connection>scm:git:git://github.com/phenotips/ontologizer.git</connection>
+    <developerConnection>scm:git:git@github.com:phenotips/ontologizer.git</developerConnection>
+    <url>https://github.com/phenotips/ontologizer.git/tree/master/</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <!-- Our local repository. We won't like to depend on external ones so - 
        the software can be still compiled with Eclipse without a Maven - plugin -->
   <repositories>
