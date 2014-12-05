@@ -54,7 +54,6 @@
                 <!--  Tell ant to use an external java compiler -->
                 <property name="build.compiler" value="extJavac"/>
                 <ant antfile="build.xml" target="version"></ant>
-                <ant antfile="build.xml" target="build-user-changelog"></ant>
               </target>
             </configuration>
             <goals>
@@ -62,6 +61,28 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.3.2</version>
+        <executions>
+          <execution>
+            <id>generate-changelog</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>sonumina.util.changelog.BuildChangeLog</mainClass>
+          <arguments>
+            <argument>${basedir}</argument>
+            <argument>${project.build.outputDirectory}/ChangeLog</argument>
+          </arguments>
+        </configuration>
       </plugin>
 
       <plugin>
