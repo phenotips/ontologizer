@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+  
+<changeset datePattern="yyyyMMdd HH:mm:ss z" start="20141105 16:53:53 EST" end="20141206 16:53:53 EST">
+	<changelog-entry>
+		<date pattern="yyyy-MM-dd">2012-02-08</date>
+		<time pattern="HH:mm:ss">16:51:12</time>
+		<author><![CDATA[Sergiu Dumitriu <private@mail.net>]]></author>
+		<file>
+			<action>modified</action>
+			<name>core/pom.xml</name>
+			<revision>a083e6d8a3482fefa4e124aa4d534d7b681b67e2</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>core/src/main/java/sonumina/util/changelog/BuildChangeLog.java</name>
+			<revision>a083e6d8a3482fefa4e124aa4d534d7b681b67e2</revision>
+		</file>
+		<msg><![CDATA[Ignored]]></msg>
+	</changelog-entry>
+	<changelog-entry>
+		<date pattern="yyyy-MM-dd">2012-07-10</date>
+		<time pattern="HH:mm:ss">10:54:12</time>
+		<author><![CDATA[Sebastian Bauer <private@mail.info>]]></author>
+		<file>
+			<action>added</action>
+			<name>ontologizer.tests/src/att/grappa/TestGradient.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src.grappa/att/grappa/Attribute.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src.grappa/att/grappa/Element.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src.grappa/att/grappa/GrappaColor.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src.grappa/att/grappa/GrappaConstants.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src.grappa/att/grappa/GrappaNexus.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/calculation/EnrichedGOTermsResult.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/gui/swt/GraphWindow.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/gui/swt/result/SemanticSimilarityComposite.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/gui/swt/support/GraphPaint.java</name>
+			<revision>b1d01f92a3bff32968fb44209bb268d2caad7b77</revision>
+		</file>
+		<msg><![CDATA[Private
+
+$foruser$
+Test1
+
+Private
+
+git-svn-id: svn://svn.code.sf.net/p/ontologizer/svn/trunk@810 07a4415e-894b-0410-a0d6-e7c924882cef]]></msg>
+	</changelog-entry>
+	<changelog-entry>
+		<date pattern="yyyy-MM-dd">2012-05-11</date>
+		<time pattern="HH:mm:ss">09:49:09</time>
+		<author><![CDATA[Sebastian Bauer <private@mail.info>]]></author>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/gui/swt/MainWindow.java</name>
+			<revision>bd4d5c52f9f38ad8764fd119faa94256eeba78d5</revision>
+		</file>
+		<msg><![CDATA[$foruser$ Test2
+
+git-svn-id: svn://svn.code.sf.net/p/ontologizer/svn/trunk@799 07a4415e-894b-0410-a0d6-e7c924882cef]]></msg>
+	</changelog-entry>
+	<changelog-entry>
+		<date pattern="yyyy-MM-dd">2012-05-11</date>
+		<time pattern="HH:mm:ss">09:44:01</time>
+		<author><![CDATA[Sebastian Bauer <private@mail.info>]]></author>
+		<file>
+			<action>modified</action>
+			<name>ontologizer/src/ontologizer/gui/swt/images/Images.java</name>
+			<revision>3dc4ae902dcb73be589c1a1b8baa42465ec2ae32</revision>
+		</file>
+		<msg><![CDATA[Ignored.
+
+git-svn-id: svn://svn.code.sf.net/p/ontologizer/svn/trunk@797 07a4415e-894b-0410-a0d6-e7c924882cef]]></msg>
+	</changelog-entry>
+</changeset>
+
+</changelog>

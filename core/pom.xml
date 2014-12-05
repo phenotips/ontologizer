@@ -21,6 +21,12 @@
       <artifactId>grappa</artifactId>
       <version>1.2-20141205-phenotips</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -32,7 +38,31 @@
     </resources>
 
     <plugins>
-      <!-- Generate the changelog -->
+      <!-- Generate the native changelog -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changelog-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>changelog</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <basedir>..</basedir>
+          <type>date</type>
+          <dates>
+            <date implementation="java.lang.String">2000-01-01T00:00:00Z</date>
+            <date implementation="java.lang.String">${build.date}</date>
+          </dates>
+          <dateFormat>${maven.build.timestamp.format}</dateFormat>
+        </configuration>
+      </plugin>
+
+      <!-- Generate the user-facing changelog -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -49,7 +79,6 @@
         <configuration>
           <mainClass>sonumina.util.changelog.BuildChangeLog</mainClass>
           <arguments>
-            <argument>${basedir}</argument>
             <argument>${project.build.outputDirectory}/ChangeLog</argument>
           </arguments>
         </configuration>

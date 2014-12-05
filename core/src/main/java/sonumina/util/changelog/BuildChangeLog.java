@@ -1,10 +1,10 @@
 package sonumina.util.changelog;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,32 +14,98 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSParser;
+
 /**
- * This implementation turns an svn log into an text document. It calls "svn log" on the current directory..
+ * This implementation turns a changelog into an text document. It relies on Maven's checkstyle plugin having executed
+ * beforehand.
  *
  * @author Sebastian Bauer
  */
 public class BuildChangeLog
 {
-    public static Change[] process(String string)
-    {
-        ArrayList<Change> list = new ArrayList<Change>(100);
-        String[] commits = string.split("-+\n");
+    /** Xerces configuration parameter for disabling fetching and checking XMLs against their DTD. */
+    private static final String DISABLE_DTD_PARAM = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
-        Pattern pat =
-            Pattern.compile("r(\\d+)\\s+\\|\\s+(\\w+)\\s+\\|\\s+(.+?)\\s+\\|.*?\\$foruser\\$(.*)", Pattern.DOTALL);
+    public static void main(String[] args) throws IOException, InterruptedException
+    {
+        PrintStream out = System.out;
+        File rawChangelog = new File("target/changelog.xml");
+
+        if (args.length > 0)
+        {
+            out = new PrintStream(new FileOutputStream(args[0]));
+        }
+        if (args.length > 1)
+        {
+            rawChangelog = new File(args[1]);
+        }
+        if (!rawChangelog.exists() || !rawChangelog.isFile() || !rawChangelog.canRead()) {
+            System.err.println("changelog.xml not found, aborting");
+            return;
+        }
+
+        /* Process the output */
+        Change[] changes = process(new FileInputStream(rawChangelog));
+        if (changes == null) {
+            // No user-facing changes detected
+            return;
+        }
+        DateFormat fmt = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        for (Change change : changes)
+        {
+            out.println(fmt.format(change.date));
+            out.println(" - " + change.logString + " (" + change.authorString + ")");
+            out.println();
+        }
+    }
+
+    public static Change[] process(InputStream rawChangelog)
+    {
+        DOMImplementationLS lsp = null;
+        try {
+            lsp = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        } catch (Exception ex) {
+            System.err.println("Cannot initialize an XML parser: " + ex.getMessage());
+            return null;
+        }
+        LSInput in = lsp.createLSInput();
+        in.setByteStream(rawChangelog);
+        LSParser p = lsp.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
+        p.getDomConfig().setParameter("validate", false);
+        if (p.getDomConfig().canSetParameter(DISABLE_DTD_PARAM, false)) {
+            p.getDomConfig().setParameter(DISABLE_DTD_PARAM, false);
+        }
+        Document doc = p.parse(in);
+
+        ArrayList<Change> result = new ArrayList<Change>(100);
+        NodeList changes = doc.getElementsByTagName("changelog-entry");
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Pattern userMessage = Pattern.compile(".*\\$foruser\\$\\s*(\\w.*?)\n", Pattern.DOTALL);
 
-        for (int i = 1; i < commits.length; i++)
+        for (int i = 0; i < changes.getLength(); ++i)
         {
-            Matcher mat = pat.matcher(commits[i]);
-            while (mat.find())
-            {
-                String revisionString = mat.group(1);
-                String authorString = mat.group(2);
-                String dateString = mat.group(3);
-                String logString = mat.group(4);
+            Element change = (Element) changes.item(i);
+            String logString = change.getElementsByTagName("msg").item(0).getTextContent();
+            if (logString.indexOf("$foruser$") < 0) {
+                continue;
+            }
+            Matcher match = userMessage.matcher(logString);
+            while (match.find()) {
+                logString = match.group(1);
+                String dateString = change.getElementsByTagName("date").item(0).getTextContent();
+                String authorString = change.getElementsByTagName("author").item(0).getTextContent();
+                int emailIdx = authorString.indexOf('<');
+                if (emailIdx >= 0) {
+                    authorString = authorString.substring(0, emailIdx);
+                }
                 Date date;
 
                 try
@@ -51,61 +117,14 @@ public class BuildChangeLog
                     c.date = date;
                     c.dateString = dateString.trim();
                     c.logString = logString.trim();
-                    c.revisionString = revisionString.trim();
 
-                    list.add(c);
+                    result.add(c);
                 } catch (ParseException e) {
                 }
-
             }
         }
-        Change[] c = new Change[list.size()];
-        list.toArray(c);
+        Change[] c = new Change[result.size()];
+        result.toArray(c);
         return c;
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException
-    {
-        PrintStream out = System.out;
-
-        String path = ".";
-
-        if (args.length > 0)
-        {
-            path = args[0];
-            if (args.length > 1)
-            {
-                System.err.println("Writing to \"" + args[1] + "\"");
-                out = new PrintStream(new FileOutputStream(args[1]));
-            }
-        }
-        System.err.println("Getting log for \"" + new File(path).getCanonicalPath() + "\"");
-
-        /* Start svn log and read the output */
-        Process svnProcess = Runtime.getRuntime().exec(new String[] { "svn", "log", path });
-        BufferedReader br = new BufferedReader(new InputStreamReader(svnProcess.getInputStream()));
-        StringBuilder str = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            str.append(line + "\n");
-        }
-        int rc = svnProcess.waitFor();
-        BufferedReader err = new BufferedReader(new InputStreamReader(svnProcess.getErrorStream()));
-        System.err.println("The svn command returned " + rc);
-        while ((line = err.readLine()) != null) {
-            System.err.println(line);
-        }
-
-        /* Process the output */
-        Change[] changes = process(str.toString());
-        for (Change change : changes)
-        {
-            out.println(DateFormat.getDateInstance(DateFormat.MEDIUM).format(change.date) + " - r"
-                + change.revisionString);
-            out.println(" - " + change.logString + " (" + change.authorString + ")");
-            out.println();
-        }
-
-        System.err.println("Wrote " + changes.length + " entries");
     }
 }
