@@ -15,12 +15,66 @@
     <tag>HEAD</tag>
   </scm>
 
-  <!-- Our local repository. We won't like to depend on external ones so - 
-       the software can be still compiled with Eclipse without a Maven - plugin -->
+  <distributionManagement>
+    <site>
+      <id>nexus.phenotips.org</id>
+      <url>dav:https://nexus.phenotips.org/nexus/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
+    </site>
+    <repository>
+      <id>nexus.phenotips.org</id>
+      <name>Maven2 Remote Repository for Releases</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus.phenotips.org</id>
+      <name>Maven2 Development Repository for Snapshots</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <repositories>
+    <!-- Our local repository. We won't like to depend on external ones so
+         the software can be still compiled with Eclipse without a Maven - plugin -->
     <repository>
       <id>ontologizer-dependency-repo</id>
       <url>file://${basedir}/../core/local-maven-repo</url>
+    </repository>
+    <repository>
+      <id>phenotips-releases</id>
+      <name>PhenoTips Releases repository</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>phenotips-snapshots</id>
+      <name>PhenoTips Snapshots repository</name>
+      <url>https://nexus.phenotips.org/nexus/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>phenotips-externals</id>
+      <name>PhenoTips external repositories mirror</name>
+      <url>https://nexus.phenotips.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
