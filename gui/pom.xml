@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>ontologizer</groupId>
-    <artifactId>ontologizer.parent</artifactId>
+    <groupId>de.charite.compbio</groupId>
+    <artifactId>ontologizer-parent</artifactId>
     <version>2.1-SNAPSHOT</version>
   </parent>
-  <artifactId>ontologizer.gui</artifactId>
+  <artifactId>ontologizer-gui</artifactId>
   <name>Ontologizer - GUI</name>
 
   <dependencies>
@@ -70,12 +70,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontologizer</artifactId>
+      <artifactId>ontologizer-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontologizer.svd</artifactId>
+      <artifactId>ontologizer-svd</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

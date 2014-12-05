@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>ontologizer</groupId>
-    <artifactId>ontologizer.parent</artifactId>
+    <groupId>de.charite.compbio</groupId>
+    <artifactId>ontologizer-parent</artifactId>
     <version>2.1-SNAPSHOT</version>
   </parent>
-  <artifactId>ontologizer.tests</artifactId>
+  <artifactId>ontologizer-tests</artifactId>
   <name>Ontologizer - Tests</name>
 
   <dependencies>
@@ -19,13 +19,13 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontologizer</artifactId>
+      <artifactId>ontologizer-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>ontologizer.benchmark</artifactId>
+      <artifactId>ontologizer-benchmark</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
