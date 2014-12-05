@@ -10,7 +10,7 @@
   <repositories>
    <repository>
     <id>ontologizer-dependency-repo</id>
-    <url>file://${basedir}/../ontologizer/local-maven-repo</url>
+    <url>file://${basedir}/../core/local-maven-repo</url>
    </repository>
   </repositories>
 
@@ -29,12 +29,12 @@
   </build>
   
   <modules>
-  	<module>../ontologizer</module>
-  	<module>../ontologizer.svd</module>
-  	<module>../ontologizer.tests</module>
-  	<module>../ontologizer.gui</module>
-	<module>../ontologizer.cmdline</module>
-	<module>../ontologizer.benchmark</module>
+  	<module>core</module>
+  	<module>svd</module>
+  	<module>tests</module>
+  	<module>gui</module>
+	<module>cmdline</module>
+	<module>benchmark</module>
   </modules>
   
 </project>
