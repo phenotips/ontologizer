@@ -290,11 +290,29 @@ public class FileCache
      *
      * @param cachePath
      */
-    public static void setCacheDirectory(String cachePath)
+    public static void setCacheDirectory(String cachePath) throws IOException
     {
+        File directory = new File(cachePath);
+        boolean directoryExists;
+
+        if (directory.exists()) {
+            directoryExists = true;
+            if (!directory.isDirectory()) {
+                throw new IllegalArgumentException(String.format("The path %s is not a directory.", cachePath));
+            }
+        } else {
+            directoryExists = false;
+            if (!directory.mkdirs()) {
+                throw new IOException(String.format("Cannot create cache directory at %s.", cachePath));
+            }
+        }
+
         FileCache.cacheDirectory = cachePath;
         logger.info("Cache directory set to \"" + cachePath + "\"");
-        new File(FileCache.cacheDirectory).mkdirs();
+        if (!directoryExists) {
+            /* Since there was no directory present, there will be nothing there. */
+            return;
+        }
 
         File index = new File(cacheDirectory, ".index");
         try
@@ -318,7 +336,7 @@ public class FileCache
             }
         } catch (FileNotFoundException e)
         {
-            logger.log(Level.WARNING, "", e);
+            logger.log(Level.WARNING, String.format("The cache file was not found in %s.", cachePath));
         } catch (IOException e)
         {
             logger.log(Level.WARNING, "", e);
