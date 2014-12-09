@@ -1,6 +1,7 @@
 package ontologizer.calculation;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -234,7 +235,7 @@ public class Bayes2GOCalculationTest extends TestCase
 	 * The original test procedure
 	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
 		final HashMap<TermID,Double> wantedActiveTerms = new HashMap<TermID,Double>(); /* Terms that are active */
 
@@ -696,7 +697,7 @@ public class Bayes2GOCalculationTest extends TestCase
 //
 //	}
 
-	private static void loadOntology() throws InterruptedException
+	private static void loadOntology() throws InterruptedException, IOException
 	{
 		File workspace = new File(ontologizer.util.Util.getAppDataDirectory("ontologizer"),"workspace");
 		if (!workspace.exists())
