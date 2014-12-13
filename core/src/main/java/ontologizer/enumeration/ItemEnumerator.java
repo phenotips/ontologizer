@@ -3,6 +3,7 @@ package ontologizer.enumeration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import ontologizer.enumeration.GOTermEnumerator.GOTermAnnotatedGenes;
@@ -20,9 +21,9 @@ public class ItemEnumerator implements Iterable<ByteString>
     {
     }
 
-    private HashMap<ByteString, ArrayList<TermID>> items2Terms;
+    private LinkedHashMap<ByteString, ArrayList<TermID>> items2Terms;
 
-    private HashMap<ByteString, ArrayList<TermID>> items2DirectTerms;
+    private LinkedHashMap<ByteString, ArrayList<TermID>> items2DirectTerms;
 
     public ArrayList<TermID> getTermsAnnotatedToTheItem(ByteString item)
     {
@@ -56,8 +57,8 @@ public class ItemEnumerator implements Iterable<ByteString>
      */
     public static ItemEnumerator createFromTermEnumerator(GOTermEnumerator termEnumerator)
     {
-        HashMap<ByteString, ArrayList<TermID>> items2Terms = new HashMap<ByteString, ArrayList<TermID>>();
-        HashMap<ByteString, ArrayList<TermID>> items2DirectTerms = new HashMap<ByteString, ArrayList<TermID>>();
+        LinkedHashMap<ByteString, ArrayList<TermID>> items2Terms = new LinkedHashMap<ByteString, ArrayList<TermID>>();
+        LinkedHashMap<ByteString, ArrayList<TermID>> items2DirectTerms = new LinkedHashMap<ByteString, ArrayList<TermID>>();
 
         for (TermID tid : termEnumerator)
         {

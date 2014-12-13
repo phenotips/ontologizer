@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -50,7 +51,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     /** The GO graph */
     private Ontology graph;
 
-    private HashMap<TermID, GOTermAnnotatedGenes> map;
+    private LinkedHashMap<TermID, GOTermAnnotatedGenes> map;
 
     /** Holds the number of suspicious annotations */
     // private int suspiciousCount;
@@ -64,7 +65,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     {
         this.graph = graph;
 
-        this.map = new HashMap<TermID, GOTermAnnotatedGenes>();
+        this.map = new LinkedHashMap<TermID, GOTermAnnotatedGenes>();
     }
 
     /**
