@@ -125,66 +125,6 @@ public class ProbabilisticCalculation implements ICalculation
         /**
          * Recalculate all parameters based upon the active terms from scratch.
          */
-        public void calculateParamtersOld()
-        {
-            /* Active gene nodes connected to at least one active term */
-            // Set<ByteString> Ag = new HashSet<ByteString>();
-            HashMap<ByteString, Integer> Ag = new HashMap<ByteString, Integer>();
-
-            /* I inactive gene nodes */
-            /* Number of edges connecting nodes in I with active term nodes */
-            this.sg = 0;
-
-            /* Number of edges connecting nodes in I with inactive term nodes */
-            this.sn = 0;
-
-            Ag.clear();
-
-            for (TermID t : this.activeTerms) {
-                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated) {
-                    if (this.activeGenes.contains(g)) {
-                        // Ag.add(g);
-                        Integer cnt = Ag.get(g);
-                        if (cnt == null) {
-                            Ag.put(g, 1);
-                        } else {
-                            Ag.put(g, cnt + 1);
-                        }
-                    } else {
-                        /* Gene is inactive but term active */
-                        this.sg++;
-                    }
-                }
-            }
-
-            // for (TermID t : allTerms)
-            // {
-            // if (activeTerms.contains(t))
-            // continue;
-            //
-            // /* Inactive terms */
-            // for (ByteString g : popEnumerator.getAnnotatedGenes(t).totalAnnotated)
-            // {
-            // if (!activeGenes.contains(g))
-            // {
-            // /* Gene is inactive as terms are inactive */
-            // sn++;
-            // }
-            // }
-            // }
-
-            /* Active gene nodes connected to at least one active term */
-            this.ag = Ag.size();
-
-            /* Active gene nodes not connected to any active term */
-            this.an = this.activeGenes.size() - this.ag;
-
-            this.sn = this.st - this.sg;
-        }
-
-        /**
-         * Recalculate all parameters based upon the active terms from scratch.
-         */
         public void calculateParamters()
         {
             /* I inactive gene nodes */

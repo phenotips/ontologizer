@@ -19,9 +19,8 @@ abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
 
     private int index = 0;
 
+    @SuppressWarnings("unused")
     private int populationGeneCount;
-
-    private int studyGeneCount;
 
     private StudySet studySet;
 
@@ -31,9 +30,8 @@ abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
      */
     public AbstractStudySetResult(StudySet studySet, int populationGeneCount)
     {
-        this.populationGeneCount = populationGeneCount;
         this.studySet = studySet;
-        this.studyGeneCount = studySet.getGeneCount();
+        this.populationGeneCount = populationGeneCount;
     }
 
     /**

@@ -339,23 +339,6 @@ class IntHashMapForDoubles
             this.key = k;
             this.hash = h;
         }
-
-        public final int getKey()
-        {
-            return this.key;
-        }
-
-        public final double getValue()
-        {
-            return this.value;
-        }
-
-        public final double setValue(double newValue)
-        {
-            double oldValue = this.value;
-            this.value = newValue;
-            return oldValue;
-        }
     }
 
     /**
