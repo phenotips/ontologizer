@@ -14,7 +14,7 @@ import ontologizer.go.TermID;
  * @author Peter Robinson
  * @version 0.15 2005-02-21
  */
-public class AssociationCounter implements Comparable
+public class AssociationCounter implements Comparable<AssociationCounter>
 {
     /**
      * Number of times the GO term indicated by this.name and this.accession was seen in the present group (cluster) of
@@ -49,13 +49,12 @@ public class AssociationCounter implements Comparable
 
     /** Compare on the basis of total counts (direct and implied). */
     @Override
-    public int compareTo(Object other)
+    public int compareTo(AssociationCounter other)
     {
-        AssociationCounter ac = (AssociationCounter) other;
-        if (this.count > ac.count) {
+        if (this.count > other.count) {
             return -1;
         }
-        if (this.count < ac.count) {
+        if (this.count < other.count) {
             return +1;
         }
         return 0;
