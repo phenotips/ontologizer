@@ -140,9 +140,9 @@
             <compilerArgument>-Xlint:all</compilerArgument>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
-            <!-- Java 1.6 is required -->
-            <source>1.6</source>
-            <target>1.6</target>
+            <!-- Java 1.7 is required -->
+            <source>1.7</source>
+            <target>1.7</target>
           </configuration>
         </plugin>
         <plugin>
