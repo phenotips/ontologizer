@@ -41,8 +41,7 @@ public class KSubsetSampler<T>
     public KSubsetSampler(Iterable<T> object)
     {
         this.objects = new ArrayList<T>();
-        for (T obj : object)
-        {
+        for (T obj : object) {
             this.objects.add(obj);
         }
         // this.objects.addAll(objects);
@@ -77,14 +76,12 @@ public class KSubsetSampler<T>
 
         k = Math.min(k, this.nObj);
 
-        if (k == this.nObj)
-        {
+        if (k == this.nObj) {
             sample.addAll(this.objects);
             return sample;
         }
 
-        for (int i = this.nObj - 1; i >= this.nObj - k; i--)
-        {
+        for (int i = this.nObj - 1; i >= this.nObj - k; i--) {
             int choose = this.rnd.nextInt(i);
 
             T item = this.objects.get(choose);
@@ -107,11 +104,10 @@ public class KSubsetSampler<T>
      */
     public HashSet<ArrayList<T>> sampleManyOrderedWithoutReplacement(int k,
         int n) throws Exception
-        {
+    {
         HashSet<ArrayList<T>> samples = new HashSet<ArrayList<T>>();
 
-        if (k == 0)
-        {
+        if (k == 0) {
             for (int i = 0; i < n; i++) {
                 samples.add(new ArrayList<T>());
             }
@@ -123,33 +119,26 @@ public class KSubsetSampler<T>
 
         ArrayList<T> nextSample;
 
-        if (logRejectProb < logPcut)
-        {
-            for (int i = 0; i < n; i++)
-            {
-                while (samples.size() == i)
-                {
+        if (logRejectProb < logPcut) {
+            for (int i = 0; i < n; i++) {
+                while (samples.size() == i) {
                     nextSample = this.sampleOneOrdered(k);
-                    if (!samples.contains(nextSample))
-                    {
+                    if (!samples.contains(nextSample)) {
                         samples.add(nextSample);
                     }
                 }
             }
-        } else if (k == 1)
-        {
+        } else if (k == 1) {
             ArrayList<T> baseSample = this.sampleOneOrdered(n);
-            for (T obj : baseSample)
-            {
+            for (T obj : baseSample) {
                 ArrayList<T> singleton = new ArrayList<T>();
                 singleton.add(obj);
                 samples.add(singleton);
             }
-        } else
-        {
+        } else {
             throw (new Exception("Not implemented yet!"));
         }
 
         return samples;
-        }
+    }
 }

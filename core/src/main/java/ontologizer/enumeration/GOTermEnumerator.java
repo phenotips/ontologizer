@@ -103,16 +103,14 @@ public class GOTermEnumerator implements Iterable<TermID>
         HashSet<TermID> termIDSet = new HashSet<TermID>();
 
         /* At first add the direct counts and remember the terms */
-        for (Association association : geneAssociations)
-        {
+        for (Association association : geneAssociations) {
             TermID termID = association.getTermID();
 
             if (!this.graph.isRelevantTermID(termID)) {
                 continue;
             }
 
-            if (evidences != null)
-            {
+            if (evidences != null) {
                 if (!evidences.contains(association.getEvidence())) {
                     continue;
                 }
@@ -121,8 +119,7 @@ public class GOTermEnumerator implements Iterable<TermID>
             GOTermAnnotatedGenes termGenes = this.map.get(termID);
 
             /* Create an entry if it doesn't exist */
-            if (termGenes == null)
-            {
+            if (termGenes == null) {
                 termGenes = new GOTermAnnotatedGenes();
                 this.map.put(termID, termGenes);
             }
@@ -153,12 +150,10 @@ public class GOTermEnumerator implements Iterable<TermID>
             @Override
             public boolean visited(Term term)
             {
-                if (GOTermEnumerator.this.graph.isRelevantTermID(term.getID()))
-                {
+                if (GOTermEnumerator.this.graph.isRelevantTermID(term.getID())) {
                     GOTermAnnotatedGenes termGenes = GOTermEnumerator.this.map.get(term.getID());
 
-                    if (termGenes == null)
-                    {
+                    if (termGenes == null) {
                         termGenes = new GOTermAnnotatedGenes();
                         GOTermEnumerator.this.map.put(term.getID(), termGenes);
                     }
@@ -172,8 +167,7 @@ public class GOTermEnumerator implements Iterable<TermID>
         /* Create the visting */
         VisitingGOVertex vistingGOVertex = new VisitingGOVertex(geneName);
 
-        if (false)
-        {
+        if (false) {
             HashSet<TermRelation> termRelations = new HashSet<TermRelation>();
             termRelations.add(TermRelation.IS_A);
             termRelations.add(TermRelation.PART_OF_A);
@@ -231,8 +225,7 @@ public class GOTermEnumerator implements Iterable<TermID>
         }
 
         /* For every term genes are annotated to */
-        for (TermID curTerm : this.map.keySet())
-        {
+        for (TermID curTerm : this.map.keySet()) {
             /* Ignore terms on the same path */
             if (this.graph.isRootTerm(curTerm)) {
                 continue;
@@ -247,15 +240,13 @@ public class GOTermEnumerator implements Iterable<TermID>
             /* Find out the number of genes which are annotated to both terms */
             int count = 0;
             GOTermAnnotatedGenes curTermAnnotated = this.map.get(curTerm);
-            for (ByteString gene : curTermAnnotated.totalAnnotated)
-            {
+            for (ByteString gene : curTermAnnotated.totalAnnotated) {
                 if (goTermIDAnnotated.totalAnnotated.contains(gene)) {
                     count++;
                 }
             }
 
-            if (count != 0)
-            {
+            if (count != 0) {
                 GOTermOftenAnnotatedCount tc = new GOTermOftenAnnotatedCount();
                 tc.term = curTerm;
                 tc.counts = count;
@@ -350,8 +341,7 @@ public class GOTermEnumerator implements Iterable<TermID>
     public void removeTerms(IRemover remove)
     {
         ArrayList<TermID> toBeRemoved = new ArrayList<TermID>();
-        for (Entry<TermID, GOTermAnnotatedGenes> entry : this.map.entrySet())
-        {
+        for (Entry<TermID, GOTermAnnotatedGenes> entry : this.map.entrySet()) {
             if (remove.remove(entry.getKey(), entry.getValue())) {
                 toBeRemoved.add(entry.getKey());
             }

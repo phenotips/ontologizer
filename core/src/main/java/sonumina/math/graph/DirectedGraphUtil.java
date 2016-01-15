@@ -24,11 +24,9 @@ public class DirectedGraphUtil
             System.out.println("g.addVertex(" + v + ");");
         }
 
-        for (T v : graph)
-        {
+        for (T v : graph) {
             Iterator<T> parentIter = graph.getParentNodes(v);
-            while (parentIter.hasNext())
-            {
+            while (parentIter.hasNext()) {
                 T p = parentIter.next();
 
                 System.out.println("g.addEdge(new Edge(" + p + ", " + v + "));");

@@ -101,8 +101,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
             return;
         }
 
-        try
-        {
+        try {
             logger.info("Writing to \"" + file.getCanonicalPath() + "\".");
 
             PrintWriter out = new PrintWriter(file);
@@ -120,8 +119,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
             Collections.sort(propsList);
 
             /* Write out table contents */
-            for (AbstractGOTermProperties props : propsList)
-            {
+            for (AbstractGOTermProperties props : propsList) {
                 out.println(props.propLineToString(this.populationGeneCount,
                     this.studyGeneCount));
             }
@@ -130,8 +128,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
             out.close();
 
             logger.info("\"" + file.getCanonicalPath() + "\"" + " successfully written.");
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception occured when writing the table.", e);
         }
     }
@@ -147,8 +144,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
     {
         HashSet<TermID> goodTerms = new HashSet<TermID>();
 
-        for (AbstractGOTermProperties goProp : this)
-        {
+        for (AbstractGOTermProperties goProp : this) {
             TermID curTerm = goProp.goTerm.getID();
             if (goProp.p_min < pvalCutoff) {
                 goodTerms.add(curTerm);
@@ -177,8 +173,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
         int i = 0;
         int scount = 0;
         AbstractGOTermProperties propArray[] = new AbstractGOTermProperties[this.list.size()];
-        for (AbstractGOTermProperties props : this)
-        {
+        for (AbstractGOTermProperties props : this) {
             propArray[i++] = props;
             if (props.p_adjusted < alpha) {
                 scount++;
@@ -215,8 +210,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
                 attributes.append(label);
 
                 AbstractGOTermProperties prop = getGOTermProperties(id);
-                if (prop != null && counts)
-                {
+                if (prop != null && counts) {
                     attributes.append(String.format("\\n%d/%d, %d/%d",
                         prop.annotatedPopulationGenes, EnrichedGOTermsResult.this.populationGeneCount,
                         prop.annotatedStudyGenes, EnrichedGOTermsResult.this.studyGeneCount));
@@ -225,8 +219,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
                 /* TODO: tip attribute */
                 attributes.append("\"");
 
-                if (prop != null && prop.p_adjusted < alpha)
-                {
+                if (prop != null && prop.p_adjusted < alpha) {
                     /* A term is "extremal" if it is significant and no one of its children is significant */
                     boolean isExtremal;
 
@@ -256,15 +249,14 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
                      * saturation, but we avoid having significant nodes with too less saturation (at least 0.2)
                      */
                     int rank = goTermRank.get(prop.goTerm);
-                    assert (rank < significants_count);
+                    assert(rank < significants_count);
                     saturation = 1.0f - (((float) rank + 1) / significants_count) * 0.8f;
 
                     /* Always full brightness */
                     brightness = 1.0f;
 
                     /* Hue depends on namespace */
-                    switch (Namespace.getNamespaceEnum(prop.goTerm.getNamespace()))
-                    {
+                    switch (Namespace.getNamespaceEnum(prop.goTerm.getNamespace())) {
                         case BIOLOGICAL_PROCESS:
                             hue = 120.f / 360;
                             break;
@@ -305,8 +297,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
     {
         HashSet<TermID> nodes = new HashSet<TermID>();
 
-        for (AbstractGOTermProperties props : this)
-        {
+        for (AbstractGOTermProperties props : this) {
             if (props.isSignificant(thresh)) {
                 nodes.add(props.goTerm.getID());
             }

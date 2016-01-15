@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author grossman
  */
 public class FDRBySteffen extends AbstractTestCorrection
-implements IResampling
+    implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -39,13 +39,12 @@ implements IResampling
         double[][] pValues = new double[this.numberOfResamplingSteps][m];
 
         /* create them */
-        for (int b = 0; b < this.numberOfResamplingSteps; b++)
-        {
+        for (int b = 0; b < this.numberOfResamplingSteps; b++) {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = pvalues.calculateRandomPValues();
             Arrays.sort(randomRawP);
 
-            assert (randomRawP.length == m);
+            assert(randomRawP.length == m);
 
             for (i = 0; i < m; i++) {
                 pValues[b][i] = randomRawP[i].p;
@@ -80,8 +79,8 @@ implements IResampling
         for (int b = 0; b < this.numberOfResamplingSteps; b++) {
             lastFDR +=
                 (lastSampleRejects[b])
-                / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
-                    / this.numberOfResamplingSteps);
+                    / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
+                        / this.numberOfResamplingSteps);
         }
         if (Double.isNaN(lastFDR)) {
             lastFDR = 0;
@@ -97,8 +96,7 @@ implements IResampling
             // "\tlastObservedRejections : " + lastObservedRejections);
             // we take old values until something happens
             int lc = 0;
-            while (i < m && rawP[i].p <= lastPValue)
-            {
+            while (i < m && rawP[i].p <= lastPValue) {
                 rawP[i].p_adjusted = lastFDR;
                 lc++;
                 i++;

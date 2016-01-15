@@ -55,8 +55,7 @@ public class Storey implements ITestCorrectionOld
             sortedPValues[i] = new Entry();
         }
 
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             sortedPValues[i].index = i;
             sortedPValues[i].value = pValues[i];
         }
@@ -66,15 +65,13 @@ public class Storey implements ITestCorrectionOld
          * Now fill the rank array by using the additional stored index within an sortedPValue entry
          */
         i = 0;
-        while (i < m)
-        {
+        while (i < m) {
             int end = i + 1;
 
             double curValue = sortedPValues[i].value;
             double curRank = i + 1;
 
-            while ((end < m) && (curValue == sortedPValues[end].value))
-            {
+            while ((end < m) && (curValue == sortedPValues[end].value)) {
                 curRank += end + 1;
                 end++;
             }
@@ -92,8 +89,7 @@ public class Storey implements ITestCorrectionOld
         /* Calculate the pi0 value */
         double pi0 = calculatePI0(sortedPValues);
 
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             /* Calculate q value and overwrite p value */
             qValues[i] = pi0 * m * pValues[i] / rank[i];
         }
@@ -127,15 +123,13 @@ public class Storey implements ITestCorrectionOld
         int m = sortedPValues.length;
 
         System.out.println("------------ " + m);
-        for (i = 0; i < pi.length; i++)
-        {
+        for (i = 0; i < pi.length; i++) {
             int count = 0;
 
             /*
              * TODO: Since the array is sorted and lamda is increasing this can be optimized
              */
-            for (int j = 0; j < m; j++)
-            {
+            for (int j = 0; j < m; j++) {
                 if (sortedPValues[j].value > lamda) {
                     count++;
                 }
@@ -186,8 +180,7 @@ public class Storey implements ITestCorrectionOld
         correctedPValues = corr.correctPValues(pValues, 0.05);
         Arrays.sort(correctedPValues);
 
-        for (int i = 0; i < list.size(); i++)
-        {
+        for (int i = 0; i < list.size(); i++) {
             System.out.println(correctedPValues[i]);
         }
     }

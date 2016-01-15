@@ -78,10 +78,8 @@ public class SmithWaterman
         }
 
         /* Compute the remaining elements of the matrix */
-        for (i = 1; i <= l1; i++)
-        {
-            for (j = 1; j <= l2; j++)
-            {
+        for (i = 1; i <= l1; i++) {
+            for (j = 1; j <= l2; j++) {
                 int diagScore = h[i - 1][j - 1] + similarity(s1, i, s2, j); /* Advance both/Diag */
                 int upScore = h[i][j - 1] + similarity(s1, 0, s2, j); /* Insertation/Up */
                 int leftScore = h[i - 1][j] + similarity(s1, i, s2, 0); /* Deletion/Left */
@@ -106,11 +104,9 @@ public class SmithWaterman
         double maxS = Double.MIN_VALUE;
         int maxI = -1;
 
-        for (int i = 0; i < strs.length; i++)
-        {
+        for (int i = 0; i < strs.length; i++) {
             double s = SmithWaterman.getScore(strs[i], str);
-            if (s > maxS)
-            {
+            if (s > maxS) {
                 maxS = s;
                 maxI = i;
             }

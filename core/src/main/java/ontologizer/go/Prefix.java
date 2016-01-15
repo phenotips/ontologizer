@@ -47,12 +47,10 @@ public class Prefix
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof Prefix)
-        {
+        if (obj instanceof Prefix) {
             return equals((Prefix) obj);
         }
-        if (obj instanceof ByteString)
-        {
+        if (obj instanceof ByteString) {
             return equals((ByteString) obj);
         }
 

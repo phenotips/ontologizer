@@ -30,25 +30,19 @@ public class DescriptionParser
     {
         int pos = 0;
 
-        while (pos < txt.length())
-        {
+        while (pos < txt.length()) {
             String ptxt = txt.substring(pos);
 
             Matcher m = termPattern.matcher(ptxt);
-            if (m.find() && m.start() == 0)
-            {
+            if (m.find() && m.start() == 0) {
                 pos += m.end();
                 cb.part(m.group(1), m.group(2));
-            } else
-            {
+            } else {
                 m = textPattern.matcher(ptxt);
-                if (m.find())
-                {
+                if (m.find()) {
                     cb.part(m.group(1), null);
                     pos += m.end() - 1; /* The ` is important for the next round, so enure that we start with that */
-                }
-                else
-                {
+                } else {
                     cb.part(ptxt, null);
                     return;
                 }

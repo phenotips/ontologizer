@@ -43,11 +43,9 @@ public class DOTDumper
 
             /* second row (matrix) */
             attributes.append("<TR><TD><TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"2\">");
-            for (int r = 0; r < this.significant.length; r++)
-            {
+            for (int r = 0; r < this.significant.length; r++) {
                 attributes.append("<TR>");
-                for (int c = 0; c < this.significant[r].length; c++)
-                {
+                for (int c = 0; c < this.significant[r].length; c++) {
                     if (this.significant[r][c]) {
                         attributes.append("<TD HEIGHT=\"8\" BGCOLOR=\""
                             + DOTDumper.this.someColors[c + r * this.significant[r].length]
@@ -111,19 +109,16 @@ public class DOTDumper
         ArrayList<String> correctionList = new ArrayList<String>();
         ArrayList<String> methodList = new ArrayList<String>();
 
-        for (EnrichedGOTermsResult studySetResult : studResList)
-        {
+        for (EnrichedGOTermsResult studySetResult : studResList) {
             String correctionName = studySetResult.getCorrectionName();
             String calculationMethod = studySetResult.getCalculationName();
 
-            if (!correction2Column.containsKey(correctionName))
-            {
+            if (!correction2Column.containsKey(correctionName)) {
                 correctionList.add(correctionName);
                 correction2Column.put(correctionName, c++);
             }
 
-            if (!method2Row.containsKey(calculationMethod))
-            {
+            if (!method2Row.containsKey(calculationMethod)) {
                 methodList.add(calculationMethod);
                 method2Row.put(calculationMethod, r++);
             }
@@ -134,8 +129,7 @@ public class DOTDumper
 
         /* Now build the multi node map */
         HashMap<Term, MultResultNode> nodeMap = new HashMap<Term, MultResultNode>();
-        for (EnrichedGOTermsResult studySetResult : studResList)
-        {
+        for (EnrichedGOTermsResult studySetResult : studResList) {
             String correctionName = studySetResult.getCorrectionName();
             String calculationMethod = studySetResult.getCalculationName();
 
@@ -147,8 +141,7 @@ public class DOTDumper
         }
 
         /* Finally write out the dot file */
-        try
-        {
+        try {
             FileWriter out = new FileWriter(file);
 
             System.out.println("Writing dot file to " + file.getCanonicalPath());
@@ -166,16 +159,14 @@ public class DOTDumper
             buf.append("<TR><TD COLSPAN=\"2\" ROWSPAN=\"2\"></TD><TD COLSPAN=\"2\">Test Correction</TD></TR>");
             buf.append("<TR>");
 
-            for (c = 0; c < numCols; c++)
-            {
+            for (c = 0; c < numCols; c++) {
                 buf.append("<TD>");
                 buf.append(correctionList.get(c));
                 buf.append("</TD>");
             }
             buf.append("</TR>");
 
-            for (r = 0; r < numRows; r++)
-            {
+            for (r = 0; r < numRows; r++) {
                 buf.append("<TR>");
                 if (r == 0) {
                     buf.append("<TD ROWSPAN=\"" + numRows + "\">Calculation<BR />method</TD>");
@@ -185,8 +176,7 @@ public class DOTDumper
                 buf.append("</TD>");
 
                 /* For every column in the row place an cell with an unique color */
-                for (c = 0; c < numCols; c++)
-                {
+                for (c = 0; c < numCols; c++) {
                     buf.append("<TD WIDTH=\"150\" BGCOLOR=\"" + this.someColors[c + r * numCols] + "\"></TD>");
                 }
                 buf.append("</TR>");
@@ -196,19 +186,16 @@ public class DOTDumper
             out.write(buf.toString());
 
             /* The nodes */
-            for (MultResultNode node : nodeMap.values())
-            {
+            for (MultResultNode node : nodeMap.values()) {
                 out.write(node.dotString());
                 out.write("\n");
             }
 
             /* The edges */
-            for (MultResultNode node : nodeMap.values())
-            {
+            for (MultResultNode node : nodeMap.values()) {
                 TermID destID = node.goTerm.getID();
 
-                for (TermID sourceID : this.graph.getTermParents(destID))
-                {
+                for (TermID sourceID : this.graph.getTermParents(destID)) {
                     Term source = this.graph.getTerm(sourceID);
                     if (nodeMap.containsKey(source)) {
                         out.write(sourceID.id + " -> " + destID.id + ";\n");
@@ -218,8 +205,7 @@ public class DOTDumper
 
             out.write("}\n");
             out.close();
-        } catch (IOException io)
-        {
+        } catch (IOException io) {
             io.printStackTrace();
         }
     }
@@ -248,8 +234,7 @@ public class DOTDumper
         @Override
         public boolean visited(Term term)
         {
-            if (term != null && !this.nodeMap.containsKey(term))
-            {
+            if (term != null && !this.nodeMap.containsKey(term)) {
                 // TermID rootTerm = new TermID(8150);
                 // if (rootTerm.equals(goTermID) || (!graph.isRootGOTermID(goTermID) &&
                 // graph.existsPath(rootTerm,goTermID)))
@@ -267,12 +252,9 @@ public class DOTDumper
         EnrichedGOTermsResult studRes,
         double alpha, int rows, int cols, int row, int col)
     {
-        for (AbstractGOTermProperties props : studRes)
-        {
-            if (props.p_adjusted < alpha)
-            {
-                if (nodeMap.containsKey(props.goTerm))
-                {
+        for (AbstractGOTermProperties props : studRes) {
+            if (props.p_adjusted < alpha) {
+                if (nodeMap.containsKey(props.goTerm)) {
                     /* node existing just make sure that significance entry is set properly */
                     nodeMap.get(props.goTerm).significant[row][col] = true;
                 } else {
@@ -286,8 +268,7 @@ public class DOTDumper
                      * set significance properly, but we have to check before if the term is really contained within the
                      * map (because it can be filtered out, e.g. if it is not part of the requested subgraph)
                      */
-                    if (nodeMap.containsKey(props.goTerm))
-                    {
+                    if (nodeMap.containsKey(props.goTerm)) {
                         nodeMap.get(props.goTerm).significant[row][col] = true;
                     }
                 }

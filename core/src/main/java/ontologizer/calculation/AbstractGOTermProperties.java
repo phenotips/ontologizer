@@ -90,11 +90,9 @@ public abstract class AbstractGOTermProperties extends PValue
         StringBuilder locstr = new StringBuilder();
         columns = this.getNumberOfProperties();
 
-        for (i = 0; i < columns; i++)
-        {
+        for (i = 0; i < columns; i++) {
             String prop = this.getProperty(i);
-            if (prop == null)
-            {
+            if (prop == null) {
                 if (this.isPropertyPopulationGeneCount(i)) {
                     prop = Integer.toString(populationGeneCount);
                 } else if (this.isPropertyStudyGeneCount(i)) {
@@ -124,8 +122,7 @@ public abstract class AbstractGOTermProperties extends PValue
         int headercolumns;
         headercolumns = this.getNumberOfProperties();
 
-        for (i = 0; i < headercolumns; i++)
-        {
+        for (i = 0; i < headercolumns; i++) {
             locstr.append(this.getPropertyName(i));
             locstr.append("\t");
         }

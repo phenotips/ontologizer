@@ -37,8 +37,7 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
 
         HashMap<TermID, Double> weights = new HashMap<TermID, Double>();
         HashSet<TermID> sigChildren = new HashSet<TermID>();
-        for (TermID child : children)
-        {
+        for (TermID child : children) {
             TopologyWeightGOTermProperties childProp =
                 (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(child);
             double w = sigRatio(childProp.p, prop.p);
@@ -48,11 +47,9 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
             }
         }
 
-        if (sigChildren.size() == 0)
-        {
+        if (sigChildren.size() == 0) {
             /* Case 1: U is the most significant term in the family */
-            for (TermID child : children)
-            {
+            for (TermID child : children) {
                 TopologyWeightGOTermProperties childProp =
                     (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(child);
                 double w = weights.get(child);
@@ -71,16 +68,14 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
         }
 
         /* Case 2: At least one child is more significant than u */
-        for (TermID child : sigChildren)
-        {
+        for (TermID child : sigChildren) {
             double w = weights.get(child);
 
             Set<TermID> upper = graph.getTermsOfInducedGraph(graph.getRootTerm().getID(), u);
             upper.remove(u);
             upper.remove(graph.getRootTerm().getID());
 
-            for (TermID up : upper)
-            {
+            for (TermID up : upper) {
                 ensureGOTermPropertiesExistence(graph, up, studySetResult, studyTermEnumerator,
                     populationTermEnumerator);
 
@@ -96,8 +91,7 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
         }
 
         HashSet<TermID> newChildren = new HashSet<TermID>();
-        for (TermID t : children)
-        {
+        for (TermID t : children) {
             if (!sigChildren.contains(t)) {
                 newChildren.add(t);
             }
@@ -151,14 +145,12 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
             studyGeneCount += prop.getWeight(gene);
         }
 
-        if (goidAnnotatedStudyGeneCount != 0)
-        {
+        if (goidAnnotatedStudyGeneCount != 0) {
             prop.p =
                 this.hyperg.phypergeometric((int) Math.ceil(popGeneCount),
                     Math.ceil(goidAnnotatedPopGeneCount) / Math.ceil(popGeneCount),
                     (int) studyGeneCount, (int) goidAnnotatedStudyGeneCount);
-        } else
-        {
+        } else {
             prop.p = 1;
             prop.p_min = 1.0;
         }
@@ -172,8 +164,7 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
         GOTermEnumerator populationTermEnumerator)
     {
         TopologyWeightGOTermProperties prop = (TopologyWeightGOTermProperties) studySetResult.getGOTermProperties(u);
-        if (prop == null)
-        {
+        if (prop == null) {
             GOTermAnnotatedGenes populationAnnotatedGenes = populationTermEnumerator.getAnnotatedGenes(u);
             GOTermAnnotatedGenes studyAnnotatedGenes = studyTermEnumerator.getAnnotatedGenes(u);
 
@@ -207,16 +198,13 @@ public class TopologyWeightedCalculation extends AbstractHypergeometricCalculati
         Set<TermID> allAnnotatedTerms = studyTermEnumerator.getAllAnnotatedTermsAsSet();
         GOLevels levels = graph.getGOLevels(allAnnotatedTerms);
 
-        for (int i = levels.getMaxLevel(); i >= 0; i--)
-        {
+        for (int i = levels.getMaxLevel(); i >= 0; i--) {
             Set<TermID> terms = levels.getLevelTermSet(i);
 
-            for (TermID t : terms)
-            {
+            for (TermID t : terms) {
                 Set<TermID> descs = graph.getTermChildren(t);
                 Set<TermID> annotatedDescs = new HashSet<TermID>();
-                for (TermID d : descs)
-                {
+                for (TermID d : descs) {
                     if (allAnnotatedTerms.contains(d)) {
                         annotatedDescs.add(d);
                     }

@@ -60,7 +60,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
              */
             private HashSet<ByteString> calculateTerm(GOTermEnumerator populationTermEnumerator,
                 GOTermEnumerator studyTermEnumerator, StudySet studySet, TermID term, ArrayList<PValue> pList)
-                {
+            {
                 if (term.id == 5982) {
                     System.out.println("HUHUHUH" + this.markedGenesMap.containsKey(term));
                 }
@@ -73,8 +73,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 /* Determine genes that are marked */
                 HashSet<ByteString> markedGenes = new HashSet<ByteString>();
                 Set<TermID> d = this.graph.getTermChildren(term);
-                if (d != null)
-                {
+                if (d != null) {
                     for (TermID c : d) {
                         markedGenes.addAll(calculateTerm(populationTermEnumerator, studyTermEnumerator, studySet, c,
                             pList));
@@ -91,23 +90,20 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 int goidAnnotatedStudyGeneCount = 0;
 
                 GOTermAnnotatedGenes annotated = studyTermEnumerator.getAnnotatedGenes(term);
-                for (ByteString gene : annotated.totalAnnotated)
-                {
+                for (ByteString gene : annotated.totalAnnotated) {
                     if (!markedGenes.contains(gene)) {
                         goidAnnotatedStudyGeneCount++;
                     }
                 }
 
                 annotated = populationTermEnumerator.getAnnotatedGenes(term);
-                for (ByteString gene : annotated.totalAnnotated)
-                {
+                for (ByteString gene : annotated.totalAnnotated) {
                     if (!markedGenes.contains(gene)) {
                         goidAnnotatedPopGeneCount++;
                     }
                 }
                 /* We have to use the real count here */
-                if (annotated.totalAnnotated.size() == 0)
-                {
+                if (annotated.totalAnnotated.size() == 0) {
                     this.markedGenesMap.put(term, markedGenes);
                     return markedGenes;
                 }
@@ -117,8 +113,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 myP.annotatedStudyGenes = studyAnnotatedGenes.totalAnnotatedCount();
                 myP.annotatedPopulationGenes = populationTermEnumerator.getAnnotatedGenes(term).totalAnnotatedCount();
 
-                if (goidAnnotatedStudyGeneCount != 0)
-                {
+                if (goidAnnotatedStudyGeneCount != 0) {
                     /*
                      * Imagine the following... In an urn you put popGeneCount number of balls where a color of a ball
                      * can be white or black. The number of balls having white color is goidAnnontatedPopGeneCount (all
@@ -139,8 +134,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                     if (myP.p < SIGNIFICANCE_LEVEL) {
                         markedGenes.addAll(studyAnnotatedGenes.totalAnnotated);
                     }
-                } else
-                {
+                } else {
                     /* Mark this p value as irrelevant so it isn't considered in an mtc */
                     myP.p = 1.0;
                     myP.ignoreAtMTC = true;
@@ -150,7 +144,7 @@ public class TopCalculation extends AbstractHypergeometricCalculation
                 pList.add(myP);
                 this.markedGenesMap.put(term, markedGenes);
                 return markedGenes;
-                }
+            }
 
             private PValue[] calculatePValues(StudySet studySet)
             {
@@ -175,7 +169,8 @@ public class TopCalculation extends AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
+                return calculatePValues(
+                    this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
 
             @Override

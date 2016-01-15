@@ -13,8 +13,8 @@ public class ParentChildGOTermProperties extends AbstractGOTermProperties
     public int studyFamilyGenes;
 
     private static final String[] propertyNames = new String[] {
-        "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "nparents", "is.trivial",
-        "p", "p.adjusted", "p.min", "name"
+    "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "nparents", "is.trivial",
+    "p", "p.adjusted", "p.min", "name"
     };
 
     @Override
@@ -32,8 +32,7 @@ public class ParentChildGOTermProperties extends AbstractGOTermProperties
     @Override
     public String getProperty(int propNumber)
     {
-        switch (propNumber)
-        {
+        switch (propNumber) {
             case 0:
                 return this.goTerm.getIDAsString();
             case 1:

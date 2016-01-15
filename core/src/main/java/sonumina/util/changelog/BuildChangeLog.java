@@ -38,12 +38,10 @@ public class BuildChangeLog
         PrintStream out = System.out;
         File rawChangelog = new File("target/changelog.xml");
 
-        if (args.length > 0)
-        {
+        if (args.length > 0) {
             out = new PrintStream(new FileOutputStream(args[0]));
         }
-        if (args.length > 1)
-        {
+        if (args.length > 1) {
             rawChangelog = new File(args[1]);
         }
         if (!rawChangelog.exists() || !rawChangelog.isFile() || !rawChangelog.canRead()) {
@@ -58,8 +56,7 @@ public class BuildChangeLog
             return;
         }
         DateFormat fmt = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        for (Change change : changes)
-        {
+        for (Change change : changes) {
             out.println(fmt.format(change.date));
             out.println(" - " + change.logString + " (" + change.authorString + ")");
             out.println();
@@ -90,8 +87,7 @@ public class BuildChangeLog
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Pattern userMessage = Pattern.compile(".*\\$foruser\\$\\s*(\\w.*?)\n", Pattern.DOTALL);
 
-        for (int i = 0; i < changes.getLength(); ++i)
-        {
+        for (int i = 0; i < changes.getLength(); ++i) {
             Element change = (Element) changes.item(i);
             String logString = change.getElementsByTagName("msg").item(0).getTextContent();
             if (logString.indexOf("$foruser$") < 0) {
@@ -108,8 +104,7 @@ public class BuildChangeLog
                 }
                 Date date;
 
-                try
-                {
+                try {
                     date = df.parse(dateString);
 
                     Change c = new Change();

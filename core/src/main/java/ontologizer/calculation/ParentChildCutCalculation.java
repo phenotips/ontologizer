@@ -15,7 +15,7 @@ import ontologizer.statistics.PValue;
 import ontologizer.types.ByteString;
 
 public class ParentChildCutCalculation extends
-AbstractHypergeometricCalculation
+    AbstractHypergeometricCalculation
 {
 
     @Override
@@ -77,8 +77,7 @@ AbstractHypergeometricCalculation
                 int i = 0;
 
                 /* For every term within the goTermCounter */
-                for (TermID term : this.popTermEnumerator)
-                {
+                for (TermID term : this.popTermEnumerator) {
                     // calculating properties of term
                     ParentChildGOTermProperties termProp = calculateTerm(term,
                         this.graph, this.popTermEnumerator, studyTermEnumerator);
@@ -105,7 +104,8 @@ AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
+                return calculatePValues(
+                    this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
 
             private ParentChildGOTermProperties calculateTerm(TermID term,
@@ -122,15 +122,13 @@ AbstractHypergeometricCalculation
                 prop.annotatedPopulationGenes = popTermCount;
                 prop.annotatedStudyGenes = studyTermCount;
 
-                if (graph.isRootTerm(term))
-                {
+                if (graph.isRootTerm(term)) {
                     prop.nparents = 0;
                     prop.ignoreAtMTC = true;
                     prop.p = 1.0;
                     prop.p_adjusted = 1.0;
                     prop.p_min = 1.0;
-                } else
-                {
+                } else {
                     // getting parents
                     Set<TermID> parents = graph.getTermParents(term);
 
@@ -141,8 +139,7 @@ AbstractHypergeometricCalculation
 
                     boolean initialized = false;
                     // looping over all parents to
-                    for (TermID parent : parents)
-                    {
+                    for (TermID parent : parents) {
                         if (!initialized) // we record all genes annotated to the first parent
                         {
                             popParentCutGenes.addAll(popTermEnumerator.getAnnotatedGenes(parent).totalAnnotated);
@@ -172,19 +169,16 @@ AbstractHypergeometricCalculation
                     prop.studyFamilyGenes = studyFamilyCount;
                     prop.nparents = parents.size();
 
-                    if (studyTermCount != 0)
-                    {
-                        if (popFamilyCount == popTermCount)
-                        {
+                    if (studyTermCount != 0) {
+                        if (popFamilyCount == popTermCount) {
                             prop.ignoreAtMTC = true;
                             prop.p = 1.0;
                             prop.p_adjusted = 1.0;
                             prop.p_min = 1.0;
-                        } else
-                        {
+                        } else {
                             double p = ParentChildCutCalculation.this.hyperg.phypergeometric(popFamilyCount,
                                 (double) popTermCount
-                                / (double) popFamilyCount,
+                                    / (double) popFamilyCount,
                                 studyFamilyCount, studyTermCount);
 
                             prop.ignoreAtMTC = false;
@@ -192,8 +186,7 @@ AbstractHypergeometricCalculation
                             prop.p_min = ParentChildCutCalculation.this.hyperg.dhyper(popTermCount,
                                 popFamilyCount, popTermCount, popTermCount);
                         }
-                    } else
-                    {
+                    } else {
                         prop.ignoreAtMTC = true;
                         prop.p = 1.0;
                         prop.p_adjusted = 1.0;

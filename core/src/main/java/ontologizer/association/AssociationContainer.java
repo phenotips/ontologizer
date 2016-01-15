@@ -77,12 +77,10 @@ public class AssociationContainer implements Iterable<Gene2Associations>
     {
         this.totalAnnotations++;
         Gene2Associations g2a = null;
-        if (this.gene2assocs.containsKey(a.getObjectSymbol()))
-        {
+        if (this.gene2assocs.containsKey(a.getObjectSymbol())) {
             g2a = this.gene2assocs.get(a.getObjectSymbol());
             g2a.add(a); // Add the Association to existing g2a
-        } else
-        {
+        } else {
             // Otherwise create new Gene2Associations object
             // for this gene.
             g2a = new Gene2Associations(a.getObjectSymbol());
@@ -117,13 +115,11 @@ public class AssociationContainer implements Iterable<Gene2Associations>
     public Gene2Associations get(ByteString geneName)
     {
         Gene2Associations g2a = this.gene2assocs.get(geneName);
-        if (g2a == null)
-        {
+        if (g2a == null) {
             ByteString dbObject = this.dbObject2gene.get(geneName);
             g2a = this.gene2assocs.get(dbObject);
         }
-        if (g2a == null)
-        {
+        if (g2a == null) {
             ByteString synonym = this.synonym2gene.get(geneName);
             g2a = this.gene2assocs.get(synonym);
         }

@@ -34,8 +34,7 @@ public class WorkSetList implements Iterable<WorkSet>
 
     public WorkSet get(String currentWorkSet)
     {
-        for (WorkSet ws : this.wsl)
-        {
+        for (WorkSet ws : this.wsl) {
             if (ws.getName().equalsIgnoreCase(currentWorkSet)) {
                 return ws;
             }

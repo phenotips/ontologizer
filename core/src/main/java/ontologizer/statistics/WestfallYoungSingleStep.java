@@ -53,8 +53,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
         /* Sort the raw P-values and remember their original index */
         Entry[] sortedRawPValues = new Entry[m];
 
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             sortedRawPValues[i] = new Entry();
             sortedRawPValues[i].value = rawP[i].p;
             sortedRawPValues[i].index = i;
@@ -78,8 +77,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
                 /* create random sample */
                 PValue[] randomRawP = pvalues.calculateRandomPValues();
 
-                if (randomRawP.length > 0)
-                {
+                if (randomRawP.length > 0) {
                     /* determine minimal p-value in sample */
                     double minP = randomRawP[0].p;
                     for (i = 1; i < randomRawP.length; i++) {
@@ -116,8 +114,7 @@ public class WestfallYoungSingleStep extends AbstractResamplingTestCorrection
         }
 
         /* Calculate the adjusted p values */
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             rawP[sortedRawPValues[i].index].p_adjusted = ((double) count[i]) / this.numberOfResamplingSteps;
         }
         return rawP;

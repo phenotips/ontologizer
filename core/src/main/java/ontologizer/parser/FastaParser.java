@@ -41,8 +41,7 @@ public final class FastaParser extends AbstractItemParser
         String inputLine;
         BufferedReader is = new BufferedReader(new FileReader(this.file));
 
-        while ((inputLine = is.readLine()) != null)
-        {
+        while ((inputLine = is.readLine()) != null) {
             if (inputLine.length() > 0 && inputLine.charAt(0) == '>') {
                 processFASTALine(inputLine, callback);
             }
@@ -62,11 +61,9 @@ public final class FastaParser extends AbstractItemParser
         StringTokenizer st = new StringTokenizer(line.substring(1), DELIM, true);
         StringBuffer sb = new StringBuffer("");
         String name = null;
-        if (st.hasMoreTokens())
-        {
+        if (st.hasMoreTokens()) {
             name = st.nextToken().trim();
-        } else
-        {
+        } else {
             /* Nothing on line */
             System.err.println("Malformed FASTA line:\n\t" + line);
             // System.err.println("Location: " + file.getName());
@@ -74,8 +71,7 @@ public final class FastaParser extends AbstractItemParser
             System.exit(1);
 
         }
-        while (st.hasMoreTokens())
-        {
+        while (st.hasMoreTokens()) {
             sb.append(st.nextToken());
         }
         ByteString itemName = new ByteString(name);

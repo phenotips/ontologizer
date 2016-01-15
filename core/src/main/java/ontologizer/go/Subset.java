@@ -55,12 +55,10 @@ public class Subset
 
         String desc;
 
-        try
-        {
+        try {
             /* TODO: skip quotation marks */
             desc = new String(str.substring(del + 1, str.length()).toCharArray());
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             /* Nothing bad if anything fails */
             desc = "";
         }

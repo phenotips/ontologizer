@@ -25,7 +25,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     private TermID proposalT2;
 
     protected double[] ALPHA = new double[] { 0.0000001, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55,
-        0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 };
+    0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 };
 
     private int alphaIdx = 0;
 
@@ -46,7 +46,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     private boolean doBetaMCMC = true;
 
     protected final int[] EXPECTED_NUMBER_OF_TERMS = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-        17, 18, 19, 20 };
+    17, 18, 19, 20 };
 
     private int expIdx = 0;
 
@@ -170,12 +170,10 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     @Override
     public void hiddenGeneActivated(int gid)
     {
-        if (this.observedGenes[gid])
-        {
+        if (this.observedGenes[gid]) {
             this.n11++;
             this.n10--;
-        } else
-        {
+        } else {
             this.n01++;
             this.n00--;
         }
@@ -184,12 +182,10 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     @Override
     public void hiddenGeneDeactivated(int gid)
     {
-        if (this.observedGenes[gid])
-        {
+        if (this.observedGenes[gid]) {
             this.n11--;
             this.n10++;
-        } else
-        {
+        } else {
             this.n01--;
             this.n00++;
         }
@@ -207,17 +203,14 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
         this.oldBetaIdx = -1;
         this.oldExpIdx = -1;
 
-        if ((!this.doAlphaMCMC && !this.doBetaMCMC && !this.doExpMCMC) || this.rnd.nextBoolean())
-        {
+        if ((!this.doAlphaMCMC && !this.doBetaMCMC && !this.doExpMCMC) || this.rnd.nextBoolean()) {
             long choose = Math.abs(rand) % oldPossibilities;
 
-            if (choose < this.termsArray.length)
-            {
+            if (choose < this.termsArray.length) {
                 /* on/off */
                 this.proposalSwitch = (int) choose;
                 switchState(this.proposalSwitch);
-            } else
-            {
+            } else {
                 long base = choose - this.termsArray.length;
 
                 int activeTermPos = (int) (base / this.numInactiveTerms);
@@ -228,8 +221,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
 
                 exchange(this.proposalT1, this.proposalT2);
             }
-        } else
-        {
+        } else {
             int max = 0;
 
             if (this.doAlphaMCMC) {
@@ -244,10 +236,8 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
 
             int choose = Math.abs((int) rand) % max;
 
-            if (this.doAlphaMCMC)
-            {
-                if (choose < this.ALPHA.length)
-                {
+            if (this.doAlphaMCMC) {
+                if (choose < this.ALPHA.length) {
                     this.oldAlphaIdx = this.alphaIdx;
                     this.alphaIdx = choose;
                     return;
@@ -255,10 +245,8 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
                 choose -= this.ALPHA.length;
             }
 
-            if (this.doBetaMCMC)
-            {
-                if (choose < this.BETA.length)
-                {
+            if (this.doBetaMCMC) {
+                if (choose < this.BETA.length) {
                     this.oldBetaIdx = this.betaIdx;
                     this.betaIdx = choose;
                     return;
@@ -321,11 +309,9 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
             return 0.0;
         }
 
-        if (a < this.lGamma.length)
-        {
+        if (a < this.lGamma.length) {
             double lg = this.lGamma[a];
-            if (lg == 0.0)
-            {
+            if (lg == 0.0) {
                 lg = Gamma.lgamma(a);
                 this.lGamma[a] = lg;
             }
@@ -344,8 +330,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
     {
         double newScore2;
 
-        if (!this.integrateParams)
-        {
+        if (!this.integrateParams) {
             double alpha;
             double beta;
             double p;
@@ -363,8 +348,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
                     Math.log(p) * (this.termsArray.length - this.numInactiveTerms) + Math.log(1 - p)
                         * this.numInactiveTerms;
             }
-        } else
-        {
+        } else {
             /* Prior */
             int alpha1 = 1; /* Psedocounts, false positive */
             int alpha2 = 1; /* Psedocounts, true negative */
@@ -476,8 +460,7 @@ public class FixedAlphaBetaScore extends Bayes2GOScore
         for (int a : counts) {
             total += a;
         }
-        for (int i = 0; i < counts.length; i++)
-        {
+        for (int i = 0; i < counts.length; i++) {
             dist[i] = counts[i] / (double) total;
         }
         return dist;

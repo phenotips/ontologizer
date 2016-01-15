@@ -120,8 +120,7 @@ abstract public class Bayes2GOScore
         this.genes = new ByteString[this.population.size()];
         this.observedGenes = new boolean[this.genes.length];
         i = 0;
-        for (ByteString g : this.population)
-        {
+        for (ByteString g : this.population) {
             this.gene2GenesIdx.put(g, i);
             this.genes[i] = g;
             this.observedGenes[i] = observedActiveGenes.contains(g);
@@ -139,8 +138,7 @@ abstract public class Bayes2GOScore
         this.termLinks = new GeneIDs[termList.size()];
 
         i = 0;
-        for (TermID tid : termList)
-        {
+        for (TermID tid : termList) {
             this.term2TermsIdx.put(tid, i);
             this.termsArray[i] = tid;
             this.termPartition[i] = i;
@@ -149,8 +147,7 @@ abstract public class Bayes2GOScore
             /* Fill in the links */
             this.termLinks[i] = new GeneIDs(populationEnumerator.getAnnotatedGenes(tid).totalAnnotated.size());
             int j = 0;
-            for (ByteString gene : populationEnumerator.getAnnotatedGenes(tid).totalAnnotated)
-            {
+            for (ByteString gene : populationEnumerator.getAnnotatedGenes(tid).totalAnnotated) {
                 this.termLinks[i].gid[j] = this.gene2GenesIdx.get(gene);
                 j++;
             }
@@ -195,8 +192,7 @@ abstract public class Bayes2GOScore
         }
 
         /* Enable new terms */
-        for (TermID tid : activeTerms)
-        {
+        for (TermID tid : activeTerms) {
             Integer idx = this.term2TermsIdx.get(tid);
             if (idx != null) {
                 switchState(idx);
@@ -206,8 +202,7 @@ abstract public class Bayes2GOScore
         double score = getScore();
 
         /* Disable new terms */
-        for (TermID tid : activeTerms)
-        {
+        for (TermID tid : activeTerms) {
             Integer idx = this.term2TermsIdx.get(tid);
             if (idx != null) {
                 switchState(idx);
@@ -249,17 +244,13 @@ abstract public class Bayes2GOScore
         int[] geneIDs = this.termLinks[toSwitch].gid;
 
         this.isActive[toSwitch] = !this.isActive[toSwitch];
-        if (this.isActive[toSwitch])
-        {
+        if (this.isActive[toSwitch]) {
             /* A term was added, activate/deactivate genes */
-            for (int gid : geneIDs)
-            {
-                if (this.activeHiddenGenes[gid] == 0)
-                {
+            for (int gid : geneIDs) {
+                if (this.activeHiddenGenes[gid] == 0) {
                     this.activeHiddenGenes[gid] = 1;
                     hiddenGeneActivated(gid);
-                } else
-                {
+                } else {
                     this.activeHiddenGenes[gid]++;
                 }
             }
@@ -269,8 +260,7 @@ abstract public class Bayes2GOScore
              * of the 1 element, while the last 0 element gets the original position of the added set)
              */
             this.numInactiveTerms--;
-            if (this.numInactiveTerms != 0)
-            {
+            if (this.numInactiveTerms != 0) {
                 int pos = this.positionOfTermInPartition[toSwitch];
                 int e0 = this.termPartition[this.numInactiveTerms];
 
@@ -281,17 +271,13 @@ abstract public class Bayes2GOScore
                 this.termPartition[this.numInactiveTerms] = toSwitch;
                 this.positionOfTermInPartition[toSwitch] = this.numInactiveTerms;
             }
-        } else
-        {
+        } else {
             /* Update hiddenActiveGenes */
-            for (int gid : geneIDs)
-            {
-                if (this.activeHiddenGenes[gid] == 1)
-                {
+            for (int gid : geneIDs) {
+                if (this.activeHiddenGenes[gid] == 1) {
                     this.activeHiddenGenes[gid] = 0;
                     hiddenGeneDeactivated(gid);
-                } else
-                {
+                } else {
                     this.activeHiddenGenes[gid]--;
                 }
             }
@@ -300,8 +286,7 @@ abstract public class Bayes2GOScore
              * Converse of above. Here the removed set, which belonged to the 1 partition, is moved at the end of the 0
              * partition while the element at that place is pushed to the original position of the removed element.
              */
-            if (this.numInactiveTerms != (this.termsArray.length - 1))
-            {
+            if (this.numInactiveTerms != (this.termsArray.length - 1)) {
                 int pos = this.positionOfTermInPartition[toSwitch];
                 int b1 = this.termPartition[this.numInactiveTerms];
                 this.termPartition[pos] = b1;

@@ -210,8 +210,7 @@ class IntHashMapForDoubles
     public double get(int key)
     {
         int hash = hash(key);
-        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next)
-        {
+        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next) {
 
             if (/* e.hash == hash && */e.key == key) {
                 return e.value;
@@ -229,8 +228,7 @@ class IntHashMapForDoubles
     public boolean containsKey(int key)
     {
         int hash = hash(key);
-        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next)
-        {
+        for (Entry e = this.table[indexFor(hash, this.table.length)]; e != null; e = e.next) {
             if (/* e.hash == hash && */e.key == key) {
                 return true;
             }
@@ -252,10 +250,8 @@ class IntHashMapForDoubles
     {
         int hash = hash(key);
         int i = indexFor(hash, this.table.length);
-        for (Entry e = this.table[i]; e != null; e = e.next)
-        {
-            if (/* e.hash == hash && */e.key == key)
-            {
+        for (Entry e = this.table[i]; e != null; e = e.next) {
+            if (/* e.hash == hash && */e.key == key) {
                 e.value = value;
                 return;
             }
@@ -297,11 +293,9 @@ class IntHashMapForDoubles
         int newCapacity = newTable.length;
         for (int j = 0; j < src.length; j++) {
             Entry e = src[j];
-            if (e != null)
-            {
+            if (e != null) {
                 src[j] = null;
-                do
-                {
+                do {
                     Entry next = e.next;
                     int i = indexFor(e.hash, newCapacity);
                     e.next = newTable[i];
@@ -448,8 +442,7 @@ public class SemanticCalculation
         /* Making associations non-redundant */
         this.associations = new Object[this.allGenesStudy.getGeneCount()];
         int i = 0;
-        for (ByteString gene : this.allGenesStudy)
-        {
+        for (ByteString gene : this.allGenesStudy) {
             this.gene2index.put(gene, i);
 
             ArrayList<TermID> assocList = assoc.get(gene).getAssociations();
@@ -459,10 +452,8 @@ public class SemanticCalculation
             }
             HashSet<TermID> nonRedundantTerms = new HashSet<TermID>();
 
-            termloop: for (TermID tid : assocList)
-            {
-                for (TermID desc : g.getTermChildren(tid))
-                {
+            termloop: for (TermID tid : assocList) {
+                for (TermID desc : g.getTermChildren(tid)) {
                     if (inducedNodes.contains(desc)) {
                         continue termloop;
                     }
@@ -481,8 +472,7 @@ public class SemanticCalculation
             i++;
         }
 
-        if (this.numberOfProcessors > 1)
-        {
+        if (this.numberOfProcessors > 1) {
             this.cacheLock = new ReentrantReadWriteLock();
             this.readLock = this.cacheLock.readLock();
             this.writeLock = this.cacheLock.writeLock();
@@ -516,8 +506,7 @@ public class SemanticCalculation
          * The information content of two terms is defined as the minimum of the information content of the shared
          * parents.
          */
-        for (TermID t : sharedParents)
-        {
+        for (TermID t : sharedParents) {
             double newP = p(t);
             if (newP < p) {
                 p = newP;
@@ -536,8 +525,7 @@ public class SemanticCalculation
     private double sim(TermID t1, TermID t2)
     {
         /* Similarity of terms is symmetric */
-        if (t1.id > t2.id)
-        {
+        if (t1.id > t2.id) {
             TermID s = t2;
             t2 = t1;
             t1 = s;
@@ -548,11 +536,9 @@ public class SemanticCalculation
         }
 
         IntHashMapForDoubles map2 = this.cache[t1.id];
-        if (map2 != null)
-        {
+        if (map2 != null) {
             double val = map2.get(t2.id);
-            if (!Double.isNaN(val))
-            {
+            if (!Double.isNaN(val)) {
                 if (this.cacheLock != null) {
                     this.cacheLock.readLock().unlock();
                 }
@@ -560,16 +546,14 @@ public class SemanticCalculation
             }
         }
 
-        if (this.cacheLock != null)
-        {
+        if (this.cacheLock != null) {
             /* Upgrade lock, must unlock the read lock manually before */
             this.readLock.unlock();
             this.writeLock.lock();
         }
 
         /* Create HashMap when needed, but the value is definitively not there */
-        if (map2 == null)
-        {
+        if (map2 == null) {
             map2 = new IntHashMapForDoubles();
             this.cache[t1.id] = map2;
         }
@@ -607,10 +591,8 @@ public class SemanticCalculation
         /*
          * TODO: Research if we can employ sorting omit some or many of the pairs.
          */
-        for (TermID t1 : tl1)
-        {
-            for (TermID t2 : tl2)
-            {
+        for (TermID t1 : tl1) {
+            for (TermID t2 : tl2) {
                 double newSim = sim(t1, t2);
                 if (newSim > sim) {
                     sim = newSim;
@@ -641,10 +623,8 @@ public class SemanticCalculation
         List<TermID> tl1 = this.goAssociations.get(g1).getAssociations();
         List<TermID> tl2 = this.goAssociations.get(g2).getAssociations();
 
-        for (TermID t1 : tl1)
-        {
-            for (TermID t2 : tl2)
-            {
+        for (TermID t1 : tl1) {
+            for (TermID t2 : tl2) {
                 double newSim = sim(t1, t2);
                 if (newSim > sim) {
                     sim = newSim;
@@ -716,14 +696,11 @@ public class SemanticCalculation
             try {
                 this.unemployedQueue.put(this);
 
-                while (true)
-                {
+                while (true) {
                     Message msg = this.messageQueue.take();
 
-                    if (msg instanceof BeginWorkMessage)
-                    {
-                        for (int i = 0; i < this.addPairCount; i += 2)
-                        {
+                    if (msg instanceof BeginWorkMessage) {
+                        for (int i = 0; i < this.addPairCount; i += 2) {
                             int i1 = this.indices[this.work[i]];
                             int i2 = this.indices[this.work[i + 1]];
 
@@ -735,15 +712,13 @@ public class SemanticCalculation
                         this.pairsDone = this.addPairCount / 2;
                         this.addPairCount = 0;
                         this.unemployedQueue.put(this);
-                    } else
-                    {
+                    } else {
                         if (msg instanceof FinishMessage) {
                             break;
                         }
                     }
                 }
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
             }
         }
 
@@ -804,11 +779,9 @@ public class SemanticCalculation
          */
         int[] indices = new int[study.getGeneCount()];
         int k = 0;
-        for (ByteString g : study)
-        {
+        for (ByteString g : study) {
             Integer idx = this.gene2index.get(g);
-            if (idx == null)
-            {
+            if (idx == null) {
                 /* Maybe we can find the gene via a mapping */
                 Gene2Associations o2a = this.goAssociations.get(g);
                 if (o2a != null) {
@@ -823,15 +796,12 @@ public class SemanticCalculation
             k++;
         }
 
-        if (this.numberOfProcessors > 1)
-        {
-            try
-            {
+        if (this.numberOfProcessors > 1) {
+            try {
                 /* Create and start the worker threads and put them in the queue */
                 WorkerThread[] wt = new WorkerThread[this.numberOfProcessors];
                 BlockingQueue<WorkerThread> unemployedQueue = new LinkedBlockingQueue<WorkerThread>();
-                for (int j = 0; j < this.numberOfProcessors; j++)
-                {
+                for (int j = 0; j < this.numberOfProcessors; j++) {
                     wt[j] = new WorkerThread(unemployedQueue, mat, indices);
                     wt[j].start();
                 }
@@ -839,12 +809,9 @@ public class SemanticCalculation
                 /* Take first unemployed thread */
                 WorkerThread currentWorker = unemployedQueue.take();
 
-                for (i = 0; i < indices.length; i++)
-                {
-                    for (int j = 0; j < indices.length; j++)
-                    {
-                        if (!currentWorker.addPairForWork(i, j))
-                        {
+                for (i = 0; i < indices.length; i++) {
+                    for (int j = 0; j < indices.length; j++) {
+                        if (!currentWorker.addPairForWork(i, j)) {
                             currentWorker.fire();
 
                             /* Take next unemployed thread (may wait if there is no unemployed thread left) */
@@ -853,8 +820,7 @@ public class SemanticCalculation
                             currentWorker.pairsDone = 0;
 
                             long newMillis = System.currentTimeMillis();
-                            if (newMillis - millis > 200)
-                            {
+                            if (newMillis - millis > 200) {
                                 millis = newMillis;
                                 progress.update(counter);
                             }
@@ -862,33 +828,25 @@ public class SemanticCalculation
                     }
                 }
 
-                for (int j = 0; j < this.numberOfProcessors; j++)
-                {
+                for (int j = 0; j < this.numberOfProcessors; j++) {
                     wt[j].finish();
                     wt[j].join();
                 }
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-        } else
-        {
+        } else {
             /* Single threaded */
-            for (i = 0; i < indices.length; i++)
-            {
-                for (int j = i; j < indices.length; j++)
-                {
+            for (i = 0; i < indices.length; i++) {
+                for (int j = i; j < indices.length; j++) {
                     mat[i][j] = mat[j][i] = sim(indices[i], indices[j]);
 
-                    if (progress != null)
-                    {
-                        if (counter++ % 1000 == 0)
-                        {
+                    if (progress != null) {
+                        if (counter++ % 1000 == 0) {
                             long newMillis = System.currentTimeMillis();
-                            if (newMillis - millis > 200)
-                            {
+                            if (newMillis - millis > 200) {
                                 millis = newMillis;
                                 progress.update(counter);
                             }
@@ -921,15 +879,12 @@ public class SemanticCalculation
         long millis = System.currentTimeMillis();
         int gene = 0;
 
-        for (int i = 0; i < this.associations.length; i++)
-        {
-            for (int j = 0; j < this.associations.length; j++)
-            {
+        for (int i = 0; i < this.associations.length; i++) {
+            for (int j = 0; j < this.associations.length; j++) {
                 sim(i, j);
             }
             long newMillis = System.currentTimeMillis();
-            if (newMillis > millis + 250)
-            {
+            if (newMillis > millis + 250) {
                 System.out.println(gene * 100.0 / this.allGenesStudy.getGeneCount() + "%");
                 millis = newMillis;
             }
@@ -986,13 +941,11 @@ public class SemanticCalculation
         Random r = new Random(1);
 
         /* Randomly assign the items (note that redundant associations are filtered out later) */
-        for (int i = 1; i <= 30; i++)
-        {
+        for (int i = 1; i <= 30; i++) {
             String itemName = "item" + i;
             int numTerms = r.nextInt(4) + 1;
 
-            for (int j = 0; j < numTerms; j++)
-            {
+            for (int j = 0; j < numTerms; j++) {
                 int tid = r.nextInt(terms.size()) + 1;
                 assocContainer.addAssociation(new Association(new ByteString(itemName), tid));
             }

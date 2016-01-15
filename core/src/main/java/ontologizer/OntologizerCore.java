@@ -166,11 +166,9 @@ public class OntologizerCore
 
         /* create the study list. A directory or a single file might be given */
         File studyFile = new File(args.studySet);
-        if (studyFile.isDirectory())
-        {
+        if (studyFile.isDirectory()) {
             this.studySetList = new StudySetList(args.studySet, args.suffix);
-        } else
-        {
+        } else {
             /* Create a study list with a dummy name and add the study manually */
             this.studySetList = new StudySetList("study");
             this.studySetList.addStudySet(StudySetFactory.createFromFile(studyFile, false));
@@ -180,8 +178,7 @@ public class OntologizerCore
         this.populationSet = (PopulationSet) StudySetFactory.createFromFile(new File(args.populationFile), true);
 
         /* Apply the optional gene name mapping given by the supplied filter file */
-        if (args.filterFile != null)
-        {
+        if (args.filterFile != null) {
             System.err.println("Parsing filter \"" + args.filterFile + "\"");
             GeneFilter filter = new GeneFilter(new File(args.filterFile));
 
@@ -197,8 +194,7 @@ public class OntologizerCore
          * Check now if all study genes are included within the population, if a partiulcar gene is not contained, add
          * it
          */
-        for (ByteString geneName : this.studySetList.getGeneSet())
-        {
+        for (ByteString geneName : this.studySetList.getGeneSet()) {
             if (!this.populationSet.contains(geneName)) {
                 this.populationSet.addGene(geneName, "");
             }
@@ -228,8 +224,7 @@ public class OntologizerCore
                     {
                         long currentTime = System.currentTimeMillis();
 
-                        if (currentTime - this.startTime > 20000)
-                        {
+                        if (currentTime - this.startTime > 20000) {
                             /* Show progress */
                             System.err.print("\033[1A\033[K");
                             System.err.println("Reading annotation file: "
@@ -249,8 +244,7 @@ public class OntologizerCore
             study.filterOutDuplicateGenes(this.goAssociations);
         }
 
-        if (args.filterOutUnannotatedGenes)
-        {
+        if (args.filterOutUnannotatedGenes) {
             /* Filter out genes within the study without any annotations */
             for (StudySet study : this.studySetList) {
                 study.filterOutAssociationlessGenes(this.goAssociations);
@@ -282,15 +276,13 @@ public class OntologizerCore
      */
     public void calculate()
     {
-        assert (this.populationSet != null);
+        assert(this.populationSet != null);
         this.studySetResultList = new StudySetResultList();
 
-        for (StudySet studySet : this.studySetList)
-        {
+        for (StudySet studySet : this.studySetList) {
             this.studySetResultList.addStudySetResult(
                 this.calculation.calculateStudySet(this.goGraph, this.goAssociations, this.populationSet, studySet,
-                    this.testCorrection)
-                );
+                    this.testCorrection));
 
             /*
              * Reset the counter and enumerator items here. It is not necessarily nice to place it here, but for the
@@ -310,12 +302,11 @@ public class OntologizerCore
      */
     public EnrichedGOTermsResult calculateNextStudy()
     {
-        assert (this.populationSet != null);
+        assert(this.populationSet != null);
         if (this.studySetIter == null) {
             this.studySetIter = this.studySetList.iterator();
         }
-        if (!this.studySetIter.hasNext())
-        {
+        if (!this.studySetIter.hasNext()) {
             return null;
         }
 

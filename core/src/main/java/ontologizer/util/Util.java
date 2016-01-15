@@ -33,15 +33,13 @@ public final class Util
     {
         /* On windows we can try the APPDATA path */
         String dirName = System.getenv("APPDATA");
-        if (dirName == null)
-        {
+        if (dirName == null) {
             /* If not defined we simply take the user directory */
             dirName = System.getProperty("user.home");
         }
 
         File app = new File(dirName);
-        if (app.exists() && app.isDirectory())
-        {
+        if (app.exists() && app.isDirectory()) {
             File onto = new File(app, "." + appName);
             if (!onto.exists()) {
                 onto.mkdir();

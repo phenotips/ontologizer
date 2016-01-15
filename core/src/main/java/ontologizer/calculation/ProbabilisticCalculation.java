@@ -65,46 +65,36 @@ public class ProbabilisticCalculation implements ICalculation
          */
         public void switchTerm(TermID t)
         {
-            if (this.activeTerms.contains(t))
-            {
+            if (this.activeTerms.contains(t)) {
                 /* Term is going to be deactivated */
                 this.activeTerms.remove(t);
 
-                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
-                {
-                    if (this.activeGenes.contains(g))
-                    {
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated) {
+                    if (this.activeGenes.contains(g)) {
                         Integer cnt = this.Ag.get(g);
                         if (cnt == 1) {
                             this.Ag.remove(g);
                         } else {
                             this.Ag.put(g, cnt - 1);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         /* Gene is inactive but term active */
                         this.nsg--;
                     }
                 }
-            } else
-            {
+            } else {
                 /* Term is going to be activated */
                 this.activeTerms.add(t);
 
-                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
-                {
-                    if (this.activeGenes.contains(g))
-                    {
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated) {
+                    if (this.activeGenes.contains(g)) {
                         Integer cnt = this.Ag.get(g);
                         if (cnt == null) {
                             this.Ag.put(g, 1);
                         } else {
                             this.Ag.put(g, cnt + 1);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         /* Gene is inactive but term active */
                         this.nsg++;
                     }
@@ -127,7 +117,7 @@ public class ProbabilisticCalculation implements ICalculation
             obj =
                 this.ag * Math.log(this.p) + this.an * Math.log(this.q) + this.sg * Math.log(1 - this.p) + this.sn
                     * Math.log(1 - this.q) - this.alpha
-                * this.activeTerms.size();
+                        * this.activeTerms.size();
 
             return obj;
         }
@@ -150,12 +140,9 @@ public class ProbabilisticCalculation implements ICalculation
 
             Ag.clear();
 
-            for (TermID t : this.activeTerms)
-            {
-                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
-                {
-                    if (this.activeGenes.contains(g))
-                    {
+            for (TermID t : this.activeTerms) {
+                for (ByteString g : this.popEnumerator.getAnnotatedGenes(t).totalAnnotated) {
+                    if (this.activeGenes.contains(g)) {
                         // Ag.add(g);
                         Integer cnt = Ag.get(g);
                         if (cnt == null) {
@@ -163,9 +150,7 @@ public class ProbabilisticCalculation implements ICalculation
                         } else {
                             Ag.put(g, cnt + 1);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         /* Gene is inactive but term active */
                         this.sg++;
                     }
@@ -232,20 +217,17 @@ public class ProbabilisticCalculation implements ICalculation
 
             double obj = objective();
 
-            do
-            {
+            do {
                 double best = Double.NEGATIVE_INFINITY;
                 TermID bestTerm = null;
 
-                // System.out.println(obj + "  " + best + "  " + activeTerms.size());
+                // System.out.println(obj + " " + best + " " + activeTerms.size());
 
-                for (TermID t : this.allTerms)
-                {
+                for (TermID t : this.allTerms) {
                     switchTerm(t);
 
                     double o = objective();
-                    if (o > best)
-                    {
+                    if (o > best) {
                         best = o;
                         bestTerm = t;
                     }
@@ -253,12 +235,10 @@ public class ProbabilisticCalculation implements ICalculation
                     switchTerm(t);
                 }
 
-                if (bestTerm != null && best > obj)
-                {
+                if (bestTerm != null && best > obj) {
                     switchTerm(bestTerm);
                     obj = objective();
-                } else
-                {
+                } else {
                     break;
                 }
             } while (true);
@@ -304,11 +284,9 @@ public class ProbabilisticCalculation implements ICalculation
         data.activeGenes = studySet.getAllGeneNames();
 
         int total = 0;
-        for (TermID t : data.allTerms)
-        {
+        for (TermID t : data.allTerms) {
             /* Inactive terms */
-            for (ByteString g : data.popEnumerator.getAnnotatedGenes(t).totalAnnotated)
-            {
+            for (ByteString g : data.popEnumerator.getAnnotatedGenes(t).totalAnnotated) {
                 if (!data.activeGenes.contains(g)) {
                     total++;
                 }
@@ -332,8 +310,7 @@ public class ProbabilisticCalculation implements ICalculation
 
         data.calculateParamters();
 
-        while (true)
-        {
+        while (true) {
             data.optimizeForTerms(graph);
 
             data.calculateParamters();
@@ -344,13 +321,12 @@ public class ProbabilisticCalculation implements ICalculation
                 break;
             }
 
-            if (Double.isNaN(pNext) || Double.isNaN(qNext))
-            {
+            if (Double.isNaN(pNext) || Double.isNaN(qNext)) {
                 System.err.println("Breaked: #terms=" + data.activeTerms.size() + " ag=" + data.ag + " sg=" + data.sg);
                 break;
             }
 
-            // System.out.println("p=" + data.p + " q=" + data.q + "  pNext="+pNext + " qNext="+qNext);
+            // System.out.println("p=" + data.p + " q=" + data.q + " pNext="+pNext + " qNext="+qNext);
 
             if (Math.abs(qNext - data.q) < eps) {
                 break;
@@ -374,14 +350,12 @@ public class ProbabilisticCalculation implements ICalculation
 
         System.out.println("Found " + data.activeTerms.size() + " terms");
 
-        for (AbstractGOTermProperties prop : results)
-        {
-            if (!data.activeTerms.contains(prop.goTerm.getID()))
-            {
+        for (AbstractGOTermProperties prop : results) {
+            if (!data.activeTerms.contains(prop.goTerm.getID())) {
                 prop.p = prop.p_adjusted = 1;
                 prop.ignoreAtMTC = true;
             }
-            // System.out.println(prop.goTerm.toString() + "  " + prop.p_adjusted);
+            // System.out.println(prop.goTerm.toString() + " " + prop.p_adjusted);
         }
 
         return results;

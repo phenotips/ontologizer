@@ -23,8 +23,7 @@ public class BenjaminiHochberg extends AbstractTestCorrection
         /*
          * Adjust the p values according to BH. Note that all object within relevantP also are objects within p!
          */
-        for (int r = 0; r < n; r++)
-        {
+        for (int r = 0; r < n; r++) {
             relevantP[r].p_adjusted = relevantP[r].p * n / (r + 1);
         }
         enforcePValueMonotony(relevantP);

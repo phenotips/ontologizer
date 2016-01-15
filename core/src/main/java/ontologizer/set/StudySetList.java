@@ -70,8 +70,7 @@ public class StudySetList implements Iterable<StudySet>
         // TODO: Check if path is really a dir
         File[] files = directory.listFiles(filter);
 
-        if (files == null || files.length == 0)
-        {
+        if (files == null || files.length == 0) {
             // Either dir does not exist or is not a directory
             System.out.println("Could not locate files in " + directory);
             System.out.println("Try entering the complete path or \".\" "
@@ -86,19 +85,16 @@ public class StudySetList implements Iterable<StudySet>
             }
 
             /* Construct the study set */
-            try
-            {
+            try {
                 StudySet study = StudySetFactory.createFromFile(myfile, false);
 
                 /* Enqueue the study set into the array list */
                 this.list.add(study);
-            } catch (FileNotFoundException fne)
-            {
+            } catch (FileNotFoundException fne) {
                 /* Quite strange that this happnen but we must react anywhy */
                 System.err
-                .println("Ignoring study file " + myfile.getAbsolutePath() + " because it couldn't be found.");
-            } catch (IOException e)
-            {
+                    .println("Ignoring study file " + myfile.getAbsolutePath() + " because it couldn't be found.");
+            } catch (IOException e) {
                 System.err.println("Ignoring study file " + myfile.getAbsolutePath() + " because: " + e.getMessage());
             }
         }
@@ -134,8 +130,7 @@ public class StudySetList implements Iterable<StudySet>
          */
         HashSet<ByteString> geneSet = new HashSet<ByteString>();
 
-        for (StudySet study : this)
-        {
+        for (StudySet study : this) {
             for (ByteString geneName : study) {
                 geneSet.add(geneName);
             }

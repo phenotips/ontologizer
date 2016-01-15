@@ -59,15 +59,12 @@ public class ItemEnumerator implements Iterable<ByteString>
         HashMap<ByteString, ArrayList<TermID>> items2Terms = new HashMap<ByteString, ArrayList<TermID>>();
         HashMap<ByteString, ArrayList<TermID>> items2DirectTerms = new HashMap<ByteString, ArrayList<TermID>>();
 
-        for (TermID tid : termEnumerator)
-        {
+        for (TermID tid : termEnumerator) {
             GOTermAnnotatedGenes genes = termEnumerator.getAnnotatedGenes(tid);
 
-            for (ByteString g : genes.totalAnnotated)
-            {
+            for (ByteString g : genes.totalAnnotated) {
                 ArrayList<TermID> al = items2Terms.get(g);
-                if (al == null)
-                {
+                if (al == null) {
                     al = new ArrayList<TermID>();
                     items2Terms.put(g, al);
                 }
@@ -75,11 +72,9 @@ public class ItemEnumerator implements Iterable<ByteString>
                 al.add(tid);
             }
 
-            for (ByteString g : genes.directAnnotated)
-            {
+            for (ByteString g : genes.directAnnotated) {
                 ArrayList<TermID> al = items2DirectTerms.get(g);
-                if (al == null)
-                {
+                if (al == null) {
                     al = new ArrayList<TermID>();
                     items2DirectTerms.put(g, al);
                 }
@@ -101,13 +96,11 @@ public class ItemEnumerator implements Iterable<ByteString>
     {
         StringBuilder builder = new StringBuilder();
 
-        for (ByteString gene : this.items2Terms.keySet())
-        {
+        for (ByteString gene : this.items2Terms.keySet()) {
             builder.append(gene);
             builder.append(": ");
 
-            for (TermID tid : this.items2Terms.get(gene))
-            {
+            for (TermID tid : this.items2Terms.get(gene)) {
                 builder.append(tid.toString());
                 builder.append(",");
             }

@@ -48,8 +48,7 @@ public class MultisetEnumerator
         int i;
 
         /* Cancelation criterion, we're ready, when we are ready :) */
-        if (pos >= this.elementList.length)
-        {
+        if (pos >= this.elementList.length) {
             callback.visit(this.elementList, this.multiplicitiesPerElement);
             return;
         }
@@ -60,13 +59,11 @@ public class MultisetEnumerator
             this.multiplicitiesPerElement[i]++;
 
             nextValue = callback.enter(pos, this.elementList, this.multiplicitiesPerElement);
-            if (nextValue > -1)
-            {
+            if (nextValue > -1) {
                 /* Sub problem */
                 enumerate(pos + 1, nextValue, callback);
                 // callback.leave(pos);
-            }
-            else if (nextValue == -2) {
+            } else if (nextValue == -2) {
                 this.multiplicitiesPerElement[i]--;
                 return;
             }

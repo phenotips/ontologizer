@@ -36,8 +36,7 @@ public class TermContainer implements Iterable<Term>
         /* Build our data structures linked list */
         this.termMap = new HashMap<TermID, Term>();
         this.termList = new LinkedList<Term>();
-        for (Term entry : terms)
-        {
+        for (Term entry : terms) {
             this.termMap.put(entry.getID(), entry);
             this.termList.add(entry);
         }

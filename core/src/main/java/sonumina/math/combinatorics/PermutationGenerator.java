@@ -26,8 +26,7 @@ public class PermutationGenerator
 
     public PermutationGenerator(int n)
     {
-        if (n < 1)
-        {
+        if (n < 1) {
             throw new IllegalArgumentException("Min 1");
         }
         this.a = new int[n];
@@ -41,8 +40,7 @@ public class PermutationGenerator
 
     public void reset()
     {
-        for (int i = 0; i < this.a.length; i++)
-        {
+        for (int i = 0; i < this.a.length; i++) {
             this.a[i] = i;
         }
         this.numLeft = new BigInteger(this.total.toString());
@@ -82,8 +80,7 @@ public class PermutationGenerator
     private static BigInteger getFactorial(int n)
     {
         BigInteger fact = BigInteger.ONE;
-        for (int i = n; i > 1; i--)
-        {
+        for (int i = n; i > 1; i--) {
             fact = fact.multiply(new BigInteger(Integer.toString(i)));
         }
         return fact;
@@ -96,8 +93,7 @@ public class PermutationGenerator
     public int[] getNext()
     {
 
-        if (this.numLeft.equals(this.total))
-        {
+        if (this.numLeft.equals(this.total)) {
             this.numLeft = this.numLeft.subtract(BigInteger.ONE);
             return this.a;
         }
@@ -107,8 +103,7 @@ public class PermutationGenerator
         // Find largest index j with a[j] < a[j+1]
 
         int j = this.a.length - 2;
-        while (this.a[j] > this.a[j + 1])
-        {
+        while (this.a[j] > this.a[j + 1]) {
             j--;
         }
 
@@ -116,8 +111,7 @@ public class PermutationGenerator
         // greater than a[j] to the right of a[j]
 
         int k = this.a.length - 1;
-        while (this.a[j] > this.a[k])
-        {
+        while (this.a[j] > this.a[k]) {
             k--;
         }
 
@@ -132,8 +126,7 @@ public class PermutationGenerator
         int r = this.a.length - 1;
         int s = j + 1;
 
-        while (r > s)
-        {
+        while (r > s) {
             temp = this.a[s];
             this.a[s] = this.a[r];
             this.a[r] = temp;

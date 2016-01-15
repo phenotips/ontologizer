@@ -7,7 +7,7 @@ import java.util.HashMap;
  * @author grossman
  */
 public class FDRBySteffenCached extends AbstractTestCorrection
-implements IResampling
+    implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -54,7 +54,7 @@ implements IResampling
                 PValue[] randomRawP = pvalues.calculateRandomPValues();
                 Arrays.sort(randomRawP);
 
-                assert (randomRawP.length == m);
+                assert(randomRawP.length == m);
                 randomSampledPValues.add(randomRawP);
 
                 System.out.print("created " + b + " samples out of " + this.numberOfResamplingSteps + "\r");
@@ -90,8 +90,8 @@ implements IResampling
         for (b = 0; b < this.numberOfResamplingSteps; b++) {
             lastFDR +=
                 (lastSampleRejects[b])
-                / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
-                    / this.numberOfResamplingSteps);
+                    / (lastSampleRejects[b] + lastObservedRejections - ((double) lastTotalSampleRejects)
+                        / this.numberOfResamplingSteps);
         }
         if (Double.isNaN(lastFDR)) {
             lastFDR = 0;
@@ -107,8 +107,7 @@ implements IResampling
             // "\tlastObservedRejections : " + lastObservedRejections);
             // we take old values until something happens
             int lc = 0;
-            while (i < m && rawP[i].p <= lastPValue)
-            {
+            while (i < m && rawP[i].p <= lastPValue) {
                 rawP[i].p_adjusted = lastFDR;
                 lc++;
                 i++;

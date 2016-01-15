@@ -29,8 +29,7 @@ public class BonferroniHolm extends AbstractTestCorrection
         /*
          * Adjust the p values. Note that all object within relevantP also are objects within p!
          */
-        for (int i = 0; i < relevantP.length; i++)
-        {
+        for (int i = 0; i < relevantP.length; i++) {
             relevantP[i].p_adjusted = relevantP[i].p * (relevantP.length - i);
         }
         enforcePValueMonotony(relevantP);

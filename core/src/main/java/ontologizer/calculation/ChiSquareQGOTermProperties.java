@@ -21,16 +21,16 @@ public class ChiSquareQGOTermProperties extends AbstractGOTermProperties
     public int observedHigherChisquares;
 
     private static final String[] propertyNames = new String[] {
-        "ID",
-        "Pop.total",
-        "Pop.term",
-        "Study.total",
-        "Study.term",
-        "chisquare",
-        "expected.higher",
-        "observed.higher",
-        "p",
-        "q"
+    "ID",
+    "Pop.total",
+    "Pop.term",
+    "Study.total",
+    "Study.term",
+    "chisquare",
+    "expected.higher",
+    "observed.higher",
+    "p",
+    "q"
     };
 
     @Override
@@ -48,8 +48,7 @@ public class ChiSquareQGOTermProperties extends AbstractGOTermProperties
     @Override
     public String getProperty(int propNumber)
     {
-        switch (propNumber)
-        {
+        switch (propNumber) {
             case 0:
                 return this.goTerm.getIDAsString();
             case 1:

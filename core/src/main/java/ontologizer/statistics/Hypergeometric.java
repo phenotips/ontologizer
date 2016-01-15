@@ -30,9 +30,10 @@ public class Hypergeometric
      * calculated by the hypergeometric distribution. See GeneMerge by Castillo-Davis et al (Bioinformatics).</LI>
      * <LI>To do this, we need to divide the population into two groups, genes with and without annotation. The
      * arguments to the function supply us with <B>n</B>, the total number of genes in the population group, and <B>p
-     * </P>, the proportion of genes with annotation to the term in question. We can then calculate the number of genes
-     * in the population annotated to the term by <B>round(n*p)</B>, and the number of genes not annotated to the term
-     * by <B>round(n*(1-p))</B>.</LI>
+     * </P>
+     * , the proportion of genes with annotation to the term in question. We can then calculate the number of genes in
+     * the population annotated to the term by <B>round(n*p)</B>, and the number of genes not annotated to the term by
+     * <B>round(n*(1-p))</B>.</LI>
      *
      * @param n Number of population genes
      * @param p Proportion of population genes
@@ -49,8 +50,7 @@ public class Hypergeometric
             return 1.0;
         }
 
-        if (r < 1)
-        {
+        if (r < 1) {
             return 1.0; // Not valid for r < 2, less than 2 study genes.
         }
 
@@ -60,8 +60,7 @@ public class Hypergeometric
 
         double log_n_choose_k = lNchooseK(n, k);
         int top = k;
-        if (np < k)
-        {
+        if (np < k) {
             top = np;
         }
 
@@ -69,11 +68,9 @@ public class Hypergeometric
 
         double sum = 0.0;
 
-        for (int i = top; i >= r; --i)
-        {
+        for (int i = top; i >= r; --i) {
             sum += java.lang.Math.exp(lfoo - log_n_choose_k);
-            if (i > r)
-            {
+            if (i > r) {
                 lfoo = lfoo
                     + java.lang.Math.log((double) i / (double) (np - i + 1))
                     + java.lang.Math.log((double) (nq - k + i)
@@ -141,8 +138,7 @@ public class Hypergeometric
         up = Math.min(n, M);
         p = 0;
 
-        if (x < up / 2)
-        {
+        if (x < up / 2) {
             for (i = x; i >= 0; i--) {
                 p += dhyper(i, N, M, n);
             }
@@ -152,8 +148,7 @@ public class Hypergeometric
             } else {
                 return 1 - p;
             }
-        } else
-        {
+        } else {
             for (i = x + 1; i <= up; i++) {
                 p += dhyper(i, N, M, n);
             }
@@ -182,10 +177,8 @@ public class Hypergeometric
         /*
          * Make sure value is already in lfactorial. If not, calculate all values up to that for i
          */
-        if (i > (this.lfactorial.size() - 1))
-        {
-            for (int j = this.lfactorial.size(); j <= i; j++)
-            {
+        if (i > (this.lfactorial.size() - 1)) {
+            for (int j = this.lfactorial.size(); j <= i; j++) {
                 double lf = this.lfactorial.get(j - 1).doubleValue()
                     + java.lang.Math.log(j);
                 this.lfactorial.add(j, new Double(lf));

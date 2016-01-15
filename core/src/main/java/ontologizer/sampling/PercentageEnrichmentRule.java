@@ -93,8 +93,7 @@ public class PercentageEnrichmentRule implements Iterable<TermID>
     {
         String str = "";
 
-        for (Entry<TermID, Integer> e : this.termPercentages.entrySet())
-        {
+        for (Entry<TermID, Integer> e : this.termPercentages.entrySet()) {
             str += e.getKey() + "/" + e.getValue() + " ";
         }
         str += "noise/" + this.noisePercentage;

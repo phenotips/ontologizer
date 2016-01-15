@@ -9,18 +9,15 @@ public class SetEnv
 {
     static boolean library_loaded = false;
 
-    static
-    {
-        try
-        {
+    static {
+        try {
             /*
              * Load the external setenv library, which is linked into the setenv_native call.
              */
             System.loadLibrary("setenv");
 
             library_loaded = true;
-        } catch (UnsatisfiedLinkError e)
-        {
+        } catch (UnsatisfiedLinkError e) {
             /* If library is not found, we don't do anything */
         }
     }

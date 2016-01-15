@@ -357,13 +357,10 @@ public class Association
         int p = offset;
         int fieldNo = 0;
 
-        while (p < offset + len)
-        {
-            if (byteBuf[p] == '\t')
-            {
+        while (p < offset + len) {
+            if (byteBuf[p] == '\t') {
                 /* New field */
-                switch (fieldNo)
-                {
+                switch (fieldNo) {
                     case DBOBJECTFIELD:
                         a.DB_Object = new ByteString(byteBuf, fieldOffset, p);
                         break;

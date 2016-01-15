@@ -32,13 +32,10 @@ public final class ParserFactory
     public static AbstractItemParser getNewInstance(final File file) throws IOException
     {
         String type = getFileType(file);
-        if (type.equals("fasta"))
-        {
+        if (type.equals("fasta")) {
             return new FastaParser(file);
-        } else
-        {
-            if (type.equals("plain-valued"))
-            {
+        } else {
+            if (type.equals("plain-valued")) {
                 return new OneOnALineValueParser(file);
             }
             return new OneOnALineParser(file);
@@ -53,13 +50,10 @@ public final class ParserFactory
      */
     public static AbstractItemParser getNewInstance(String[] entries)
     {
-        if (entries.length > 0)
-        {
+        if (entries.length > 0) {
             String[] splitted = entries[0].split("\\s+");
-            try
-            {
-                if (splitted.length > 1)
-                {
+            try {
+                if (splitted.length > 1) {
                     Double.parseDouble(splitted[1]);
                     return new OneOnALineValueParser(entries);
                 }
@@ -84,19 +78,14 @@ public final class ParserFactory
         BufferedReader is = new BufferedReader(new FileReader(file));
 
         int num = 0;
-        while ((inputLine = is.readLine()) != null && num < 3)
-        {
-            if (inputLine.startsWith(">"))
-            {
+        while ((inputLine = is.readLine()) != null && num < 3) {
+            if (inputLine.startsWith(">")) {
                 type = "fasta";
                 break;
-            } else
-            {
+            } else {
                 String[] splitted = inputLine.split("\\s+");
-                if (splitted.length > 2)
-                {
-                    try
-                    {
+                if (splitted.length > 2) {
+                    try {
                         Double.parseDouble(splitted[1]);
                         type = "plain-valued";
                     } catch (NumberFormatException ex) {

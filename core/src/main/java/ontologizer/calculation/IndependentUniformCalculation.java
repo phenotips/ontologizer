@@ -74,8 +74,7 @@ public class IndependentUniformCalculation implements ICalculation
                 PValue p[] = new PValue[this.graph.getNumberOfTerms()];
                 TermForTermGOTermProperties myP;
 
-                for (Term goterm : this.graph)
-                {
+                for (Term goterm : this.graph) {
                     String term = goterm.getIDAsString();
 
                     int goidAnnotatedPopGeneCount = this.populationSet.getGeneCount();
@@ -103,7 +102,8 @@ public class IndependentUniformCalculation implements ICalculation
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
+                return calculatePValues(
+                    this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
         }
 

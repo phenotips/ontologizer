@@ -1,7 +1,7 @@
 package ontologizer.statistics;
 
 public abstract class AbstractResamplingTestCorrection extends AbstractTestCorrection
-implements IResampling
+    implements IResampling
 {
     /** Specifies the number of resampling steps */
     protected int numberOfResamplingSteps = 500;

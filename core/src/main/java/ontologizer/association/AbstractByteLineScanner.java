@@ -30,17 +30,13 @@ abstract public class AbstractByteLineScanner
         int read;
         int read_offset = 0;
 
-        outer: while ((read = this.is.read(this.byteBuf, read_offset, this.BUF_SIZE) + read_offset) > read_offset)
-        {
+        outer: while ((read = this.is.read(this.byteBuf, read_offset, this.BUF_SIZE) + read_offset) > read_offset) {
             int line_start = 0;
             int pos = 0;
 
-            while (pos < read)
-            {
-                if (this.byteBuf[pos] == '\n')
-                {
-                    if (!newLine(this.byteBuf, line_start, pos - line_start))
-                    {
+            while (pos < read) {
+                if (this.byteBuf[pos] == '\n') {
+                    if (!newLine(this.byteBuf, line_start, pos - line_start)) {
                         this.availableStart = pos + 1;
                         this.available = read - this.availableStart;
                         break outer;

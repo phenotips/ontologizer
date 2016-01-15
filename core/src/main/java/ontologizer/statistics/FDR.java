@@ -3,7 +3,7 @@ package ontologizer.statistics;
 import java.util.Arrays;
 
 public class FDR extends AbstractTestCorrection
-implements IResampling
+    implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -58,8 +58,7 @@ implements IResampling
         int r[] = new int[m];
         Entry[] sortedRawPValues = new Entry[m];
 
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             sortedRawPValues[i] = new Entry();
             sortedRawPValues[i].value = rawP[i].p;
             sortedRawPValues[i].index = i;
@@ -79,12 +78,11 @@ implements IResampling
         double[][] pValues = new double[this.numberOfResamplingSteps][rawP.length];
 
         /* Now "permute" */
-        for (int b = 0; b < this.numberOfResamplingSteps; b++)
-        {
+        for (int b = 0; b < this.numberOfResamplingSteps; b++) {
             /* Compute raw p values of "permuted" data */
             PValue[] randomRawP = pvalues.calculateRandomPValues();
 
-            assert (randomRawP.length == rawP.length);
+            assert(randomRawP.length == rawP.length);
 
             for (i = 0; i < m; i++) {
                 pValues[b][i] = randomRawP[i].p;
@@ -95,15 +93,13 @@ implements IResampling
         System.out.println("");
 
         /* For every P-value determine the adjusted P-value (but TODO: optimze!!!) */
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             /* The p-value which is being currently adjusted */
             double p = rawP[i].p;
 
             /* The number of rejections observed within the dataset using p as rejection level */
             int observedRejections = 0;
-            for (int j = 0; j < m; j++)
-            {
+            for (int j = 0; j < m; j++) {
                 if (rawP[j].p < p) {
                     observedRejections++;
                 }
@@ -111,10 +107,8 @@ implements IResampling
 
             /* The number of rejections of the complete permuted data set */
             int totalRejects = 0;
-            for (int b = 0; b < this.numberOfResamplingSteps; b++)
-            {
-                for (int j = 0; j < m; j++)
-                {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
+                for (int j = 0; j < m; j++) {
                     if (pValues[b][j] < p) {
                         totalRejects++;
                     }
@@ -130,13 +124,11 @@ implements IResampling
              */
 
             double fdr = 0.0;
-            for (int b = 0; b < this.numberOfResamplingSteps; b++)
-            {
+            for (int b = 0; b < this.numberOfResamplingSteps; b++) {
                 /* number of rejections for a single permutation, this is used as an estimate for V */
                 int rejections = 0;
 
-                for (int j = 0; j < m; j++)
-                {
+                for (int j = 0; j < m; j++) {
                     if (pValues[b][j] < p) {
                         rejections++;
                     }

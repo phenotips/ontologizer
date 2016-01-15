@@ -240,11 +240,9 @@ public class Bayes2GOCalculation implements ICalculation
     {
         boolean hasOnlyValuedItemAttributes = true;
 
-        for (ByteString gene : studySet)
-        {
+        for (ByteString gene : studySet) {
             ItemAttribute item = studySet.getItemAttribute(gene);
-            if (!(item instanceof ValuedItemAttribute))
-            {
+            if (!(item instanceof ValuedItemAttribute)) {
                 hasOnlyValuedItemAttributes = false;
                 break;
             }
@@ -266,11 +264,9 @@ public class Bayes2GOCalculation implements ICalculation
         valuedCalculation = hasOnlyValuedItemAttributes(populationSet);
         valuedCalculation = valuedCalculation & hasOnlyValuedItemAttributes(studySet);
 
-        if (valuedCalculation)
-        {
+        if (valuedCalculation) {
             System.out.println("We have values!");
-        } else
-        {
+        } else {
             System.out.println("We don't have values!");
         }
 
@@ -322,12 +318,10 @@ public class Bayes2GOCalculation implements ICalculation
         }
 
         Random rnd;
-        if (this.seed != 0)
-        {
+        if (this.seed != 0) {
             rnd = new Random(this.seed);
             logger.info("Use a random seed of: " + this.seed);
-        } else
-        {
+        } else {
             long newSeed = new Random().nextLong();
             logger.info("Use a random seed of: " + newSeed);
             rnd = new Random(newSeed);
@@ -343,8 +337,7 @@ public class Bayes2GOCalculation implements ICalculation
         double beta;
         double expectedNumberOfTerms;
 
-        switch (this.alpha.getType())
-        {
+        switch (this.alpha.getType()) {
             case EM:
                 alpha = 0.4;
                 doAlphaEm = true;
@@ -357,8 +350,7 @@ public class Bayes2GOCalculation implements ICalculation
                 break;
         }
 
-        switch (this.beta.getType())
-        {
+        switch (this.beta.getType()) {
             case EM:
                 beta = 0.4;
                 doBetaEm = true;
@@ -371,8 +363,7 @@ public class Bayes2GOCalculation implements ICalculation
                 break;
         }
 
-        switch (this.expectedNumberOfTerms.getType())
-        {
+        switch (this.expectedNumberOfTerms.getType()) {
             case EM:
                 expectedNumberOfTerms = 1;
                 doPEm = true;
@@ -398,25 +389,21 @@ public class Bayes2GOCalculation implements ICalculation
 
         BufferedWriter statsFile = null;
         try {
-            if (this.WRITE_STATS_FILE)
-            {
+            if (this.WRITE_STATS_FILE) {
                 statsFile = new BufferedWriter(new FileWriter(new File("stats.txt")));
                 statsFile.append("iter\tstep\tacceptProb\taccepted\tscore\n");
             }
         } catch (IOException e) {
         }
 
-        for (int i = 0; i < maxIter; i++)
-        {
+        for (int i = 0; i < maxIter; i++) {
             FixedAlphaBetaScore bayesScore =
                 new FixedAlphaBetaScore(rnd, allTerms, populationEnumerator, studyEnumerator.getGenes());
             bayesScore.setIntegrateParams(this.integrateParams);
 
-            if (doEm)
-            {
+            if (doEm) {
                 System.out.println("EM-Iter(" + i + ")" + alpha + "  " + beta + "  " + expectedNumberOfTerms);
-            } else
-            {
+            } else {
                 System.out.println("MCMC only: " + alpha + "  " + beta + "  " + expectedNumberOfTerms);
 
             }
@@ -448,8 +435,7 @@ public class Bayes2GOCalculation implements ICalculation
             logger.info("Score of empty set: " + score);
 
             /* Provide a starting point */
-            if (this.randomStart)
-            {
+            if (this.randomStart) {
                 int numberOfTerms =
                     bayesScore.EXPECTED_NUMBER_OF_TERMS[rnd.nextInt(bayesScore.EXPECTED_NUMBER_OF_TERMS.length)];
                 double pForStart = ((double) numberOfTerms) / allTerms.size();
@@ -475,11 +461,9 @@ public class Bayes2GOCalculation implements ICalculation
 
             long start = System.currentTimeMillis();
 
-            for (int t = 0; t < maxSteps; t++)
-            {
+            for (int t = 0; t < maxSteps; t++) {
                 /* Remember maximum score and terms */
-                if (score > maxScore)
-                {
+                if (score > maxScore) {
                     maxScore = score;
                     maxScoredTerms = bayesScore.getActiveTerms();
                     maxScoredAlpha = bayesScore.getAlpha();
@@ -489,8 +473,7 @@ public class Bayes2GOCalculation implements ICalculation
                 }
 
                 long now = System.currentTimeMillis();
-                if (now - start > this.updateReportTime)
-                {
+                if (now - start > this.updateReportTime) {
                     logger.info((t * 100 / maxSteps) + "% (score=" + score + " maxScore=" + maxScore + " #terms="
                         + bayesScore.getActiveTerms().size() +
                         " accept/reject=" + String.format("%g", (double) numAccepts / (double) numRejects) +
@@ -510,10 +493,10 @@ public class Bayes2GOCalculation implements ICalculation
                 long newPossibilities = bayesScore.getNeighborhoodSize();
 
                 double acceptProb = Math.exp(newScore - score) * oldPossibilities / newPossibilities; /*
-                 * last quotient
-                 * is the hasting
-                 * ratio
-                 */
+                                                                                                       * last quotient
+                                                                                                       * is the hasting
+                                                                                                       * ratio
+                                                                                                       */
 
                 boolean DEBUG = false;
 
@@ -523,12 +506,10 @@ public class Bayes2GOCalculation implements ICalculation
                 }
 
                 double u = rnd.nextDouble();
-                if (u >= acceptProb)
-                {
+                if (u >= acceptProb) {
                     bayesScore.undoProposal();
                     numRejects++;
-                } else
-                {
+                } else {
                     score = newScore;
                     numAccepts++;
                 }
@@ -540,8 +521,7 @@ public class Bayes2GOCalculation implements ICalculation
                     bayesScore.record();
                 }
 
-                if (statsFile != null)
-                {
+                if (statsFile != null) {
                     try {
                         statsFile.append(i + "\t" + t + "\t" + acceptProb + "\t" + numAccepts + "\t" + score + "\n");
                     } catch (IOException e) {
@@ -549,8 +529,7 @@ public class Bayes2GOCalculation implements ICalculation
                 }
             }
 
-            if (doAlphaEm)
-            {
+            if (doAlphaEm) {
                 double newAlpha = bayesScore.getAvgN10() / (bayesScore.getAvgN00() + bayesScore.getAvgN10());
                 if (newAlpha < 0.0000001) {
                     newAlpha = 0.0000001;
@@ -562,8 +541,7 @@ public class Bayes2GOCalculation implements ICalculation
                 alpha = newAlpha;
             }
 
-            if (doBetaEm)
-            {
+            if (doBetaEm) {
                 double newBeta = bayesScore.getAvgN01() / (bayesScore.getAvgN01() + bayesScore.getAvgN11());
                 if (newBeta < 0.0000001) {
                     newBeta = 0.0000001;
@@ -575,8 +553,7 @@ public class Bayes2GOCalculation implements ICalculation
                 beta = newBeta;
             }
 
-            if (doPEm)
-            {
+            if (doPEm) {
                 double newExpectedNumberOfTerms = bayesScore.getAvgT();
                 if (newExpectedNumberOfTerms < 0.0000001) {
                     newExpectedNumberOfTerms = 0.0000001;
@@ -586,20 +563,20 @@ public class Bayes2GOCalculation implements ICalculation
                 expectedNumberOfTerms = newExpectedNumberOfTerms;
             }
 
-            if (i == maxIter - 1)
-            {
-                for (TermID t : allTerms)
-                {
+            if (i == maxIter - 1) {
+                for (TermID t : allTerms) {
                     Bayes2GOGOTermProperties prop = new Bayes2GOGOTermProperties();
                     prop.goTerm = graph.getTerm(t);
                     prop.annotatedStudyGenes = studyEnumerator.getAnnotatedGenes(t).totalAnnotatedCount();
                     prop.annotatedPopulationGenes = populationEnumerator.getAnnotatedGenes(t).totalAnnotatedCount();
                     prop.marg =
-                        ((double) bayesScore.termActivationCounts[bayesScore.term2TermsIdx.get(t)] / bayesScore.numRecords);
+                        ((double) bayesScore.termActivationCounts[bayesScore.term2TermsIdx.get(t)]
+                            / bayesScore.numRecords);
 
                     /* At the moment, we need these fields for technical reasons */
                     prop.p =
-                        1 - ((double) bayesScore.termActivationCounts[bayesScore.term2TermsIdx.get(t)] / bayesScore.numRecords);
+                        1 - ((double) bayesScore.termActivationCounts[bayesScore.term2TermsIdx.get(t)]
+                            / bayesScore.numRecords);
                     prop.p_adjusted = prop.p;
                     prop.p_min = 0.001;
 
@@ -612,29 +589,25 @@ public class Bayes2GOCalculation implements ICalculation
             /* Print out the term combination which scored max */
             System.out.println("Term combination that reaches score of " + maxScore + " when alpha=" + maxScoredAlpha
                 + ", beta=" + maxScoredBeta + ", p=" + maxScoredP + " at step " + maxWhenSeen);
-            for (TermID tid : maxScoredTerms)
-            {
+            for (TermID tid : maxScoredTerms) {
                 System.out.println(tid.toString() + "/" + graph.getTerm(tid).getName());
             }
 
-            if (Double.isNaN(alpha))
-            {
+            if (Double.isNaN(alpha)) {
                 for (int j = 0; j < bayesScore.totalAlpha.length; j++) {
                     System.out.println("alpha(" + bayesScore.ALPHA[j] + ")=" + (double) bayesScore.totalAlpha[j]
                         / bayesScore.numRecords);
                 }
             }
 
-            if (Double.isNaN(beta))
-            {
+            if (Double.isNaN(beta)) {
                 for (int j = 0; j < bayesScore.totalBeta.length; j++) {
                     System.out.println("beta(" + bayesScore.BETA[j] + ")=" + (double) bayesScore.totalBeta[j]
                         / bayesScore.numRecords);
                 }
             }
 
-            if (Double.isNaN(expectedNumberOfTerms))
-            {
+            if (Double.isNaN(expectedNumberOfTerms)) {
                 for (int j = 0; j < bayesScore.totalExp.length; j++) {
                     System.out.println("exp(" + bayesScore.EXPECTED_NUMBER_OF_TERMS[j] + ")="
                         + (double) bayesScore.totalExp[j] / bayesScore.numRecords);
@@ -643,8 +616,7 @@ public class Bayes2GOCalculation implements ICalculation
             }
         }
 
-        if (statsFile != null)
-        {
+        if (statsFile != null) {
             try {
                 statsFile.flush();
             } catch (IOException e) {

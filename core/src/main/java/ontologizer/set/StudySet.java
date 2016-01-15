@@ -273,19 +273,15 @@ public class StudySet implements Iterable<ByteString>
         /* This will be filled with unique genes */
         HashMap<ByteString, ItemAttribute> uniqueGenes = new HashMap<ByteString, ItemAttribute>();
 
-        for (ByteString geneName : this.gene2Attribute.keySet())
-        {
+        for (ByteString geneName : this.gene2Attribute.keySet()) {
             Gene2Associations gene2Association = associationContainer.get(geneName);
-            if (gene2Association != null)
-            {
+            if (gene2Association != null) {
                 boolean add;
                 ItemAttribute desc = uniqueGenes.get(gene2Association.name());
 
-                if (!(add = (desc == null)))
-                {
+                if (!(add = (desc == null))) {
                     ItemAttribute current = this.gene2Attribute.get(geneName);
-                    if (current != null)
-                    {
+                    if (current != null) {
                         add = desc.prefer(current);
                     } else {
                         add = true;
@@ -295,17 +291,15 @@ public class StudySet implements Iterable<ByteString>
                 if (add) {
                     uniqueGenes.put(gene2Association.name(), desc);
                 }
-            } else
-            {
+            } else {
                 /* We don't want to filter out genes without an association here */
                 uniqueGenes.put(geneName, this.gene2Attribute.get(geneName));
             }
         }
 
-        if (uniqueGenes.size() != this.gene2Attribute.size())
-        {
+        if (uniqueGenes.size() != this.gene2Attribute.size()) {
             logger
-            .info((this.gene2Attribute.size() - uniqueGenes.size())
+                .info((this.gene2Attribute.size() - uniqueGenes.size())
                     + " duplicate gene entries have been filtered out");
             this.gene2Attribute = uniqueGenes;
         }
@@ -328,13 +322,11 @@ public class StudySet implements Iterable<ByteString>
         /*
          * Iterate over all gene names and put those who doesn't have an association into the unannotatedGeneNames list
          */
-        for (ByteString geneName : this.gene2Attribute.keySet())
-        {
+        for (ByteString geneName : this.gene2Attribute.keySet()) {
             Gene2Associations gene2Association = associationContainer.get(geneName);
             if (gene2Association == null) {
                 this.unannotatedGeneNames.add(geneName);
-            } else
-            {
+            } else {
                 if (associationContainer.isObjectSymbol(geneName)) {
                     numObjectSymbol++;
                 } else if (associationContainer.isObjectID(geneName)) {
@@ -380,8 +372,7 @@ public class StudySet implements Iterable<ByteString>
         this.goTermCounter = new GOTermCounter(graph);
 
         /* Iterate over all gene names and add their annotations to the goTermCounter */
-        for (ByteString geneName : this.gene2Attribute.keySet())
-        {
+        for (ByteString geneName : this.gene2Attribute.keySet()) {
             Gene2Associations gene2Association = associationContainer.get(geneName);
             if (gene2Association != null) {
                 this.goTermCounter.add(gene2Association.getAssociations());
@@ -423,8 +414,7 @@ public class StudySet implements Iterable<ByteString>
         this.goTermEnumerator = new GOTermEnumerator(graph);
 
         /* Iterate over all gene names and add their annotations to the goTermCounter */
-        for (ByteString geneName : this.gene2Attribute.keySet())
-        {
+        for (ByteString geneName : this.gene2Attribute.keySet()) {
             Gene2Associations geneAssociations = associationContainer.get(geneName);
             if (geneAssociations != null) {
                 this.goTermEnumerator.push(geneAssociations, evidences);
@@ -481,8 +471,7 @@ public class StudySet implements Iterable<ByteString>
         /*
          * If terms weren't already annotated do it now, but remove the local reference then
          */
-        if (enumerator == null)
-        {
+        if (enumerator == null) {
             enumerator = enumerateGOTerms(graph, associations);
             this.goTermEnumerator = null;
         }
@@ -514,8 +503,7 @@ public class StudySet implements Iterable<ByteString>
         ;
 
         ArrayList<TermID> terms = new ArrayList<TermID>();
-        for (TermID t : enumerator)
-        {
+        for (TermID t : enumerator) {
             if (!graph.isRootTerm(t)) {
                 terms.add(t);
             }
@@ -524,10 +512,8 @@ public class StudySet implements Iterable<ByteString>
         int totalTerms = terms.size();
         int[][] matrix = new int[totalTerms][totalTerms];
 
-        for (int i = 0; i < totalTerms; i++)
-        {
-            for (int j = 0; j < totalTerms; j++)
-            {
+        for (int i = 0; i < totalTerms; i++) {
+            for (int j = 0; j < totalTerms; j++) {
                 TermID ti = terms.get(i);
                 TermID tj = terms.get(j);
 
@@ -538,15 +524,13 @@ public class StudySet implements Iterable<ByteString>
                 graph.walkToSource(tj, pj);
 
                 HashSet<TermID> sharedParents = new HashSet<TermID>();
-                for (TermID t : pi.getSet())
-                {
+                for (TermID t : pi.getSet()) {
                     if (pj.getSet().contains(t)) {
                         sharedParents.add(t);
                     }
                 }
 
-                for (TermID t : pj.getSet())
-                {
+                for (TermID t : pj.getSet()) {
                     if (pi.getSet().contains(t)) {
                         sharedParents.add(t);
                     }
@@ -554,8 +538,7 @@ public class StudySet implements Iterable<ByteString>
 
                 int min = Integer.MAX_VALUE;
 
-                for (TermID t : sharedParents)
-                {
+                for (TermID t : sharedParents) {
                     int c = enumerator.getAnnotatedGenes(t).totalAnnotatedCount();
                     if (c < min) {
                         min = c;
@@ -566,31 +549,26 @@ public class StudySet implements Iterable<ByteString>
             }
         }
 
-        try
-        {
+        try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
             out.write("GOID");
-            for (int i = 0; i < terms.size(); i++)
-            {
+            for (int i = 0; i < terms.size(); i++) {
                 out.write("\t");
                 out.write(terms.get(i).toString());
             }
 
-            for (int i = 0; i < matrix.length; i++)
-            {
+            for (int i = 0; i < matrix.length; i++) {
                 out.write(terms.get(i).toString());
 
-                for (int j = 0; j < matrix[i].length; j++)
-                {
+                for (int j = 0; j < matrix[i].length; j++) {
                     out.write("\t");
                     out.write(matrix[i][j] + "");
                 }
                 out.write("\n");
             }
             out.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
         }
 
     }
@@ -609,25 +587,21 @@ public class StudySet implements Iterable<ByteString>
         /*
          * If terms weren't already annotated do it now, but remove the local reference then
          */
-        if (enumerator == null)
-        {
+        if (enumerator == null) {
             enumerator = enumerateGOTerms(graph, associations);
             this.goTermEnumerator = null;
         }
 
-        try
-        {
+        try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
-            for (TermID id : enumerator)
-            {
+            for (TermID id : enumerator) {
                 out.write(id.toString());
                 out.write('\t');
                 out.write("genes={");
                 GOTermAnnotatedGenes genes = enumerator.getAnnotatedGenes(id);
                 boolean first = true;
-                for (ByteString gene : genes.totalAnnotated)
-                {
+                for (ByteString gene : genes.totalAnnotated) {
                     if (!first) {
                         out.write(',');
                     } else {
@@ -638,8 +612,7 @@ public class StudySet implements Iterable<ByteString>
                 out.write("}");
             }
             out.flush();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -651,12 +624,10 @@ public class StudySet implements Iterable<ByteString>
      */
     public void writeSetWithAnnotations(Ontology graph, AssociationContainer associations, File file)
     {
-        try
-        {
+        try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
-            for (ByteString gene : this)
-            {
+            for (ByteString gene : this) {
                 /* gene name */
                 out.write(gene.toString());
                 out.write('\t');
@@ -669,16 +640,14 @@ public class StudySet implements Iterable<ByteString>
                 out.write('\t');
 
                 Gene2Associations geneAssociations = associations.get(gene);
-                if (geneAssociations != null)
-                {
+                if (geneAssociations != null) {
                     final HashSet<TermID> direct = new HashSet<TermID>();
                     final HashSet<TermID> indirect = new HashSet<TermID>();
 
                     /* direct annotations */
                     boolean first = true;
                     out.write("annotations={");
-                    for (Association assoc : geneAssociations)
-                    {
+                    for (Association assoc : geneAssociations) {
                         if (first == false) {
                             out.write(',');
                         } else {
@@ -709,8 +678,7 @@ public class StudySet implements Iterable<ByteString>
 
                     out.write(" ancestors_annotations={");
                     first = true;
-                    for (TermID t : indirect)
-                    {
+                    for (TermID t : indirect) {
                         if (first == false) {
                             out.write(',');
                         } else {
@@ -724,8 +692,7 @@ public class StudySet implements Iterable<ByteString>
                 out.write('\n');
             }
             out.flush();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -746,21 +713,16 @@ public class StudySet implements Iterable<ByteString>
 
         HashMap<ByteString, ItemAttribute> newGene2Attributes = new HashMap<ByteString, ItemAttribute>();
 
-        for (Entry<ByteString, ItemAttribute> entry : this.gene2Attribute.entrySet())
-        {
+        for (Entry<ByteString, ItemAttribute> entry : this.gene2Attribute.entrySet()) {
             ByteString newName = filter.mapGene(entry.getKey());
 
             /* If no mapping exists we'll accept the original gene name */
-            if (newName == null)
-            {
+            if (newName == null) {
                 newGene2Attributes.put(entry.getKey(), entry.getValue());
                 unmappedGenes++;
-            }
-            else
-            {
+            } else {
                 /* Decide whether gene should be discarded or mapped */
-                if (!newName.equals("-"))
-                {
+                if (!newName.equals("-")) {
                     /*
                      * It's possible that more than one gene map to another but we wouldn't like to loss the
                      * information. Therefore we merge the attributes

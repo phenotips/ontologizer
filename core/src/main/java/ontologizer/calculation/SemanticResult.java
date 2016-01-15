@@ -27,29 +27,24 @@ public class SemanticResult
 
     public void writeTable(File file)
     {
-        try
-        {
+        try {
             logger.info("Writing to \"" + file.getCanonicalPath() + "\".");
 
             PrintWriter out = new PrintWriter(file);
 
-            if (this.names != null && this.names.length > 0)
-            {
+            if (this.names != null && this.names.length > 0) {
                 out.print(this.names[0]);
-                for (int i = 1; i < this.names.length; i++)
-                {
+                for (int i = 1; i < this.names.length; i++) {
                     out.print("\t");
                     out.print(this.names[i]);
                 }
 
                 out.println();
 
-                for (int i = 0; i < this.names.length; i++)
-                {
+                for (int i = 0; i < this.names.length; i++) {
                     out.print(this.names[i]);
 
-                    for (int j = 0; j < this.names.length; j++)
-                    {
+                    for (int j = 0; j < this.names.length; j++) {
                         out.print("\t");
                         out.print(this.mat[i][j]);
                     }
@@ -59,8 +54,7 @@ public class SemanticResult
             }
 
             out.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
         }
 
     }

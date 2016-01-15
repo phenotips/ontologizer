@@ -25,8 +25,8 @@ public class Namespace
     };
 
     static private HashMap<Namespace, NamespaceEnum> namespaceMap = new HashMap<Namespace, NamespaceEnum>();
-    static
-    {
+
+    static {
         namespaceMap.put(new Namespace("biological_process"), NamespaceEnum.BIOLOGICAL_PROCESS);
         namespaceMap.put(new Namespace("molecular_function"), NamespaceEnum.MOLECULAR_FUNCTION);
         namespaceMap.put(new Namespace("cellular_component"), NamespaceEnum.CELLULAR_COMPONENT);

@@ -8,8 +8,8 @@ import ontologizer.types.ByteString;
 public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
 {
     private static final String[] propertyNames = new String[] {
-        "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "is.trivial", "p",
-        "p.adjusted", "p.min"
+    "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "Pop.family", "Study.family", "is.trivial", "p",
+    "p.adjusted", "p.min"
     };
 
     /** Number of genes annotated to family (term and parents) in population set. */
@@ -33,8 +33,7 @@ public class TopologyWeightGOTermProperties extends AbstractGOTermProperties
     @Override
     public String getProperty(int propNumber)
     {
-        switch (propNumber)
-        {
+        switch (propNumber) {
             case 0:
                 return this.goTerm.getIDAsString();
             case 1:

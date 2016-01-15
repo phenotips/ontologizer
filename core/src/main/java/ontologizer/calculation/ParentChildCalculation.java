@@ -15,7 +15,7 @@ import ontologizer.statistics.PValue;
 import ontologizer.types.ByteString;
 
 public class ParentChildCalculation extends
-AbstractHypergeometricCalculation
+    AbstractHypergeometricCalculation
 {
 
     @Override
@@ -77,8 +77,7 @@ AbstractHypergeometricCalculation
                 int i = 0;
 
                 /* For every term within the goTermCounter */
-                for (TermID term : this.popTermEnumerator)
-                {
+                for (TermID term : this.popTermEnumerator) {
                     // calculating properties of term
                     ParentChildGOTermProperties termProp = calculateTerm(term, this.graph,
                         this.popTermEnumerator, studyTermEnumerator);
@@ -105,7 +104,8 @@ AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
+                return calculatePValues(
+                    this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
 
             private ParentChildGOTermProperties calculateTerm(
@@ -139,14 +139,11 @@ AbstractHypergeometricCalculation
                     HashSet<ByteString> studyParentAllGenes = new HashSet<ByteString>();
 
                     // looping over all parents to get the genes and adding all annotated genes to HashSets
-                    for (TermID parent : parents)
-                    {
+                    for (TermID parent : parents) {
                         popParentAllGenes.addAll(
-                            popTermEnumerator.getAnnotatedGenes(parent).totalAnnotated
-                            );
+                            popTermEnumerator.getAnnotatedGenes(parent).totalAnnotated);
                         studyParentAllGenes.addAll(
-                            studyTermEnumerator.getAnnotatedGenes(parent).totalAnnotated
-                            );
+                            studyTermEnumerator.getAnnotatedGenes(parent).totalAnnotated);
                     }
 
                     // number of genes annotated to family (term and parents)

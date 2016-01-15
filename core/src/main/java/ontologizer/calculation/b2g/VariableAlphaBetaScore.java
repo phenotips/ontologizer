@@ -37,13 +37,11 @@ class VariableAlphaBetaScore extends Bayes2GOScore
 
     public void calcLLR()
     {
-        for (ByteString g : this.population)
-        {
+        for (ByteString g : this.population) {
             int gid = this.gene2GenesIdx.get(g);
             if (this.observedGenes[gid]) {
                 this.llr.put(g, Math.log(1 - this.beta) - Math.log(this.alpha)); // P(oi=1|h=1) / P(oi=1|h=0)
-            }
-            else {
+            } else {
                 this.llr.put(g, Math.log(this.beta) - Math.log(1 - this.alpha)); // P(oi=0|h=1) / P(oi=0|h=0)
             }
         }
@@ -81,13 +79,11 @@ class VariableAlphaBetaScore extends Bayes2GOScore
 
         long choose = Math.abs(rand) % oldPossibilities;
 
-        if (choose < this.termsArray.length)
-        {
+        if (choose < this.termsArray.length) {
             /* on/off */
             this.proposalSwitch = (int) choose;
             switchState(this.proposalSwitch);
-        } else
-        {
+        } else {
             long base = choose - this.termsArray.length;
 
             int activeTermPos = (int) (base / this.numInactiveTerms);

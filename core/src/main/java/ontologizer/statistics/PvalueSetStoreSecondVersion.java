@@ -173,10 +173,8 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
         int[] defPValsIndicesLarge = new int[nPValsInput];
         int nPValsOutput = 0;
 
-        for (int i = 0; i < nPValsInput; i++)
-        {
-            if (!values[i].ignoreAtMTC)
-            {
+        for (int i = 0; i < nPValsInput; i++) {
+            if (!values[i].ignoreAtMTC) {
                 defPValsLarge[nPValsOutput] = values[i].p;
                 defPValsIndicesLarge[nPValsOutput] = i;
                 nPValsOutput++;
@@ -200,8 +198,7 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
         PValue[] pvals = new PValue[this.setSize];
 
         // initialize array
-        for (int i = 0; i < this.setSize; i++)
-        {
+        for (int i = 0; i < this.setSize; i++) {
             pvals[i] = new PValue();
             pvals[i].ignoreAtMTC = true;
             pvals[i].p = 1.0;
@@ -210,8 +207,7 @@ public class PvalueSetStoreSecondVersion implements Iterable<PValue[]>
         // set old values
         double[] defPVals = reducedSet.getDefPVals();
         int[] defPValsIndices = reducedSet.getDefPValsIndices();
-        for (int k = 0; k < defPVals.length; k++)
-        {
+        for (int k = 0; k < defPVals.length; k++) {
             pvals[defPValsIndices[k]].ignoreAtMTC = false;
             pvals[defPValsIndices[k]].p = defPVals[k];
         }

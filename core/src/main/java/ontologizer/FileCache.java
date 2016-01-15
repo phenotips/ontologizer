@@ -85,8 +85,7 @@ class DownloadThread extends Thread
      */
     public int getContentLength()
     {
-        synchronized (this)
-        {
+        synchronized (this) {
             return this.contentLength;
         }
     }
@@ -98,8 +97,7 @@ class DownloadThread extends Thread
      */
     public int getContentActual()
     {
-        synchronized (this)
-        {
+        synchronized (this) {
             return this.contentActual;
         }
     }
@@ -121,8 +119,7 @@ class DownloadThread extends Thread
     {
         interrupt();
 
-        if (this.urlConnection instanceof HttpURLConnection)
-        {
+        if (this.urlConnection instanceof HttpURLConnection) {
             HttpURLConnection httpConnection = (HttpURLConnection) this.urlConnection;
             httpConnection.disconnect();
         }
@@ -138,8 +135,7 @@ class DownloadThread extends Thread
         int read;
 
         InputStream stream;
-        try
-        {
+        try {
             logger.fine("Open connection");
 
             if (this.proxy != null) {
@@ -153,8 +149,7 @@ class DownloadThread extends Thread
             int cl = this.urlConnection.getContentLength();
 
             logger.fine("Content-Length = " + cl);
-            synchronized (this)
-            {
+            synchronized (this) {
                 this.contentLength = cl;
             }
             /* Forward content length */
@@ -163,11 +158,9 @@ class DownloadThread extends Thread
             stream = this.urlConnection.getInputStream();
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(this.destFile));
 
-            while ((read = stream.read(buf)) > 0)
-            {
+            while ((read = stream.read(buf)) > 0) {
                 bos.write(buf, 0, read);
-                synchronized (this)
-                {
+                synchronized (this) {
                     this.contentActual += read;
                 }
 
@@ -178,8 +171,7 @@ class DownloadThread extends Thread
 
             /* Forward ready status */
             this.downloadCallback.ready(null, this.destFile.getCanonicalPath());
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Exception while downloading a file.", e);
             /* Forward ready status */
             this.downloadCallback.ready(e, null);
@@ -252,8 +244,7 @@ public class FileCache
 
     private static List<FileCacheUpdateCallback> cacheUpdateCallbackList;
 
-    static
-    {
+    static {
         fileCache = new HashMap<String, CachedFile>();
         downloadHashMap = new HashMap<String, DownloadThread>();
         cacheUpdateCallbackList = new LinkedList<FileCacheUpdateCallback>();
@@ -264,10 +255,8 @@ public class FileCache
 
     public static void abortAllDownloads()
     {
-        try
-        {
-            synchronized (downloadThreadGroup)
-            {
+        try {
+            synchronized (downloadThreadGroup) {
                 downloadThreadGroup.interrupt();
 
                 for (DownloadThread dt : downloadHashMap.values()) {
@@ -279,8 +268,7 @@ public class FileCache
                 }
             }
 
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -315,15 +303,12 @@ public class FileCache
         }
 
         File index = new File(cacheDirectory, ".index");
-        try
-        {
+        try {
             BufferedReader br = new BufferedReader(new FileReader(index));
             String line;
-            while ((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 int idx = line.indexOf('=');
-                if (idx != -1)
-                {
+                if (idx != -1) {
                     String cacheName = line.substring(0, idx);
                     String url = line.substring(idx + 1);
 
@@ -334,11 +319,9 @@ public class FileCache
                     fileCache.put(url, cf);
                 }
             }
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             logger.log(Level.WARNING, String.format("The cache file was not found in %s.", cachePath));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.log(Level.WARNING, "", e);
         }
     }
@@ -360,21 +343,17 @@ public class FileCache
     {
         File index = new File(cacheDirectory, ".index");
 
-        synchronized (downloadHashMap)
-        {
-            try
-            {
+        synchronized (downloadHashMap) {
+            try {
                 PrintWriter bw = new PrintWriter(index);
 
-                for (String key : fileCache.keySet())
-                {
+                for (String key : fileCache.keySet()) {
                     CachedFile cf = fileCache.get(key);
                     bw.println(cf.cachedFilename + "=" + cf.url);
                 }
 
                 bw.close();
-            } catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
             }
         }
     }
@@ -386,8 +365,7 @@ public class FileCache
      */
     public static void addUpdateCallback(FileCacheUpdateCallback callback)
     {
-        synchronized (cacheUpdateCallbackList)
-        {
+        synchronized (cacheUpdateCallbackList) {
             cacheUpdateCallbackList.add(callback);
         }
     }
@@ -400,8 +378,7 @@ public class FileCache
      */
     public static void removeUpdateCallback(FileCacheUpdateCallback callback)
     {
-        synchronized (cacheUpdateCallbackList)
-        {
+        synchronized (cacheUpdateCallbackList) {
             cacheUpdateCallbackList.remove(callback);
         }
     }
@@ -429,11 +406,9 @@ public class FileCache
             return url;
         }
 
-        synchronized (downloadHashMap)
-        {
+        synchronized (downloadHashMap) {
             CachedFile local = fileCache.get(url);
-            if (local != null)
-            {
+            if (local != null) {
                 return local.cachedFilename;
             }
             return null;
@@ -472,13 +447,10 @@ public class FileCache
         /*
          * If there is currently a download thread for this file download subscribe to its callbacks.
          */
-        synchronized (downloadHashMap)
-        {
+        synchronized (downloadHashMap) {
             DownloadThread dt = downloadHashMap.get(url);
-            if (dt != null)
-            {
-                synchronized (dt)
-                {
+            if (dt != null) {
+                synchronized (dt) {
                     logger.fine("Added another request for the download for URL \"" + url + "\"");
 
                     if (ready != null) {
@@ -489,11 +461,9 @@ public class FileCache
             }
 
             /* The file could be in the cache as well */
-            if (fileCache.containsKey(url))
-            {
+            if (fileCache.containsKey(url)) {
                 String cachedFilename = fileCache.get(url).cachedFilename;
-                if (new File(cachedFilename).exists())
-                {
+                if (new File(cachedFilename).exists()) {
                     logger.fine("URL \"" + url + "\" has already been cached.");
                     return cachedFilename;
                 }
@@ -509,8 +479,7 @@ public class FileCache
         int t = 0;
 
         /* Find appropriate cached file name */
-        do
-        {
+        do {
             String name = String.format("%x_%d", hashCode, t);
             destFile = new File(cacheDirectory, name);
             t++;
@@ -529,16 +498,14 @@ public class FileCache
             @Override
             public void initProgress(int max)
             {
-                synchronized (dt)
-                {
+                synchronized (dt) {
                     for (FileDownload fd : dt.getCallbackSubscriberList()) {
                         fd.initProgress(max);
                     }
                 }
 
                 /* Notify the global updates */
-                synchronized (cacheUpdateCallbackList)
-                {
+                synchronized (cacheUpdateCallbackList) {
                     for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                         fcuc.update(url);
                     }
@@ -549,18 +516,15 @@ public class FileCache
             public void progress(int current)
             {
                 long progressMillis = System.currentTimeMillis();
-                if (progressMillis - this.lastProgressMillis > 200)
-                {
-                    synchronized (dt)
-                    {
+                if (progressMillis - this.lastProgressMillis > 200) {
+                    synchronized (dt) {
                         for (FileDownload fd : dt.getCallbackSubscriberList()) {
                             fd.progress(current);
                         }
                     }
 
                     /* Notify the global updates. TODO: The progress update should be global here */
-                    synchronized (cacheUpdateCallbackList)
-                    {
+                    synchronized (cacheUpdateCallbackList) {
                         for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                             fcuc.update(url);
                         }
@@ -571,11 +535,9 @@ public class FileCache
             @Override
             public void ready(Exception ex, String name)
             {
-                synchronized (downloadHashMap)
-                {
+                synchronized (downloadHashMap) {
                     downloadHashMap.remove(url);
-                    if (name != null)
-                    {
+                    if (name != null) {
                         CachedFile cf = new CachedFile();
                         cf.cachedFilename = name;
                         cf.url = url;
@@ -584,23 +546,19 @@ public class FileCache
                     }
                 }
 
-                synchronized (dt)
-                {
+                synchronized (dt) {
                     for (FileDownload fd : dt.getCallbackSubscriberList()) {
                         fd.ready(ex, name);
                     }
                 }
 
                 /* Notify the global updates */
-                if (ex != null)
-                {
+                if (ex != null) {
                     for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                         fcuc.exception(ex, url);
                     }
-                } else
-                {
-                    synchronized (cacheUpdateCallbackList)
-                    {
+                } else {
+                    synchronized (cacheUpdateCallbackList) {
                         for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                             fcuc.update(url);
                         }
@@ -616,8 +574,7 @@ public class FileCache
         downloadHashMap.put(url, dt);
 
         /* Notify the global updates */
-        synchronized (cacheUpdateCallbackList)
-        {
+        synchronized (cacheUpdateCallbackList) {
             for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                 fcuc.update(url);
             }
@@ -650,7 +607,7 @@ public class FileCache
      * @throws InterruptedException
      */
     public static String getCachedFileNameBlocking(String url, final FileDownload ready) throws IOException,
-    InterruptedException
+        InterruptedException
     {
         Object lock = new Object();
 
@@ -709,8 +666,7 @@ public class FileCache
                     this.ex = ex;
                 }
 
-                synchronized (this.lock)
-                {
+                synchronized (this.lock) {
                     this.lock.notifyAll();
                 }
                 if (ready != null) {
@@ -719,20 +675,17 @@ public class FileCache
             }
         }
 
-        synchronized (lock)
-        {
+        synchronized (lock) {
             SynchronDownloaderCallback sdc = new SynchronDownloaderCallback(lock);
             String newPath = FileCache.open(url, sdc);
 
-            if (newPath == null)
-            {
+            if (newPath == null) {
                 Exception ex;
 
                 lock.wait();
 
                 ex = sdc.getException();
-                if (ex != null)
-                {
+                if (ex != null) {
                     if (ex instanceof IOException) {
                         throw (IOException) ex;
                     }
@@ -757,11 +710,9 @@ public class FileCache
             return FileState.LOCAL;
         }
 
-        synchronized (downloadHashMap)
-        {
+        synchronized (downloadHashMap) {
             DownloadThread dt = downloadHashMap.get(url);
-            if (dt != null)
-            {
+            if (dt != null) {
                 if (dt.getContentActual() == 0) {
                     return FileState.WAITING;
                 }
@@ -801,14 +752,11 @@ public class FileCache
      */
     public static String getDownloadTime(String url)
     {
-        synchronized (downloadHashMap)
-        {
+        synchronized (downloadHashMap) {
             FileState fs = getState(url);
-            if (fs == FileState.CACHED)
-            {
+            if (fs == FileState.CACHED) {
                 CachedFile cf = fileCache.get(url);
-                if (cf != null)
-                {
+                if (cf != null) {
                     File f = new File(cf.cachedFilename);
                     long modTime = f.lastModified();
                     SimpleDateFormat sdf = new SimpleDateFormat();
@@ -825,8 +773,7 @@ public class FileCache
 
     public static String getPathInfo(String url)
     {
-        synchronized (downloadHashMap)
-        {
+        synchronized (downloadHashMap) {
             FileState fs = getState(url);
             if (fs == FileState.CACHED) {
                 return "Cached";
@@ -842,11 +789,9 @@ public class FileCache
             }
 
             DownloadThread dt = downloadHashMap.get(url);
-            if (dt != null)
-            {
+            if (dt != null) {
                 int length = dt.getContentLength();
-                if (length != -1)
-                {
+                if (length != -1) {
                     int currentPos = dt.getContentActual();
 
                     return String.format("Downloading (%d%%)", currentPos * 100 / length);
@@ -859,19 +804,15 @@ public class FileCache
 
     public static void invalidate(String url)
     {
-        synchronized (downloadHashMap)
-        {
-            if (getState(url) == FileState.CACHED)
-            {
+        synchronized (downloadHashMap) {
+            if (getState(url) == FileState.CACHED) {
                 CachedFile cf = fileCache.get(url);
-                if (cf != null)
-                {
+                if (cf != null) {
                     new File(cf.cachedFilename).delete();
                     fileCache.remove(url);
 
                     /* Notify the global updates */
-                    synchronized (cacheUpdateCallbackList)
-                    {
+                    synchronized (cacheUpdateCallbackList) {
                         for (FileCacheUpdateCallback fcuc : cacheUpdateCallbackList) {
                             fcuc.update(url);
                         }
@@ -893,10 +834,8 @@ public class FileCache
 
     public static void visitFiles(IFileVisitor visitor)
     {
-        synchronized (downloadHashMap)
-        {
-            for (String name : fileCache.keySet())
-            {
+        synchronized (downloadHashMap) {
+            for (String name : fileCache.keySet()) {
                 CachedFile file = fileCache.get(name);
                 visitor.visit(file.cachedFilename, file.url, getPathInfo(file.url), getDownloadTime(file.url));
             }

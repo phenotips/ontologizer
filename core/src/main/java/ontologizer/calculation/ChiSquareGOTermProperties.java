@@ -12,7 +12,7 @@ public class ChiSquareGOTermProperties extends AbstractGOTermProperties
     public int df;
 
     private static final String[] propertyNames = new String[] {
-        "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "nchildren", "df", "chisquare", "p"
+    "ID", "Pop.total", "Pop.term", "Study.total", "Study.term", "nchildren", "df", "chisquare", "p"
     };
 
     @Override
@@ -30,8 +30,7 @@ public class ChiSquareGOTermProperties extends AbstractGOTermProperties
     @Override
     public String getProperty(int propNumber)
     {
-        switch (propNumber)
-        {
+        switch (propNumber) {
             case 0:
                 return this.goTerm.getIDAsString();
             case 1:

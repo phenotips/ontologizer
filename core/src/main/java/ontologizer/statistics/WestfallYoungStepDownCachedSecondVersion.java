@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class WestfallYoungStepDownCachedSecondVersion extends AbstractTestCorrection
-implements IResampling
+    implements IResampling
 {
     /** Specifies the number of resampling steps */
     private int numberOfResamplingSteps = 1000;
@@ -63,8 +63,7 @@ implements IResampling
         int r[] = new int[m];
         Entry[] sortedRawPValues = new Entry[m];
 
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             sortedRawPValues[i] = new Entry();
             sortedRawPValues[i].value = rawP[i].p;
             sortedRawPValues[i].index = i;
@@ -97,8 +96,7 @@ implements IResampling
         }
 
         /* Now "permute" */
-        for (PValue[] randomRawP : randomSampledPValues)
-        {
+        for (PValue[] randomRawP : randomSampledPValues) {
             /* Compute raw p values of "permuted" data */
             // PValue [] randomRawP = randomSampledPValues[b];
 
@@ -109,8 +107,7 @@ implements IResampling
             }
 
             /* Count up */
-            for (i = 0; i < m; i++)
-            {
+            for (i = 0; i < m; i++) {
                 if (q[i] <= rawP[r[i]].p) {
                     count[i]++;
                 }
@@ -124,8 +121,7 @@ implements IResampling
         }
 
         /* Calculate the adjusted p values */
-        for (i = 0; i < m; i++)
-        {
+        for (i = 0; i < m; i++) {
             rawP[r[i]].p_adjusted = ((double) count[i]) / this.numberOfResamplingSteps;
         }
         return rawP;
@@ -134,8 +130,7 @@ implements IResampling
     @Override
     public void setNumberOfResamplingSteps(int n)
     {
-        if (n != this.numberOfResamplingSteps)
-        {
+        if (n != this.numberOfResamplingSteps) {
             this.numberOfResamplingSteps = n;
 
             /* Clear the cache */

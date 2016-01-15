@@ -47,8 +47,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
      */
     private void emitPosition(Element e, int miny)
     {
-        switch (e.getType())
-        {
+        switch (e.getType()) {
             case GrappaConstants.NODE: {
                 Node node = (Node) e;
                 GrappaPoint center = node.getCenterPoint();
@@ -62,7 +61,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                 int index = Integer.parseInt(e.getName());
                 this.positionCallback.set(this.slimGraph.getVertex(index), x, y);
             }
-            break;
+                break;
 
             case GrappaConstants.EDGE:
                 break;
@@ -70,15 +69,14 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
             case GrappaConstants.SUBGRAPH: {
                 GraphEnumeration en = ((Subgraph) e).elements();
 
-                while (en.hasMoreElements())
-                {
+                while (en.hasMoreElements()) {
                     Element ne = en.nextGraphElement();
                     if (e != ne) {
                         emitPosition(ne, miny);
                     }
                 }
             }
-            break;
+                break;
         }
     }
 
@@ -119,8 +117,8 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                     };
                 }, horizSpace / DPI, vertSpace / DPI);
             String[] args = new String[] {
-                "dot", dotTmpFile.getCanonicalPath(),
-                "-Tdot", "-o", layoutedDotTmpFile.getCanonicalPath() };
+            "dot", dotTmpFile.getCanonicalPath(),
+            "-Tdot", "-o", layoutedDotTmpFile.getCanonicalPath() };
             Process dotProcess = Runtime.getRuntime().exec(args);
 
             /* Gather error stream */
@@ -134,8 +132,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
             /* Wait for process to be finished */
             dotProcess.waitFor();
 
-            if (dotProcess.exitValue() == 0)
-            {
+            if (dotProcess.exitValue() == 0) {
                 logger.info("Layouted graph that was stored at " + layoutedDotTmpFile.getCanonicalPath());
 
                 /* Now parse the dot file using Grappa */
@@ -154,8 +151,7 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                 /* And walk though the graph and emit the positions */
                 emitPosition(g, (int) bb.getMinY());
                 rc = true;
-            } else
-            {
+            } else {
                 logger.severe(errStr.toString());
             }
         } catch (IOException e) {

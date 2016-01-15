@@ -27,7 +27,7 @@ final class VertexAttributes<VertexType>
  * @author Sebastian Bauer
  * @author sebastiankohler
  */
-public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> implements Iterable<VertexType>
+public class DirectedGraph<VertexType> extends AbstractGraph<VertexType>implements Iterable<VertexType>
 {
     /** Contains the vertices associated to meta information (edges) */
     private LinkedHashMap<VertexType, VertexAttributes<VertexType>> vertices;
@@ -58,8 +58,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
      */
     public void addVertex(VertexType vertex)
     {
-        if (!this.vertices.containsKey(vertex))
-        {
+        if (!this.vertices.containsKey(vertex)) {
             VertexAttributes<VertexType> va = new VertexAttributes<VertexType>();
             this.vertices.put(vertex, va);
         }
@@ -73,19 +72,16 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public void removeVertex(VertexType vertex)
     {
         VertexAttributes<VertexType> va = this.vertices.get(vertex);
-        if (va != null)
-        {
+        if (va != null) {
             /* Remove each in edge */
-            while (va.inEdges.size() > 0)
-            {
+            while (va.inEdges.size() > 0) {
                 int lastPos = va.inEdges.size() - 1;
                 Edge<VertexType> last = va.inEdges.get(lastPos);
                 removeConnections(last.getSource(), last.getDest());
             }
 
             /* Remove each out edge */
-            while (va.outEdges.size() > 0)
-            {
+            while (va.outEdges.size() > 0) {
                 int lastPos = va.outEdges.size() - 1;
                 Edge<VertexType> last = va.outEdges.get(lastPos);
                 removeConnections(last.getSource(), last.getDest());
@@ -103,13 +99,10 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     private void removeVertexMaintainConnectivity(VertexType vertex)
     {
         VertexAttributes<VertexType> va = this.vertices.get(vertex);
-        if (va != null)
-        {
+        if (va != null) {
             /* Connect each the source of each in edges to the dest of each out edge */
-            for (Edge<VertexType> i : va.inEdges)
-            {
-                for (Edge<VertexType> o : va.outEdges)
-                {
+            for (Edge<VertexType> i : va.inEdges) {
+                for (Edge<VertexType> o : va.outEdges) {
                     if (!hasEdge(i.getSource(), o.getDest())) {
                         addEdge(new Edge<VertexType>(i.getSource(), o.getDest()));
                     }
@@ -140,18 +133,15 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     {
         DirectedGraph<VertexType> copy = new DirectedGraph<VertexType>();
         Iterator<VertexType> nodeIt = this.getVertexIterator();
-        while (nodeIt.hasNext())
-        {
+        while (nodeIt.hasNext()) {
             copy.addVertex(nodeIt.next());
         }
 
         nodeIt = this.getVertexIterator();
-        while (nodeIt.hasNext())
-        {
+        while (nodeIt.hasNext()) {
             VertexType node = nodeIt.next();
             Iterator<VertexType> descIt = this.getChildNodes(node);
-            while (descIt.hasNext())
-            {
+            while (descIt.hasNext()) {
                 copy.addEdge(new Edge<VertexType>(node, descIt.next()));
             }
         }
@@ -203,8 +193,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public boolean hasEdge(VertexType source, VertexType dest)
     {
         VertexAttributes<VertexType> vaSource = this.vertices.get(source);
-        for (Edge<VertexType> e : vaSource.outEdges)
-        {
+        for (Edge<VertexType> e : vaSource.outEdges) {
             if (e.getDest().equals(dest)) {
                 return true;
             }
@@ -221,7 +210,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
             throw new IllegalArgumentException();
         }
 
-        // System.out.println("start removing -->  ");
+        // System.out.println("start removing --> ");
         HashSet<Edge<VertexType>> deleteMe = new HashSet<Edge<VertexType>>();
         for (Edge<VertexType> edge : vaSource.outEdges) {
             if (edge.getDest().equals(dest)) {
@@ -275,7 +264,8 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
             }
         }
         if (deleteMe.size() > 1) {
-            throw new RuntimeException(" found more than one edge to delete! (" + deleteMe.size() + ") --> " + deleteMe);
+            throw new RuntimeException(
+                " found more than one edge to delete! (" + deleteMe.size() + ") --> " + deleteMe);
         }
         for (Edge<VertexType> edge : deleteMe) {
             // System.out.print("rem: "+edge.getSource()+" -> "+edge.getDest());
@@ -305,8 +295,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     {
         VertexAttributes<VertexType> va = this.vertices.get(source);
 
-        for (Edge<VertexType> e : va.outEdges)
-        {
+        for (Edge<VertexType> e : va.outEdges) {
             if (e.getDest().equals(dest)) {
                 return e;
             }
@@ -323,7 +312,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public int getNumberOfInEdges(VertexType v)
     {
         VertexAttributes<VertexType> va = this.vertices.get(v);
-        assert (va != null);
+        assert(va != null);
         return va.inEdges.size();
     }
 
@@ -337,7 +326,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public Iterator<Edge<VertexType>> getInEdges(VertexType t)
     {
         VertexAttributes<VertexType> va = this.vertices.get(t);
-        assert (va != null);
+        assert(va != null);
         return va.inEdges.iterator();
     }
 
@@ -345,7 +334,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public Iterator<VertexType> getParentNodes(VertexType vt)
     {
         VertexAttributes<VertexType> va = this.vertices.get(vt);
-        assert (va != null);
+        assert(va != null);
 
         List<VertexType> ancestors = new LinkedList<VertexType>();
         for (Edge<VertexType> e : va.inEdges) {
@@ -363,7 +352,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public int getNumberOfOutEdges(VertexType v)
     {
         VertexAttributes<VertexType> va = this.vertices.get(v);
-        assert (va != null);
+        assert(va != null);
         return va.outEdges.size();
     }
 
@@ -376,7 +365,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public double getClusteringCoefficient(VertexType v)
     {
         VertexAttributes<VertexType> va = this.vertices.get(v);
-        assert (va != null);
+        assert(va != null);
 
         /*
          * Determine the neighborhood of provided vertex.
@@ -442,7 +431,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public Iterator<Edge<VertexType>> getOutEdges(VertexType t)
     {
         VertexAttributes<VertexType> va = this.vertices.get(t);
-        assert (va != null);
+        assert(va != null);
         return va.outEdges.iterator();
     }
 
@@ -454,7 +443,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public Iterator<VertexType> getChildNodes(VertexType vt)
     {
         VertexAttributes<VertexType> va = this.vertices.get(vt);
-        assert (va != null);
+        assert(va != null);
 
         List<VertexType> descendant = new LinkedList<VertexType>();
         for (Edge<VertexType> e : va.outEdges) {
@@ -472,7 +461,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public Iterable<VertexType> getDescendantVertices(VertexType vt)
     {
         VertexAttributes<VertexType> va = this.vertices.get(vt);
-        assert (va != null);
+        assert(va != null);
 
         List<VertexType> descendant = new ArrayList<VertexType>(va.outEdges.size());
         for (Edge<VertexType> e : va.outEdges) {
@@ -544,8 +533,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
         queue.offer(ve);
         map.put(ve.vertex, ve);
 
-        while (!queue.isEmpty())
-        {
+        while (!queue.isEmpty()) {
             /* Take a node which has minimal distance to the starting node */
             VertexExtension next = queue.poll();
 
@@ -557,8 +545,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
                 edgeIter = getOutEdges(next.vertex);
             }
 
-            while (edgeIter.hasNext())
-            {
+            while (edgeIter.hasNext()) {
                 Edge<VertexType> edge = edgeIter.next();
                 VertexType neighbour;
 
@@ -570,18 +557,15 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
 
                 /* Relax the neighbour (or add it if it is not available) */
                 VertexExtension neighbourExt = map.get(neighbour);
-                if (neighbourExt == null)
-                {
+                if (neighbourExt == null) {
                     neighbourExt = new VertexExtension(neighbour, next.distance + edge.getWeight(), next.vertex);
                     map.put(neighbour, neighbourExt);
                     queue.offer(neighbourExt);
-                } else
-                {
+                } else {
                     /*
                      * Would the edge from the current vertex to the neighbour make the path to the neighbour shorter?
                      */
-                    if (neighbourExt.distance > next.distance + edge.getWeight())
-                    {
+                    if (neighbourExt.distance > next.distance + edge.getWeight()) {
                         queue.remove(neighbourExt);
                         neighbourExt.distance = next.distance + edge.getWeight();
                         neighbourExt.parent = next.vertex;
@@ -592,16 +576,14 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
         }
 
         /* Now throw out the results */
-        for (Entry<VertexType, VertexExtension> v : map.entrySet())
-        {
+        for (Entry<VertexType, VertexExtension> v : map.entrySet()) {
             /*
              * Build the path by successively traversing the path from the current destination through the stored
              * ancestors (parents)
              */
             LinkedList<VertexType> ll = new LinkedList<VertexType>();
             VertexExtension curVe = v.getValue();
-            do
-            {
+            do {
                 ll.addFirst(curVe.vertex);
                 curVe = map.get(curVe.parent);
             } while (curVe != null);
@@ -658,13 +640,11 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
         map.put(source, new VertexExtension(source, 0, null));
 
         /* Vertices loop */
-        for (int i = 0; i < this.vertices.size(); i++)
-        {
+        for (int i = 0; i < this.vertices.size(); i++) {
             boolean changed = false;
 
             /* Edge loop */
-            for (Entry<VertexType, VertexAttributes<VertexType>> ent : this.vertices.entrySet())
-            {
+            for (Entry<VertexType, VertexAttributes<VertexType>> ent : this.vertices.entrySet()) {
                 VertexType u = ent.getKey();
 
                 VertexExtension uExt = map.get(u);
@@ -672,20 +652,16 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
                     continue;
                 }
 
-                for (Edge<VertexType> edge : ent.getValue().outEdges)
-                {
+                for (Edge<VertexType> edge : ent.getValue().outEdges) {
                     VertexType v = edge.getDest();
 
                     VertexExtension vExt = map.get(v);
-                    if (vExt == null)
-                    {
+                    if (vExt == null) {
                         vExt = new VertexExtension(v, uExt.distance + edge.getWeight() * weightMultiplier, u);
                         map.put(v, vExt);
                         changed = true;
-                    } else
-                    {
-                        if (vExt.distance > uExt.distance + edge.getWeight() * weightMultiplier)
-                        {
+                    } else {
+                        if (vExt.distance > uExt.distance + edge.getWeight() * weightMultiplier) {
                             vExt.distance = uExt.distance + edge.getWeight() * weightMultiplier;
                             vExt.parent = u;
                             changed = true;
@@ -701,16 +677,14 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
         }
 
         /* Now throw out the results */
-        for (Entry<VertexType, VertexExtension> v : map.entrySet())
-        {
+        for (Entry<VertexType, VertexExtension> v : map.entrySet()) {
             /*
              * Build the path by successively traversing the path from the current destination through the stored
              * ancestors (parents)
              */
             LinkedList<VertexType> ll = new LinkedList<VertexType>();
             VertexExtension curVe = v.getValue();
-            do
-            {
+            do {
                 ll.addFirst(curVe.vertex); /* FIXME: (VertexType) is for the java compiler */
                 curVe = map.get(curVe.parent);
             } while (curVe != null);
@@ -742,13 +716,13 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public void singleSourceLongestPath(VertexType source, final IDistanceVisitor<VertexType> visitor)
     {
         bf(source, -1, new IDistanceVisitor<VertexType>()
-            {
+        {
             @Override
             public boolean visit(VertexType vertex, java.util.List<VertexType> path, int distance)
             {
                 return visitor.visit(vertex, path, distance * -1);
             };
-            });
+        });
     }
 
     /**
@@ -858,8 +832,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
     public int getMaxDegree()
     {
         int max = Integer.MIN_VALUE;
-        for (VertexType vertex : this.vertices.keySet())
-        {
+        for (VertexType vertex : this.vertices.keySet()) {
             int degreeOut = this.getNumberOfOutEdges(vertex);
             int degreeIn = this.getNumberOfInEdges(vertex);
             if (degreeIn != degreeOut) {
@@ -924,11 +897,9 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
         }
 
         /* Add edges (only one class of edges needs to be added) */
-        for (VertexType v : verticesToBeIncluded)
-        {
+        for (VertexType v : verticesToBeIncluded) {
             Iterator<Edge<VertexType>> edges = getInEdges(v);
-            while (edges.hasNext())
-            {
+            while (edges.hasNext()) {
                 Edge<VertexType> e = edges.next();
                 if (verticesToBeIncluded.contains(e.getSource())) {
                     graph.addEdge(e);
@@ -955,20 +926,18 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
             graph.addVertex(v);
         }
 
-        for (final VertexType v1 : verticesToBeIncluded)
-        {
+        for (final VertexType v1 : verticesToBeIncluded) {
             bfs(v1, false, new IVisitor<VertexType>()
-                {
+            {
                 @Override
                 public boolean visited(VertexType vertex)
                 {
-                    if (verticesToBeIncluded.contains(vertex))
-                    {
+                    if (verticesToBeIncluded.contains(vertex)) {
                         graph.addEdge(new Edge<VertexType>(v1, vertex));
                     }
                     return true;
                 };
-                });
+            });
         }
 
         return graph;
@@ -988,8 +957,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
          * Note that we iterate here over the nodes the this instance and not over the duplicated graph. We will remove
          * nodes from there therefore iterating over those nodes is node safe.
          */
-        for (VertexType v : this)
-        {
+        for (VertexType v : this) {
             if (!verticesToBeIncluded.contains(v)) {
                 graph.removeVertexMaintainConnectivity(v);
             }
@@ -1014,8 +982,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
 
         int removed = 0;
 
-        do
-        {
+        do {
             reducedInIteration = false;
 
             /* Here, the reduced graph structure is stored */
@@ -1028,8 +995,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
              * Now add edges to the reduced graph structure, i.e., leave out edges that are redundant
              */
             int i = 0;
-            for (VertexType v : verticesToBeIncluded)
-            {
+            for (VertexType v : verticesToBeIncluded) {
                 Set<VertexType> vUpperVertices = transitiveClosure.getVerticesOfUpperInducedGraph(null, v);
                 LinkedList<VertexType> parents = new LinkedList<VertexType>();
                 Iterator<VertexType> parentIterator = transitiveClosure.getParentNodes(v);
@@ -1042,12 +1008,10 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
                  * Construct the upper graph by using only the parents. Always leave out a single parent. If that edge
                  * is redundant, the number of nodes in this newly created graph differs only by one.
                  */
-                for (VertexType p : parents)
-                {
+                for (VertexType p : parents) {
                     HashSet<VertexType> pUpperVertices = new HashSet<VertexType>();
 
-                    for (VertexType p2 : parents)
-                    {
+                    for (VertexType p2 : parents) {
                         /* Skip parent that should be left out */
                         if (p.equals(p2)) {
                             continue;
@@ -1056,12 +1020,10 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
                         pUpperVertices.addAll(transitiveClosure.getVerticesOfUpperInducedGraph(null, p2));
                     }
 
-                    if (pUpperVertices.size() != vUpperVertices.size() - 1)
-                    {
+                    if (pUpperVertices.size() != vUpperVertices.size() - 1) {
                         /* Here we know that the edge from p to v was relevant */
                         transitivitySubGraph.addEdge(new Edge<VertexType>(p, v));
-                    } else
-                    {
+                    } else {
                         reducedInIteration = true;
                         removed++;
                     }
@@ -1094,8 +1056,7 @@ public class DirectedGraph<VertexType> extends AbstractGraph<VertexType> impleme
             @Override
             public boolean visited(VertexType vertex)
             {
-                if (root != null)
-                {
+                if (root != null) {
                     if (vertex.equals(root) || existsPath(root, vertex)) {
                         this.nodeSet.add(vertex);
                     }

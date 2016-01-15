@@ -66,10 +66,8 @@ public class PvalueSetStore implements Iterable<PValue[]>
     private HashMap<Integer, Double> deflate_pvals(PValue[] values)
     {
         HashMap<Integer, Double> reducedSet = new HashMap<Integer, Double>();
-        for (int i = 0; i < values.length; i++)
-        {
-            if (!values[i].ignoreAtMTC)
-            {
+        for (int i = 0; i < values.length; i++) {
+            if (!values[i].ignoreAtMTC) {
                 reducedSet.put(i, values[i].p);
             }
         }
@@ -81,16 +79,14 @@ public class PvalueSetStore implements Iterable<PValue[]>
         PValue[] pvals = new PValue[this.setSize];
 
         // initialize array
-        for (int i = 0; i < this.setSize; i++)
-        {
+        for (int i = 0; i < this.setSize; i++) {
             pvals[i] = new PValue();
             pvals[i].ignoreAtMTC = true;
             pvals[i].p = 1.0;
         }
 
         // set old values
-        for (int k : reducedSet.keySet())
-        {
+        for (int k : reducedSet.keySet()) {
             pvals[k].ignoreAtMTC = false;
             pvals[k].p = reducedSet.get(k);
         }

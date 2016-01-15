@@ -116,19 +116,19 @@ abstract public class AbstractGraph<VertexType>
         bfs(initial,
             new INeighbourGrabber<VertexType>()
             {
-            @Override
-            public Iterator<VertexType> grabNeighbours(VertexType t)
-            {
-                /*
-                 * If bfs is done against flow neighbours can be found via the in-going edges otherwise via the
-                 * outgoing edges
-                 */
-                if (againstFlow) {
-                    return getParentNodes(t);
-                } else {
-                    return getChildNodes(t);
+                @Override
+                public Iterator<VertexType> grabNeighbours(VertexType t)
+                {
+                    /*
+                     * If bfs is done against flow neighbours can be found via the in-going edges otherwise via the
+                     * outgoing edges
+                     */
+                    if (againstFlow) {
+                        return getParentNodes(t);
+                    } else {
+                        return getChildNodes(t);
+                    }
                 }
-            }
             }, visitor);
     }
 
@@ -149,8 +149,7 @@ abstract public class AbstractGraph<VertexType>
 
         /* Add all nodes into the queue */
         TinyQueue<VertexType> queue = new TinyQueue<VertexType>();
-        for (VertexType vertex : initial)
-        {
+        for (VertexType vertex : initial) {
             queue.offer(vertex);
             visited.add(vertex);
             if (!visitor.visited(vertex)) {
@@ -158,8 +157,7 @@ abstract public class AbstractGraph<VertexType>
             }
         }
 
-        while (!queue.isEmpty())
-        {
+        while (!queue.isEmpty()) {
             /* Remove head of the queue */
             VertexType head = queue.poll();
 
@@ -168,12 +166,10 @@ abstract public class AbstractGraph<VertexType>
              */
             Iterator<VertexType> neighbours = grabber.grabNeighbours(head);
 
-            while (neighbours.hasNext())
-            {
+            while (neighbours.hasNext()) {
                 VertexType neighbour = neighbours.next();
 
-                if (!visited.contains(neighbour))
-                {
+                if (!visited.contains(neighbour)) {
                     queue.offer(neighbour);
                     visited.add(neighbour);
                     if (!visitor.visited(neighbour)) {
@@ -198,14 +194,12 @@ abstract public class AbstractGraph<VertexType>
         visited.add(vertex);
         stack.push(vertex);
 
-        while (!stack.isEmpty())
-        {
+        while (!stack.isEmpty()) {
             VertexType v = stack.pop();
             visitor.visited(v);
 
             Iterator<VertexType> iter = grabber.grabNeighbours(v);
-            while (iter.hasNext())
-            {
+            while (iter.hasNext()) {
                 VertexType n = iter.next();
                 if (visited.contains(n)) {
                     continue;
@@ -223,15 +217,13 @@ abstract public class AbstractGraph<VertexType>
         visitor.visited(v);
 
         Iterator<VertexType> iter = grabber.grabNeighbours(v);
-        while (iter.hasNext())
-        {
+        while (iter.hasNext()) {
             VertexType n = iter.next();
             if (visited.contains(n)) {
                 continue;
             }
 
-            if (upwardQueue.size() > 0)
-            {
+            if (upwardQueue.size() > 0) {
                 for (VertexType t : upwardQueue) {
                     map.put(t, n);
                 }
@@ -256,7 +248,7 @@ abstract public class AbstractGraph<VertexType>
      */
     public HashMap<VertexType, VertexType> getDFSShotcutLinks(VertexType vt, INeighbourGrabber<VertexType> grabber,
         IVisitor<VertexType> visitor)
-        {
+    {
         HashMap<VertexType, VertexType> map = new HashMap<VertexType, VertexType>();
         ArrayList<VertexType> upwardQueue = new ArrayList<VertexType>();
 
@@ -267,7 +259,7 @@ abstract public class AbstractGraph<VertexType>
         }
 
         return map;
-        }
+    }
 
     /**
      * Returns whether there is a path from source to dest.
@@ -285,8 +277,7 @@ abstract public class AbstractGraph<VertexType>
             @Override
             public boolean visited(VertexType vertex)
             {
-                if (vertex.equals(dest))
-                {
+                if (vertex.equals(dest)) {
                     this.found = true;
                     return false;
                 }
@@ -312,8 +303,7 @@ abstract public class AbstractGraph<VertexType>
         HashMap<VertexType, Integer> vertex2NumParents = new HashMap<VertexType, Integer>();
         LinkedList<VertexType> verticesWithNoParents = new LinkedList<VertexType>();
 
-        for (VertexType v : getVertices())
-        {
+        for (VertexType v : getVertices()) {
             /* Build list of children */
             LinkedList<VertexType> vChild = new LinkedList<VertexType>();
             Iterator<VertexType> childrenIterator = getChildNodes(v);
@@ -325,16 +315,14 @@ abstract public class AbstractGraph<VertexType>
             /* Determine the number of parents for each node */
             int numParents = 0;
             Iterator<VertexType> parentIterator = getParentNodes(v);
-            while (parentIterator.hasNext())
-            {
+            while (parentIterator.hasNext()) {
                 parentIterator.next();
                 numParents++;
             }
 
             if (numParents == 0) {
                 verticesWithNoParents.add(v);
-            }
-            else {
+            } else {
                 vertex2NumParents.put(v, numParents);
             }
         }
@@ -346,13 +334,11 @@ abstract public class AbstractGraph<VertexType>
          * Take the first vertex in the queue verticesWithNoParents and to every vertex to which vertex is a parent
          * decrease its current number of parents value by one.
          */
-        while (!verticesWithNoParents.isEmpty())
-        {
+        while (!verticesWithNoParents.isEmpty()) {
             VertexType top = verticesWithNoParents.poll();
             order.add(top);
 
-            for (VertexType p : vertex2Children.get(top))
-            {
+            for (VertexType p : vertex2Children.get(top)) {
                 int newNumParents = vertex2NumParents.get(p) - 1;
                 vertex2NumParents.put(p, newNumParents);
 
@@ -425,7 +411,7 @@ abstract public class AbstractGraph<VertexType>
         final DotAttributesProvider<VertexType> provider, final double nodeSep, final double rankSep)
     {
         DotAttributesProvider<VertexType> newProvider = new DotAttributesProvider<VertexType>()
-            {
+        {
             @Override
             public String getDotGraphAttributes()
             {
@@ -455,8 +441,8 @@ abstract public class AbstractGraph<VertexType>
             {
                 return provider.getDotHeader();
             }
-            };
-            writeDOT(fos, nodeSet, newProvider);
+        };
+        writeDOT(fos, nodeSet, newProvider);
     }
 
     /**
@@ -472,15 +458,13 @@ abstract public class AbstractGraph<VertexType>
         String graphHeader = provider.getDotHeader();
         String graphAttributes = provider.getDotGraphAttributes();
 
-        if (graphHeader != null)
-        {
+        if (graphHeader != null) {
             out.append(graphHeader);
             out.append("\n");
         }
 
         out.append("digraph G {");
-        if (graphAttributes != null)
-        {
+        if (graphAttributes != null) {
             out.append(graphAttributes);
             out.append('\n');
         }
@@ -488,8 +472,7 @@ abstract public class AbstractGraph<VertexType>
         /* Write out all nodes, call the given interface. Along the way, remember the indices. */
         HashMap<VertexType, Integer> v2idx = new HashMap<VertexType, Integer>();
         int i = 0;
-        for (VertexType v : nodeSet)
-        {
+        for (VertexType v : nodeSet) {
             String attributes = provider.getDotNodeAttributes(v);
 
             out.write(Integer.toString(i));
@@ -502,15 +485,12 @@ abstract public class AbstractGraph<VertexType>
         }
 
         /* Now write out the edges. Write out only the edges which are linking nodes within the node set. */
-        for (VertexType s : nodeSet)
-        {
+        for (VertexType s : nodeSet) {
             Iterator<VertexType> ancest = getChildNodes(s);
-            while (ancest.hasNext())
-            {
+            while (ancest.hasNext()) {
                 VertexType d = ancest.next();
 
-                if (v2idx.containsKey(d))
-                {
+                if (v2idx.containsKey(d)) {
                     out.write(v2idx.get(s) + " -> " + v2idx.get(d));
 
                     String attributes = provider.getDotEdgeAttributes(s, d);

@@ -92,11 +92,9 @@ public class TermID
 
         int parsedId;
         String parseIdFrom = stringID.substring(colon + 1);
-        try
-        {
+        try {
             parsedId = Integer.parseInt(parseIdFrom);
-        } catch (NumberFormatException ex)
-        {
+        } catch (NumberFormatException ex) {
             // this is a fix to keep this running for uberpheno
             parsedId = makeIdFromString(parseIdFrom);
             // throw new IllegalArgumentException("Failed to parse the integer part of termid: \"" + stringID + "\"");
@@ -121,12 +119,10 @@ public class TermID
             this.prefix = newPrefix;
         }
 
-        try
-        {
+        try {
             int parsedId = ByteString.parseFirstInt(stringID);
             this.id = parsedId;
-        } catch (NumberFormatException ex)
-        {
+        } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Failed to parse the integer part of termid: \"" + stringID.toString()
                 + "\"");
         }
@@ -145,18 +141,15 @@ public class TermID
         int i;
         int colon = -1;
 
-        for (i = start; i < start + len; i++)
-        {
-            if (id[i] == ':')
-            {
+        for (i = start; i < start + len; i++) {
+            if (id[i] == ':') {
                 colon = i;
                 break;
             }
         }
 
         /* Ensure that there is a proper prefix */
-        if (colon < 1)
-        {
+        if (colon < 1) {
             throw new IllegalArgumentException("Failed to find a proper prefix of termid: \""
                 + new String(id, start, len) + "\"");
         }
@@ -170,11 +163,9 @@ public class TermID
 
         int tid;
 
-        try
-        {
+        try {
             tid = ByteString.parseFirstInt(id, colon, start + len - colon);
-        } catch (NumberFormatException ex)
-        {
+        } catch (NumberFormatException ex) {
             /* This is a hack to make it possible to accept non-number ids */
             String strID = new String(id, colon + 1, start + len - colon - 1);
             tid = makeIdFromString(strID);
@@ -228,8 +219,7 @@ public class TermID
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof TermID)
-        {
+        if (obj instanceof TermID) {
             TermID goTermID = (TermID) obj;
             if (goTermID.id != this.id) {
                 return false;

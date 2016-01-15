@@ -50,8 +50,7 @@ public class OneOnALineParser extends AbstractItemParser
     @Override
     public void parseSource(IParserCallback callback) throws IOException
     {
-        if (this.file != null)
-        {
+        if (this.file != null) {
             BufferedReader is;
             is = new BufferedReader(new FileReader(this.file));
             String inputLine;
@@ -63,8 +62,7 @@ public class OneOnALineParser extends AbstractItemParser
             return;
         }
 
-        if (this.names != null)
-        {
+        if (this.names != null) {
             for (String name : this.names) {
                 processLine(name, callback);
             }

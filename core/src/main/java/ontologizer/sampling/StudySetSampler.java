@@ -37,8 +37,7 @@ public class StudySetSampler
 
         // Check first how much we already have to prevent from over-sampling.
         HashSet<ByteString> cleanedRepository = new HashSet<ByteString>();
-        for (ByteString entry : repository)
-        {
+        for (ByteString entry : repository) {
             cleanedRepository.add(entry);
         }
         int nRepTotal = cleanedRepository.size();
@@ -48,8 +47,7 @@ public class StudySetSampler
         int desiredBefore = desiredSize;
         int nWeHave = weHave.size();
         desiredSize -= nWeHave;
-        if (desiredSize <= 0)
-        {
+        if (desiredSize <= 0) {
             System.err.println("We already have more than we want of the term to enrich! "
                 + "nRepTotal = "
                 + nRepTotal
@@ -64,8 +62,7 @@ public class StudySetSampler
         KSubsetSampler<ByteString> sampler = new KSubsetSampler<ByteString>(cleanedRepository, this.rnd);
         ArrayList<ByteString> sample = sampler.sampleOneOrdered(desiredSize);
 
-        for (ByteString gene : sample)
-        {
+        for (ByteString gene : sample) {
             studySet.addGene(gene, this.baseStudySet.getGeneDescription(gene));
         }
     }
@@ -148,8 +145,7 @@ public class StudySetSampler
 
         HashSet<ByteString> seenGenes = new HashSet<ByteString>();
 
-        for (TermID id : enrichRule)
-        {
+        for (TermID id : enrichRule) {
             // TermID id = termsToOverRepresent[i];
             GOTermAnnotatedGenes annoGenes = termEnum.getAnnotatedGenes(id);
             seenGenes.addAll(annoGenes.totalAnnotated);
@@ -162,8 +158,7 @@ public class StudySetSampler
         }
 
         HashSet<ByteString> genesRest = new HashSet<ByteString>();
-        for (TermID id : termEnum)
-        {
+        for (TermID id : termEnum) {
             GOTermAnnotatedGenes annoGenes = termEnum.getAnnotatedGenes(id);
             genesRest.addAll(annoGenes.totalAnnotated);
         }
@@ -198,8 +193,7 @@ public class StudySetSampler
          */
         HashSet<ByteString> genesToOverRepresent = new HashSet<ByteString>();
 
-        for (TermID id : termsToOverRepresent)
-        {
+        for (TermID id : termsToOverRepresent) {
             GOTermAnnotatedGenes annoGenes = termEnum.getAnnotatedGenes(id);
             for (ByteString gene : annoGenes.totalAnnotated) {
                 genesToOverRepresent.add(gene);
@@ -207,8 +201,7 @@ public class StudySetSampler
         }
 
         HashSet<ByteString> genesRest = studySet.getAllGeneNames();
-        for (ByteString gene : genesToOverRepresent)
-        {
+        for (ByteString gene : genesToOverRepresent) {
             genesRest.remove(gene);
         }
         WeightedUrn<ByteString> termUrn =
@@ -216,8 +209,7 @@ public class StudySetSampler
 
         HashSet<ByteString> sampledGenes = termUrn.sample(desiredSize);
 
-        for (ByteString gene : sampledGenes)
-        {
+        for (ByteString gene : sampledGenes) {
             studySet.addGene(gene, this.baseStudySet.getGeneDescription(gene));
         }
 

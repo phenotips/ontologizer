@@ -59,8 +59,7 @@ public class GOTermCounter implements Iterable<TermID>
 
         /* First, add direct counts for ids */
         it = ids.iterator();
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             TermID id = it.next();
             addDirect(id);
         }
@@ -83,8 +82,7 @@ public class GOTermCounter implements Iterable<TermID>
          * diamond shaped paths or two children of one term being annotated).
          */
         Iterator<TermID> it2 = allTerms.iterator();
-        while (it2.hasNext())
-        {
+        while (it2.hasNext()) {
             TermID id = it2.next();
             addTotal(id);
         }
@@ -95,22 +93,18 @@ public class GOTermCounter implements Iterable<TermID>
     {
         Term gt = this.graph.getTerm(id);
         AssociationCounter ac = null;
-        if (gt == null)
-        {
+        if (gt == null) {
             System.err.println("Error: GOTermCounter.addDirect"
                 + " Could not find " + id);
             System.exit(1);
         }
 
-        switch (Namespace.getNamespaceEnum(gt.getNamespace()))
-        {
+        switch (Namespace.getNamespaceEnum(gt.getNamespace())) {
             case BIOLOGICAL_PROCESS:
-                if (this.processHashMap.containsKey(id))
-                {
+                if (this.processHashMap.containsKey(id)) {
                     ac = this.processHashMap.get(id);
                     ac.incrementDirectCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementDirectCount();
                     this.processHashMap.put(id, ac);
@@ -118,12 +112,10 @@ public class GOTermCounter implements Iterable<TermID>
                 break;
 
             case MOLECULAR_FUNCTION:
-                if (this.functionHashMap.containsKey(id))
-                {
+                if (this.functionHashMap.containsKey(id)) {
                     ac = this.functionHashMap.get(id);
                     ac.incrementDirectCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementDirectCount();
                     this.functionHashMap.put(id, ac);
@@ -131,12 +123,10 @@ public class GOTermCounter implements Iterable<TermID>
                 break;
 
             case CELLULAR_COMPONENT:
-                if (this.componentHashMap.containsKey(id))
-                {
+                if (this.componentHashMap.containsKey(id)) {
                     ac = this.componentHashMap.get(id);
                     ac.incrementDirectCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementDirectCount();
                     this.componentHashMap.put(id, ac);
@@ -150,22 +140,18 @@ public class GOTermCounter implements Iterable<TermID>
     {
         Term gt = this.graph.getTerm(id);
         AssociationCounter ac = null;
-        if (gt == null)
-        {
+        if (gt == null) {
             System.err.println("Error: GOTermCounter.addDirect"
                 + " Could not find " + id);
             System.exit(1);
         }
 
-        switch (Namespace.getNamespaceEnum(gt.getNamespace()))
-        {
+        switch (Namespace.getNamespaceEnum(gt.getNamespace())) {
             case BIOLOGICAL_PROCESS:
-                if (this.processHashMap.containsKey(id))
-                {
+                if (this.processHashMap.containsKey(id)) {
                     ac = this.processHashMap.get(id);
                     ac.incrementCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementCount();
                     this.processHashMap.put(id, ac);
@@ -173,12 +159,10 @@ public class GOTermCounter implements Iterable<TermID>
                 break;
 
             case MOLECULAR_FUNCTION:
-                if (this.functionHashMap.containsKey(id))
-                {
+                if (this.functionHashMap.containsKey(id)) {
                     ac = this.functionHashMap.get(id);
                     ac.incrementCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementCount();
                     this.functionHashMap.put(id, ac);
@@ -186,12 +170,10 @@ public class GOTermCounter implements Iterable<TermID>
                 break;
 
             case CELLULAR_COMPONENT:
-                if (this.componentHashMap.containsKey(id))
-                {
+                if (this.componentHashMap.containsKey(id)) {
                     ac = this.componentHashMap.get(id);
                     ac.incrementCount();
-                } else
-                {
+                } else {
                     ac = new AssociationCounter(id);
                     ac.incrementCount();
                     this.componentHashMap.put(id, ac);
@@ -204,12 +186,10 @@ public class GOTermCounter implements Iterable<TermID>
     {
         AssociationCounter ac = null;
         ac = this.processHashMap.get(id);
-        if (ac == null)
-        {
+        if (ac == null) {
             ac = this.functionHashMap.get(id);
         }
-        if (ac == null)
-        {
+        if (ac == null) {
             ac = this.componentHashMap.get(id);
         }
 
@@ -224,8 +204,7 @@ public class GOTermCounter implements Iterable<TermID>
     public int getDirectCount(TermID id)
     {
         AssociationCounter ac = find(id);
-        if (ac == null)
-        {
+        if (ac == null) {
             System.out.println("Error: Could not find Association counts for "
                 + id);
             return 0;

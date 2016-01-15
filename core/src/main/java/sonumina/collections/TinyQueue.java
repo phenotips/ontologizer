@@ -34,8 +34,7 @@ public class TinyQueue<Type>
      */
     private TinyElement<Type> allocateElement()
     {
-        if (this.headOfFree != null)
-        {
+        if (this.headOfFree != null) {
             TinyElement<Type> te = this.headOfFree;
             this.headOfFree = te.next;
             te.next = null;
@@ -64,11 +63,9 @@ public class TinyQueue<Type>
     {
         TinyElement<Type> te = allocateElement();
         te.t = t;
-        if (this.head == null)
-        {
+        if (this.head == null) {
             this.head = this.tail = te;
-        } else
-        {
+        } else {
             this.tail.next = te;
             this.tail = te;
         }

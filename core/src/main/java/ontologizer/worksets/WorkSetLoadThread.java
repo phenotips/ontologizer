@@ -129,8 +129,7 @@ public class WorkSetLoadThread extends Thread
 
     static private WorkSetLoadThread wslt;
 
-    static
-    {
+    static {
         wslt = new WorkSetLoadThread();
         wslt.start();
     }
@@ -287,8 +286,7 @@ public class WorkSetLoadThread extends Thread
                     List<Task> toBeRemoved = new LinkedList<Task>();
 
                     /* Go through all task, check whether the URL affects any tasks */
-                    for (Task t : WorkSetLoadThread.this.taskList)
-                    {
+                    for (Task t : WorkSetLoadThread.this.taskList) {
                         if (this.url.equals(t.obo)) {
                             t.oboDownloaded = true;
                         }
@@ -296,29 +294,23 @@ public class WorkSetLoadThread extends Thread
                             t.assocDownloaded = true;
                         }
 
-                        if (t.oboDownloaded)
-                        {
-                            try
-                            {
-                                if (FileCache.isNonBlocking(t.obo))
-                                {
+                        if (t.oboDownloaded) {
+                            try {
+                                if (FileCache.isNonBlocking(t.obo)) {
                                     loadGraph(FileCache.getLocalFileName(t.obo), dummyWorkSetProgress);
                                 }
-                            } catch (Exception ex)
-                            {
+                            } catch (Exception ex) {
 
                             }
 
-                            if (t.assocDownloaded)
-                            {
+                            if (t.assocDownloaded) {
                                 /*
                                  * Both, the definition and the assoc file for this task has been at least downloaded.
                                  * Note that loading the graph is double-work here but it is not as it is cached. TODO:
                                  * Load only the assoc here.
                                  */
 
-                                if (FileCache.isNonBlocking(t.obo) && FileCache.isNonBlocking(t.assoc))
-                                {
+                                if (FileCache.isNonBlocking(t.obo) && FileCache.isNonBlocking(t.assoc)) {
                                     loadFiles(FileCache.getLocalFileName(t.obo), FileCache.getLocalFileName(t.assoc),
                                         dummyWorkSetProgress);
                                 }
@@ -341,8 +333,7 @@ public class WorkSetLoadThread extends Thread
             @Override
             public void update(String url)
             {
-                if (FileCache.getState(url) == FileCache.FileState.CACHED)
-                {
+                if (FileCache.getState(url) == FileCache.FileState.CACHED) {
                     execAsync(new CleanupTasksRunnable(url));
                 }
             }
@@ -355,41 +346,32 @@ public class WorkSetLoadThread extends Thread
             }
         };
 
-        try
-        {
+        try {
             /* Message loop */
-            again: while (true)
-            {
+            again: while (true) {
                 Message msg = this.messageQueue.take();
 
-                if (msg instanceof CallbackMessage)
-                {
+                if (msg instanceof CallbackMessage) {
                     ((CallbackMessage) msg).run.run();
-                } else if (msg instanceof CleanCacheMessage)
-                {
+                } else if (msg instanceof CleanCacheMessage) {
                     this.graphMap.clear();
                     this.assocMap.clear();
-                } else if (msg instanceof WorkSetMessage)
-                {
+                } else if (msg instanceof WorkSetMessage) {
                     WorkSetMessage wsm = (WorkSetMessage) msg;
                     WorkSet ws = wsm.workset;
 
-                    if (wsm instanceof ObtainWorkSetMessage)
-                    {
+                    if (wsm instanceof ObtainWorkSetMessage) {
                         /* Check whether stuff has already been loaded. Fire if positive */
                         ObtainWorkSetMessage owsm = (ObtainWorkSetMessage) msg;
                         if (this.graphMap.containsKey(ws.getOboPath())
-                            && this.assocMap.containsKey(ws.getAssociationPath()))
-                        {
+                            && this.assocMap.containsKey(ws.getAssociationPath())) {
                             owsm.callback.run();
                             continue again;
                         }
 
                         /* Check whether a similar task is pending. Add the callback if positive. */
-                        for (Task task : this.taskList)
-                        {
-                            if (task.matches(ws))
-                            {
+                        for (Task task : this.taskList) {
+                            if (task.matches(ws)) {
                                 task.addCallback(owsm.callback);
                                 continue again;
                             }
@@ -406,8 +388,7 @@ public class WorkSetLoadThread extends Thread
                         String oboName = FileCache.open(ws.getOboPath());
                         String assocName = FileCache.open(ws.getAssociationPath());
 
-                        if (oboName != null && assocName != null)
-                        {
+                        if (oboName != null && assocName != null) {
                             loadFiles(oboName, assocName, owsm.progress);
                             owsm.callback.run();
                             continue again;
@@ -421,18 +402,14 @@ public class WorkSetLoadThread extends Thread
                         newTask.oboDownloaded = oboName != null;
                         newTask.addCallback(owsm.callback);
                         addTask(newTask);
-                    } else
-                    {
-                        if (wsm instanceof ReleaseWorkSetMessage)
-                        {
+                    } else {
+                        if (wsm instanceof ReleaseWorkSetMessage) {
                         }
                     }
                 }
             }
-        } catch (InterruptedException e)
-        {
-        } catch (Exception e)
-        {
+        } catch (InterruptedException e) {
+        } catch (Exception e) {
             if (!Thread.interrupted()) {
                 e.printStackTrace();
             }
@@ -463,11 +440,10 @@ public class WorkSetLoadThread extends Thread
      * @throws OBOParserException
      */
     private Ontology loadGraph(String oboName, final IWorkSetProgress workSetProgress) throws IOException,
-    OBOParserException
+        OBOParserException
     {
         Ontology graph;
-        if (!this.graphMap.containsKey(oboName))
-        {
+        if (!this.graphMap.containsKey(oboName)) {
             OBOParser oboParser = new OBOParser(oboName, OBOParser.IGNORE_SYNONYMS);
             workSetProgress.message("Parsing OBO file");
             oboParser.doParse(new IOBOParserProgress()
@@ -491,8 +467,7 @@ public class WorkSetLoadThread extends Thread
             workSetProgress.message("Building GO graph");
             graph = new Ontology(goTerms);
             this.graphMap.put(oboName, graph);
-        } else
-        {
+        } else {
             graph = this.graphMap.get(oboName);
         }
         return graph;
@@ -514,12 +489,10 @@ public class WorkSetLoadThread extends Thread
             return;
         }
 
-        try
-        {
+        try {
             Ontology graph = loadGraph(oboName, workSetProgress);
 
-            if (!this.assocMap.containsKey(assocName))
-            {
+            if (!this.assocMap.containsKey(assocName)) {
                 logger.info("Parse local association file \"" + assocName + "\"");
 
                 workSetProgress.message("Parsing association file");
@@ -546,8 +519,7 @@ public class WorkSetLoadThread extends Thread
                 workSetProgress.message("");
                 workSetProgress.initGauge(0);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to load files", e);
         }
     }

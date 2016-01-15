@@ -131,20 +131,16 @@ public class AssociationParser
         this.synonym2gene = new HashMap<ByteString, ByteString>();
         this.dbObjectID2gene = new HashMap<ByteString, ByteString>();
 
-        if (filename.endsWith(".ids"))
-        {
+        if (filename.endsWith(".ids")) {
             importIDSAssociation(filename, terms, progress);
             this.fileType = Type.IDS;
-        } else
-        {
+        } else {
             /* We support compressed association files */
             FileInputStream fis = new FileInputStream(filename);
             InputStream is;
-            try
-            {
+            try {
                 is = new GZIPInputStream(fis);
-            } catch (IOException exp)
-            {
+            } catch (IOException exp) {
                 fis.close();
                 fis = new FileInputStream(filename);
                 is = fis;
@@ -157,8 +153,7 @@ public class AssociationParser
                 @Override
                 public boolean newLine(byte[] buf, int start, int len)
                 {
-                    if (len > 0 && buf[start] != '#')
-                    {
+                    if (len > 0 && buf[start] != '#') {
                         strBuilder.append(new String(buf, start, len));
                         return false;
                     }
@@ -167,8 +162,7 @@ public class AssociationParser
             };
             abls.scan();
 
-            if (strBuilder.length() != 0)
-            {
+            if (strBuilder.length() != 0) {
                 String str = strBuilder.toString();
                 byte[] line = str.getBytes();
 
@@ -178,12 +172,10 @@ public class AssociationParser
                 System.arraycopy(abls.availableBuffer(), 0, buf, line.length, abls.available());
                 pis.unread(buf);
 
-                if (str.startsWith("\"Probe Set ID\",\"GeneChip Array\""))
-                {
+                if (str.startsWith("\"Probe Set ID\",\"GeneChip Array\"")) {
                     importAffyFile(new BufferedReader(new InputStreamReader(pis)), fis, names, terms, progress);
                     this.fileType = Type.AFFYMETRIX;
-                } else
-                {
+                } else {
                     importAssociationFile(pis, fis, names, terms, evidences, progress);
                     this.fileType = Type.GAF;
                 }
@@ -198,13 +190,11 @@ public class AssociationParser
      */
     private void importIDSAssociation(String filename, TermContainer terms, IAssociationParserProgress progress)
     {
-        try
-        {
+        try {
             BufferedReader is = new BufferedReader(new FileReader(filename));
             String line;
 
-            while ((line = is.readLine()) != null)
-            {
+            while ((line = is.readLine()) != null) {
                 if (line.equalsIgnoreCase("GoStat IDs Format Version 1.0")) {
                     continue;
                 }
@@ -221,29 +211,23 @@ public class AssociationParser
 
                     TermID tid;
 
-                    try
-                    {
+                    try {
                         tid = new TermID(annotatedTerm);
-                    } catch (IllegalArgumentException ex)
-                    {
+                    } catch (IllegalArgumentException ex) {
                         int id = new Integer(annotatedTerm);
                         tid = new TermID(TermID.DEFAULT_PREFIX, id);
                     }
 
-                    if (terms.get(tid) != null)
-                    {
+                    if (terms.get(tid) != null) {
                         Association assoc = new Association(new ByteString(fields[0]), tid.toString());
                         this.associations.add(assoc);
-                    } else
-                    {
+                    } else {
                         logger.warning(tid.toString() + " which annotates " + fields[0] + " not found");
                     }
                 }
             }
-        } catch (FileNotFoundException e)
-        {
-        } catch (IOException e)
-        {
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
         }
     }
 
@@ -261,8 +245,7 @@ public class AssociationParser
             throws IOException
     {
         final HashSet<ByteString> myEvidences; /* Evidences converted to ByteString */
-        if (evidences != null)
-        {
+        if (evidences != null) {
             myEvidences = new HashSet<ByteString>();
             for (String e : evidences) {
                 myEvidences.add(new ByteString(e));
@@ -317,11 +300,9 @@ public class AssociationParser
             public boolean newLine(byte[] buf, int start, int len)
             {
                 /* Progress stuff */
-                if (progress != null)
-                {
+                if (progress != null) {
                     long newMillis = System.currentTimeMillis();
-                    if (newMillis - this.millis > 250)
-                    {
+                    if (newMillis - this.millis > 250) {
                         try {
                             progress.update((int) fc.position());
                         } catch (IOException e) {
@@ -339,28 +320,24 @@ public class AssociationParser
 
                 Association assoc = Association.createFromGAFLine(buf, start, len, AssociationParser.this.prefixPool);
 
-                try
-                {
+                try {
                     TermID currentTermID = assoc.getTermID();
 
                     Term currentTerm;
 
                     this.good++;
 
-                    if (assoc.hasNotQualifier())
-                    {
+                    if (assoc.hasNotQualifier()) {
                         this.skipped++;
                         this.nots++;
                         return true;
                     }
 
-                    if (myEvidences != null)
-                    {
+                    if (myEvidences != null) {
                         /*
                          * Skip if evidence of the annotation was not supplied as argument
                          */
-                        if (!myEvidences.contains(assoc.getEvidence()))
-                        {
+                        if (!myEvidences.contains(assoc.getEvidence())) {
                             this.skipped++;
                             this.evidenceMismatch++;
                             return true;
@@ -368,10 +345,8 @@ public class AssociationParser
                     }
 
                     currentTerm = terms.get(currentTermID);
-                    if (currentTerm == null)
-                    {
-                        if (this.altTermID2Term == null)
-                        {
+                    if (currentTerm == null) {
+                        if (this.altTermID2Term == null) {
                             /* Create the alternative ID to Term map */
                             this.altTermID2Term = new HashMap<TermID, Term>();
 
@@ -384,21 +359,18 @@ public class AssociationParser
 
                         /* Try to find the term among the alternative terms before giving up. */
                         currentTerm = this.altTermID2Term.get(currentTermID);
-                        if (currentTerm == null)
-                        {
+                        if (currentTerm == null) {
                             System.err.println("Skipping association of item \"" + assoc.getObjectSymbol() + "\" to "
                                 + currentTermID + " because the term was not found!");
                             System.err.println("(Are the obo file and the association " + "file both up-to-date?)");
                             this.skipped++;
                             return true;
-                        } else
-                        {
+                        } else {
                             /* Okay, found, so set the new attributes */
                             currentTermID = currentTerm.getID();
                             assoc.setTermID(currentTermID);
                         }
-                    } else
-                    {
+                    } else {
                         /* Reset the term id so a unique id is used */
                         currentTermID = currentTerm.getID();
                         assoc.setTermID(currentTermID);
@@ -406,8 +378,7 @@ public class AssociationParser
 
                     usedGoTerms.add(currentTermID);
 
-                    if (currentTerm.isObsolete())
-                    {
+                    if (currentTerm.isObsolete()) {
                         System.err.println("Skipping association of item \"" + assoc.getObjectSymbol() + "\" to "
                             + currentTermID + " because term is obsolete!");
                         System.err.println("(Are the obo file and the association file in sync?)");
@@ -419,46 +390,38 @@ public class AssociationParser
                     ByteString[] synonyms;
 
                     /* populate synonym string field */
-                    if (assoc.getSynonym() != null && assoc.getSynonym().length() > 2)
-                    {
+                    if (assoc.getSynonym() != null && assoc.getSynonym().length() > 2) {
                         /* Note that there can be multiple synonyms, separated by a pipe */
                         synonyms = assoc.getSynonym().splitBySingleChar('|');
                     } else {
                         synonyms = null;
                     }
 
-                    if (names != null)
-                    {
+                    if (names != null) {
                         /* We are only interested in associations to given genes */
                         boolean keep = false;
 
                         /* Check if synoyms are contained */
-                        if (synonyms != null)
-                        {
+                        if (synonyms != null) {
                             for (ByteString synonym : synonyms) {
-                                if (names.contains(synonym))
-                                {
+                                if (names.contains(synonym)) {
                                     keep = true;
                                     break;
                                 }
                             }
                         }
 
-                        if (keep || names.contains(assoc.getObjectSymbol()) || names.contains(assoc.getDB_Object()))
-                        {
+                        if (keep || names.contains(assoc.getObjectSymbol()) || names.contains(assoc.getDB_Object())) {
                             this.kept++;
-                        } else
-                        {
+                        } else {
                             this.skipped++;
                             return true;
                         }
-                    } else
-                    {
+                    } else {
                         this.kept++;
                     }
 
-                    if (synonyms != null)
-                    {
+                    if (synonyms != null) {
                         for (ByteString synonym : synonyms) {
                             AssociationParser.this.synonym2gene.put(synonym, assoc.getObjectSymbol());
                         }
@@ -469,13 +432,10 @@ public class AssociationParser
                         ByteString dbObject = objectSymbol2dbObject.get(assoc.getObjectSymbol());
                         if (dbObject == null) {
                             objectSymbol2dbObject.put(assoc.getObjectSymbol(), assoc.getDB_Object());
-                        } else
-                        {
-                            if (!dbObject.equals(assoc.getDB_Object()))
-                            {
+                        } else {
+                            if (!dbObject.equals(assoc.getDB_Object())) {
                                 AssociationParser.this.symbolWarnings++;
-                                if (AssociationParser.this.symbolWarnings < 1000)
-                                {
+                                if (AssociationParser.this.symbolWarnings < 1000) {
                                     logger.warning("Line " + this.lineno + ": Expected that symbol \""
                                         + assoc.getObjectSymbol() + "\" maps to \"" + dbObject + "\" but it maps to \""
                                         + assoc.getDB_Object() + "\"");
@@ -487,13 +447,10 @@ public class AssociationParser
                         ByteString objectSymbol = dbObject2ObjectSymbol.get(assoc.getDB_Object());
                         if (objectSymbol == null) {
                             dbObject2ObjectSymbol.put(assoc.getDB_Object(), assoc.getObjectSymbol());
-                        } else
-                        {
-                            if (!objectSymbol.equals(assoc.getObjectSymbol()))
-                            {
+                        } else {
+                            if (!objectSymbol.equals(assoc.getObjectSymbol())) {
                                 AssociationParser.this.dbObjectWarnings++;
-                                if (AssociationParser.this.dbObjectWarnings < 1000)
-                                {
+                                if (AssociationParser.this.dbObjectWarnings < 1000) {
                                     logger.warning("Line " + this.lineno + ": Expected that dbObject \""
                                         + assoc.getDB_Object() + "\" maps to symbol \"" + objectSymbol
                                         + "\" but it maps to \"" + assoc.getObjectSymbol() + "\"");
@@ -508,8 +465,7 @@ public class AssociationParser
                     AssociationParser.this.associations.add(assoc);
 
                     ArrayList<Association> gassociations = gene2Associations.get(assoc.getObjectSymbol());
-                    if (gassociations == null)
-                    {
+                    if (gassociations == null) {
                         gassociations = new ArrayList<Association>();
                         gene2Associations.put(assoc.getObjectSymbol(), gassociations);
                     }
@@ -606,7 +562,7 @@ public class AssociationParser
          * to make sure the code is doing what it thinks it is doing. Therefore, throw an error if something is amiss.
          */
         String[] annot =
-        {
+            {
             "Probe Set ID", /* 0 */
             "GeneChip Array",
             "Species Scientific Name",
@@ -650,7 +606,7 @@ public class AssociationParser
             "Annotation Transcript Cluster",
             "Transcript Assignments",
             "Annotation Notes",
-        };
+            };
 
         FileChannel fc = fis.getChannel();
 
@@ -664,8 +620,7 @@ public class AssociationParser
         String line;
 
         /* Skip comments */
-        do
-        {
+        do {
             line = in.readLine();
         } while (line.startsWith("#"));
 
@@ -684,27 +639,22 @@ public class AssociationParser
             }
             item = item.substring(x, y);
 
-            if (!item.equals(annot[i]))
-            {
+            if (!item.equals(annot[i])) {
                 logger.severe("Found column header \"" + item + "\" but expected \"" + annot[i] + "\"");
                 headerFailure = true;
                 break;
             }
         }
 
-        if (!headerFailure)
-        {
+        if (!headerFailure) {
             SwissProtAffyAnnotaionSet annotationSet = new SwissProtAffyAnnotaionSet();
 
             /* Header is fine */
-            while ((line = in.readLine()) != null)
-            {
+            while ((line = in.readLine()) != null) {
                 /* Progress stuff */
-                if (progress != null)
-                {
+                if (progress != null) {
                     long newMillis = System.currentTimeMillis();
-                    if (newMillis - millis > 250)
-                    {
+                    if (newMillis - millis > 250) {
                         progress.update((int) fc.position());
                         millis = newMillis;
                     }
@@ -722,30 +672,23 @@ public class AssociationParser
                 x = -1;
                 idx = 0;
 
-                for (int i = 0; i < len; ++i)
-                {
-                    if (line.charAt(i) == '\"')
-                    {
+                for (int i = 0; i < len; ++i) {
+                    if (line.charAt(i) == '\"') {
                         if (x == -1) {
                             x = i;
-                        } else
-                        {
+                        } else {
                             y = i;
 
-                            if (y > x)
-                            {
-                                if (idx == 0)
-                                {
+                            if (y > x) {
+                                if (idx == 0) {
                                     probeid = new ByteString(line.substring(x + 1, y));
-                                } else
-                                {
+                                } else {
                                     if (idx == 14) /* gene symbol */
                                     {
                                         String s = line.substring(x + 1, y);
                                         if (s.startsWith("---")) {
                                             swiss = null;
-                                        } else
-                                        {
+                                        } else {
                                             swiss = new ByteString(s);
                                             int sepIndex = swiss.indexOf(THREE_SLASHES);
                                             if (sepIndex != -1) {
@@ -755,21 +698,17 @@ public class AssociationParser
                                     } else if (idx == 30 || idx == 31 || idx == 32) /* GO */
                                     {
                                         String[] ids = line.substring(x + 1, y).split("///");
-                                        if (ids != null)
-                                        {
+                                        if (ids != null) {
                                             int j;
-                                            for (j = 0; j < ids.length; j++)
-                                            {
+                                            for (j = 0; j < ids.length; j++) {
                                                 String number;
-                                                if (ids[j].contains("/"))
-                                                {
+                                                if (ids[j].contains("/")) {
                                                     number = ids[j].substring(0, ids[j].indexOf('/')).trim();
                                                 } else {
                                                     number = ids[j].trim();
                                                 }
 
-                                                try
-                                                {
+                                                try {
                                                     int goId = Integer.parseInt(number);
                                                     TermID id = new TermID(goId);
 
@@ -778,8 +717,7 @@ public class AssociationParser
                                                     } else {
                                                         skipped++;
                                                     }
-                                                } catch (NumberFormatException ex)
-                                                {
+                                                } catch (NumberFormatException ex) {
                                                 }
                                             }
                                         }
@@ -795,31 +733,24 @@ public class AssociationParser
                 }
 
                 /* Add the annotation to our annotation set */
-                if (swiss != null && swiss.length() > 0)
-                {
+                if (swiss != null && swiss.length() > 0) {
                     annotationSet.add(swiss, probeid, termList);
-                }
-                else
-                {
-                    if (termList.size() > 0)
-                    {
+                } else {
+                    if (termList.size() > 0) {
                         annotationSet.add(probeid, probeid, termList);
                     }
                 }
 
             } /* while (line != null) */
 
-            for (SwissProtAffyAnnotation swissAnno : annotationSet)
-            {
+            for (SwissProtAffyAnnotation swissAnno : annotationSet) {
                 ByteString swissID = swissAnno.getSwissProtID();
-                for (TermID goID : swissAnno.getGOIDs())
-                {
+                for (TermID goID : swissAnno.getGOIDs()) {
                     Association assoc = new Association(swissID, goID);
                     this.associations.add(assoc);
                 }
 
-                for (ByteString affy : swissAnno.getAffyIDs())
-                {
+                for (ByteString affy : swissAnno.getAffyIDs()) {
                     this.synonym2gene.put(affy, swissID);
                 }
             }
@@ -894,8 +825,7 @@ class SwissProtAffyAnnotaionSet implements Iterable<SwissProtAffyAnnotation>
     public void add(ByteString swissProtID, ByteString affyID, List<TermID> goIDs)
     {
         SwissProtAffyAnnotation an = this.map.get(swissProtID);
-        if (an == null)
-        {
+        if (an == null) {
             an = new SwissProtAffyAnnotation(swissProtID);
             this.map.put(swissProtID, an);
         }

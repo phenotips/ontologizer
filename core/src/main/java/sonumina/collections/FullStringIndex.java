@@ -33,8 +33,7 @@ public class FullStringIndex<T>
         @Override
         public boolean hasNext()
         {
-            while (true)
-            {
+            while (true) {
                 this.pos++;
                 if (this.pos >= FullStringIndex.this.stringList.size()) {
                     return false;
@@ -97,12 +96,12 @@ public class FullStringIndex<T>
     public Iterable<T> contains(final String string)
     {
         return new Iterable<T>()
-            {
+        {
             @Override
             public Iterator<T> iterator()
             {
                 return new StringIterator(string.toLowerCase());
             }
-            };
+        };
     }
 }

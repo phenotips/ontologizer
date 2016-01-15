@@ -57,33 +57,29 @@ public class GODOTWriter
     {
         /* Collect terms starting from the terms upto the root term and place them into nodeSet */
         HashSet<Term> nodeSet = new HashSet<Term>();
-        for (TermID term : terms)
-        {
+        for (TermID term : terms) {
             if (!graph.termExists(term)) {
                 throw new IllegalArgumentException("Requested term " + term.toString()
                     + " couldn't be found in the graph");
             }
 
-            if (!nodeSet.contains(term))
-            {
+            if (!nodeSet.contains(term)) {
                 for (TermID it : graph.getTermsOfInducedGraph(rootTerm, term)) {
                     nodeSet.add(graph.getTerm(it));
                 }
             }
         }
 
-        if (ignoreTerms != null)
-        {
+        if (ignoreTerms != null) {
             for (TermID it : ignoreTerms) {
                 nodeSet.remove(graph.getTerm(it));
             }
         }
 
         /* We now have a list of nodes which can be placed into the output */
-        try
-        {
+        try {
             graph.getGraph().writeDOT(new FileOutputStream(file), nodeSet, new DotAttributesProvider<Term>()
-                {
+            {
                 /* Note that the default direction is assumed to be the opposite direction */
                 private String direction = reverseDirection ? "" : "dir=\"back\"";
 
@@ -115,8 +111,7 @@ public class GODOTWriter
 
                     TermRelation rel = graph.getDirectRelation(src.getID(), dest.getID());
 
-                    switch (rel)
-                    {
+                    switch (rel) {
                         case IS_A:
                             relationName = "is a";
                             break;
@@ -136,8 +131,7 @@ public class GODOTWriter
                             relationName = "";
                     }
 
-                    switch (rel)
-                    {
+                    switch (rel) {
                         case IS_A:
                             color = "black";
                             break;
@@ -154,8 +148,7 @@ public class GODOTWriter
                             break;
                     }
 
-                    if (edgeLabels)
-                    {
+                    if (edgeLabels) {
                         label = provider.getDotEdgeAttributes(src.getID(), dest.getID());
                         if (label == null) {
                             label = "label=\"" + relationName + "\"";
@@ -168,9 +161,8 @@ public class GODOTWriter
                     return "color=" + color + "," + this.direction + "," + tooltip
                         + (label != null ? ("," + label) : "");
                 }
-                });
-        } catch (IOException e)
-        {
+            });
+        } catch (IOException e) {
             logger.severe("Unable to create dot file: " + e.getLocalizedMessage());
             e.printStackTrace();
         }

@@ -54,8 +54,7 @@ public class SlimDirectedGraphView<VertexType>
         this.vertices = new Object[graph.getNumberOfVertices()];
         this.vertex2Index = new HashMap<VertexType, Integer>();
         i = 0;
-        for (VertexType t : graph)
-        {
+        for (VertexType t : graph) {
             this.vertices[i] = t;
             this.vertex2Index.put(t, i);
             i++;
@@ -63,8 +62,7 @@ public class SlimDirectedGraphView<VertexType>
 
         /* Term parents stuff */
         this.vertexParents = new int[this.vertices.length][];
-        for (i = 0; i < this.vertices.length; i++)
-        {
+        for (i = 0; i < this.vertices.length; i++) {
             VertexType v = (VertexType) this.vertices[i];
             Iterator<VertexType> parentIter = graph.getParentNodes(v);
             this.vertexParents[i] = createIndicesFromIter(parentIter);
@@ -72,19 +70,18 @@ public class SlimDirectedGraphView<VertexType>
 
         /* Term ancestor stuff */
         this.vertexAncestors = new int[this.vertices.length][];
-        for (i = 0; i < this.vertices.length; i++)
-        {
+        for (i = 0; i < this.vertices.length; i++) {
             VertexType v = (VertexType) this.vertices[i];
             final List<VertexType> ancestors = new ArrayList<VertexType>(20);
             graph.bfs(v, true, new IVisitor<VertexType>()
-                {
+            {
                 @Override
                 public boolean visited(VertexType vertex)
                 {
                     ancestors.add(vertex);
                     return true;
                 };
-                });
+            });
             this.vertexAncestors[i] = createIndicesFromIter(ancestors.iterator());
 
             /* Sort them, as we require this for binary search in isAncestor() */
@@ -93,8 +90,7 @@ public class SlimDirectedGraphView<VertexType>
 
         /* Term children stuff */
         this.vertexChildren = new int[this.vertices.length][];
-        for (i = 0; i < this.vertices.length; i++)
-        {
+        for (i = 0; i < this.vertices.length; i++) {
             VertexType v = (VertexType) this.vertices[i];
 
             Iterator<VertexType> childrenIter = graph.getChildNodes(v);
@@ -103,19 +99,18 @@ public class SlimDirectedGraphView<VertexType>
 
         /* Term descendants stuff */
         this.vertexDescendants = new int[this.vertices.length][];
-        for (i = 0; i < this.vertices.length; i++)
-        {
+        for (i = 0; i < this.vertices.length; i++) {
             VertexType v = (VertexType) this.vertices[i];
             final List<VertexType> descendants = new ArrayList<VertexType>(20);
             graph.bfs(v, false, new IVisitor<VertexType>()
-                {
+            {
                 @Override
                 public boolean visited(VertexType vertex)
                 {
                     descendants.add(vertex);
                     return true;
                 };
-                });
+            });
             this.vertexDescendants[i] = createIndicesFromIter(descendants.iterator());
 
             /* Sort them, as we require this for binary search in isDescendant() */
@@ -133,8 +128,7 @@ public class SlimDirectedGraphView<VertexType>
     {
         ArrayList<Integer> indicesList = new ArrayList<Integer>(10);
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             VertexType p = iterator.next();
             Integer idx = this.vertex2Index.get(p);
             if (idx != null) {

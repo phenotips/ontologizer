@@ -29,21 +29,17 @@ public final class GlobalPreferences
 
     private static double upperBeta = 1.;
 
-    static
-    {
+    static {
         /* Initialize default values */
         String proxySet = System.getProperty("proxySet", "false");
         proxyPort = 8888;
         proxyHost = "";
-        if (proxySet.equalsIgnoreCase("true"))
-        {
+        if (proxySet.equalsIgnoreCase("true")) {
             proxyHost = System.getProperty("proxyHost", "");
             String portString = System.getProperty("proxyPort", "8888");
-            try
-            {
+            try {
                 proxyPort = Integer.parseInt(portString);
-            } catch (NumberFormatException e)
-            {
+            } catch (NumberFormatException e) {
             }
         }
     }
@@ -132,8 +128,7 @@ public final class GlobalPreferences
      */
     public static void setProxyPort(String proxyPort)
     {
-        try
-        {
+        try {
             GlobalPreferences.proxyPort = Integer.parseInt(proxyPort);
         } catch (NumberFormatException e) {
         }

@@ -78,8 +78,7 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
 
                 TermForTermGOTermProperties myP;
 
-                for (TermID term : populationTermEnumerator)
-                {
+                for (TermID term : populationTermEnumerator) {
                     int goidAnnotatedPopGeneCount =
                         populationTermEnumerator.getAnnotatedGenes(term).totalAnnotatedCount();
                     int popGeneCount = this.populationSet.getGeneCount();
@@ -91,8 +90,7 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
                     myP.annotatedStudyGenes = goidAnnotatedStudyGeneCount;
                     myP.annotatedPopulationGenes = goidAnnotatedPopGeneCount;
 
-                    if (goidAnnotatedStudyGeneCount != 0)
-                    {
+                    if (goidAnnotatedStudyGeneCount != 0) {
                         /*
                          * Imagine the following... In an urn you put popGeneCount number of balls where a color of a
                          * ball can be white or black. The number of balls having white color is
@@ -112,8 +110,7 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
                             popGeneCount,
                             goidAnnotatedPopGeneCount,
                             goidAnnotatedPopGeneCount);
-                    } else
-                    {
+                    } else {
                         /* Mark this p value as irrelevant so it isn't considered in a mtc */
                         myP.p = 1.0;
                         myP.ignoreAtMTC = true;
@@ -140,7 +137,8 @@ public class TermForTermCalculation extends AbstractHypergeometricCalculation
             @Override
             public PValue[] calculateRandomPValues()
             {
-                return calculatePValues(this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
+                return calculatePValues(
+                    this.populationSet.generateRandomStudySet(this.observedStudySet.getGeneCount()));
             }
         }
         ;

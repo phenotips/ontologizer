@@ -75,8 +75,7 @@ public class TestCorrectionRegistry
         return def;
     }
 
-    static
-    {
+    static {
         def = new None();
         registerCorrection(def);
 

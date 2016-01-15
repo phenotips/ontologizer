@@ -81,8 +81,7 @@ public class CalculationRegistry
      * Register all known calculations. TODO: To make this more flexible we have to go through all classes (how to get
      * them?) which implements ICalculation and add them.
      */
-    static
-    {
+    static {
         def = new ParentChildCalculation();
         registerCalculation(def);
         registerCalculation(new TermForTermCalculation());
@@ -91,8 +90,7 @@ public class CalculationRegistry
         registerCalculation(new TopologyWeightedCalculation());
         registerCalculation(new Bayes2GOCalculation());
 
-        if (experimentalActivated())
-        {
+        if (experimentalActivated()) {
             System.err.println("Enabled experimental calculations");
             registerCalculation(new ProbabilisticCalculation());
         }

@@ -26,8 +26,7 @@ public class GeneFilter
     {
         BufferedReader is = new BufferedReader(reader);
         String inputLine;
-        while ((inputLine = is.readLine()) != null)
-        {
+        while ((inputLine = is.readLine()) != null) {
             /* Ignore comments */
             if (inputLine.startsWith(";")) {
                 continue;
@@ -41,29 +40,24 @@ public class GeneFilter
             int i;
 
             /* First */
-            for (i = 0; i < inputLine.length(); i++)
-            {
+            for (i = 0; i < inputLine.length(); i++) {
                 char c = inputLine.charAt(i);
-                if (c == ' ' || c == '\t')
-                {
+                if (c == ' ' || c == '\t') {
                     firstEndPos = i;
                     break;
                 }
             }
 
             /* Skip spaces or tabs */
-            for (; i < inputLine.length(); i++)
-            {
+            for (; i < inputLine.length(); i++) {
                 char c = inputLine.charAt(i);
-                if (c != ' ' && c != '\t')
-                {
+                if (c != ' ' && c != '\t') {
                     secondStartPos = i;
                     break;
                 }
             }
 
-            if (secondStartPos != -1)
-            {
+            if (secondStartPos != -1) {
                 this.mapping.put(new ByteString(inputLine.substring(0, firstEndPos)),
                     new ByteString(inputLine.substring(secondStartPos)));
             }

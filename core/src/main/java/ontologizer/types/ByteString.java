@@ -74,8 +74,7 @@ public final class ByteString
         if (this.bytes.length < l) {
             return false;
         }
-        for (int i = 0; i < l; i++)
-        {
+        for (int i = 0; i < l; i++) {
             if ((byte) string.charAt(i) != this.bytes[i]) {
                 return false;
             }
@@ -109,8 +108,7 @@ public final class ByteString
             return false;
         }
 
-        for (int i = 0; i < this.bytes.length; i++)
-        {
+        for (int i = 0; i < this.bytes.length; i++) {
             if (this.bytes[i] != string.charAt(i)) {
                 return false;
             }
@@ -127,8 +125,7 @@ public final class ByteString
     {
         byte[] sub = new byte[to - from];
         int bytesW = 0;
-        for (int i = from; i < to; i++)
-        {
+        for (int i = from; i < to; i++) {
             byte b = this.bytes[i];
             if (b == ' ' || b == '\t' || b == '\n' || b == '\r') {
                 continue;
@@ -148,17 +145,14 @@ public final class ByteString
     public int indexOf(ByteString string)
     {
         byte[] stringBytes = string.bytes;
-        for (int i = 0; i < this.bytes.length; i++)
-        {
+        for (int i = 0; i < this.bytes.length; i++) {
             if (i + stringBytes.length > this.bytes.length) {
                 return -1;
             }
 
-            if (stringBytes[0] == this.bytes[i])
-            {
+            if (stringBytes[0] == this.bytes[i]) {
                 int j;
-                for (j = 1; j < stringBytes.length; j++)
-                {
+                for (j = 1; j < stringBytes.length; j++) {
                     if (stringBytes[j] != this.bytes[j + i]) {
                         break;
                     }
@@ -174,17 +168,14 @@ public final class ByteString
     public int indexOf(String string)
     {
         byte[] stringBytes = string.getBytes();
-        for (int i = 0; i < this.bytes.length; i++)
-        {
+        for (int i = 0; i < this.bytes.length; i++) {
             if (i + stringBytes.length > this.bytes.length) {
                 return -1;
             }
 
-            if (stringBytes[0] == this.bytes[i])
-            {
+            if (stringBytes[0] == this.bytes[i]) {
                 int j;
-                for (j = 1; j < stringBytes.length; j++)
-                {
+                for (j = 1; j < stringBytes.length; j++) {
                     if (stringBytes[j] != this.bytes[j + i]) {
                         break;
                     }
@@ -200,28 +191,24 @@ public final class ByteString
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ByteString)
-        {
+        if (obj instanceof ByteString) {
             ByteString bStr = (ByteString) obj;
             if (bStr.bytes.length != this.bytes.length) {
                 return false;
             }
-            for (int i = 0; i < this.bytes.length; i++)
-            {
+            for (int i = 0; i < this.bytes.length; i++) {
                 if (this.bytes[i] != bStr.bytes[i]) {
                     return false;
                 }
             }
             return true;
         }
-        if (obj instanceof String)
-        {
+        if (obj instanceof String) {
             String str = (String) obj;
             if (str.length() != this.bytes.length) {
                 return false;
             }
-            for (int i = 0; i < this.bytes.length; i++)
-            {
+            for (int i = 0; i < this.bytes.length; i++) {
                 if (str.charAt(i) != this.bytes[i]) {
                     return false;
                 }
@@ -248,10 +235,8 @@ public final class ByteString
 
         ArrayList<ByteString> bl = new ArrayList<ByteString>();
 
-        for (to = 0; to < this.bytes.length; to++)
-        {
-            if (this.bytes[to] == (byte) c)
-            {
+        for (to = 0; to < this.bytes.length; to++) {
+            if (this.bytes[to] == (byte) c) {
                 ByteString bs = new ByteString(this.bytes, from, to);
                 bl.add(bs);
                 from = to + 1;
@@ -279,16 +264,13 @@ public final class ByteString
         int number = 0;
         boolean converting = false;
 
-        for (int i = off; i < off + len; i++)
-        {
+        for (int i = off; i < off + len; i++) {
             byte b = buf[i];
-            if (b >= '0' && b <= '9')
-            {
+            if (b >= '0' && b <= '9') {
                 number *= 10;
                 number += b - '0';
                 converting = true;
-            } else if (converting)
-            {
+            } else if (converting) {
                 break;
             }
         }
