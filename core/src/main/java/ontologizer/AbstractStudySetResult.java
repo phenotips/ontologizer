@@ -3,6 +3,7 @@ package ontologizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import ontologizer.set.StudySet;
 
@@ -12,7 +13,7 @@ import ontologizer.set.StudySet;
  */
 abstract public class AbstractStudySetResult<Result> implements Iterable<Result>
 {
-    protected ArrayList<Result> list = new ArrayList<Result>();
+    protected List<Result> list = new ArrayList<Result>();
 
     private HashMap<String, Integer> goID2Index = new HashMap<String, Integer>();
 
