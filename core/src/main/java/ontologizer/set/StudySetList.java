@@ -25,7 +25,7 @@ import ontologizer.types.ByteString;
 public class StudySetList implements Iterable<StudySet>
 {
     /** The name of the StudySetList */
-    private String name = new String();
+    private String name = "";
 
     /** Container for all study sets */
     private ArrayList<StudySet> list = new ArrayList<StudySet>();
@@ -108,6 +108,11 @@ public class StudySetList implements Iterable<StudySet>
     public StudySetList(String name)
     {
         this.name = name;
+    }
+
+    public String getName()
+    {
+        return this.name;
     }
 
     /**

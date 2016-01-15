@@ -15,11 +15,17 @@ public class Subset
     public Subset(String name, String desc)
     {
         this.name = name;
+        this.desc = desc;
     }
 
     public String getName()
     {
         return this.name;
+    }
+
+    public String getDesc()
+    {
+        return this.desc;
     }
 
     @Override
