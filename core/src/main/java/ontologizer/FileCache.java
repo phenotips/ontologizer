@@ -303,8 +303,7 @@ public class FileCache
         }
 
         File index = new File(cacheDirectory, ".index");
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(index));
+        try (BufferedReader br = new BufferedReader(new FileReader(index))) {
             String line;
             while ((line = br.readLine()) != null) {
                 int idx = line.indexOf('=');

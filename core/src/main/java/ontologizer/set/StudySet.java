@@ -592,8 +592,7 @@ public class StudySet implements Iterable<ByteString>
             this.goTermEnumerator = null;
         }
 
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(file));
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(file))) {
 
             for (TermID id : enumerator) {
                 out.write(id.toString());
@@ -624,8 +623,7 @@ public class StudySet implements Iterable<ByteString>
      */
     public void writeSetWithAnnotations(Ontology graph, AssociationContainer associations, File file)
     {
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(file));
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(file))) {
 
             for (ByteString gene : this) {
                 /* gene name */

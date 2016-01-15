@@ -160,28 +160,29 @@ public class Storey implements ITestCorrectionOld
 
     public static void main(String[] args) throws IOException
     {
-        ITestCorrectionOld corr = new Storey();
-        FileReader file = new FileReader("/home/sba/R/multtest/pvalues.txt");
-        BufferedReader reader = new BufferedReader(file);
-        ArrayList<Double> list = new ArrayList<Double>();
-        String line;
-        double[] pValues;
-        double[] correctedPValues;
+        try (FileReader file = new FileReader("/home/sba/R/multtest/pvalues.txt");
+            BufferedReader reader = new BufferedReader(file)) {
+            ITestCorrectionOld corr = new Storey();
+            ArrayList<Double> list = new ArrayList<Double>();
+            String line;
+            double[] pValues;
+            double[] correctedPValues;
 
-        for (int linenum = 1; (line = reader.readLine()) != null; linenum++) {
-            list.add(Double.parseDouble(line));
-        }
+            while ((line = reader.readLine()) != null) {
+                list.add(Double.parseDouble(line));
+            }
 
-        pValues = new double[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            pValues[i] = list.get(i);
-        }
+            pValues = new double[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                pValues[i] = list.get(i);
+            }
 
-        correctedPValues = corr.correctPValues(pValues, 0.05);
-        Arrays.sort(correctedPValues);
+            correctedPValues = corr.correctPValues(pValues, 0.05);
+            Arrays.sort(correctedPValues);
 
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(correctedPValues[i]);
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println(correctedPValues[i]);
+            }
         }
     }
 }

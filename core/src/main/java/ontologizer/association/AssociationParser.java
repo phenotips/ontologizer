@@ -190,8 +190,7 @@ public class AssociationParser
      */
     private void importIDSAssociation(String filename, TermContainer terms, IAssociationParserProgress progress)
     {
-        try {
-            BufferedReader is = new BufferedReader(new FileReader(filename));
+        try (BufferedReader is = new BufferedReader(new FileReader(filename))) {
             String line;
 
             while ((line = is.readLine()) != null) {
