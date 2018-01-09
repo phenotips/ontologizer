@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.association.AssociationContainer;
 import ontologizer.calculation.EnrichedGOTermsResult;
@@ -32,7 +33,7 @@ import ontologizer.types.ByteString;
  */
 public class Bayes2GOCalculation implements ICalculation
 {
-    private static Logger logger = Logger.getLogger(Bayes2GOCalculation.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(Bayes2GOCalculation.class.getCanonicalName());
 
     private boolean WRITE_STATS_FILE = false;
 

@@ -2,7 +2,8 @@ package ontologizer.set;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +20,7 @@ import ontologizer.types.ByteString;
  */
 public class StudySetFactory
 {
-    private static Logger logger = Logger.getLogger(StudySetFactory.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(StudySetFactory.class.getCanonicalName());
 
     private StudySetFactory()
     {

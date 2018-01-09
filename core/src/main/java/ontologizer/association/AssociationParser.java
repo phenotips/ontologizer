@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.zip.GZIPInputStream;
 
 import ontologizer.go.PrefixPool;
@@ -37,7 +38,7 @@ import ontologizer.types.ByteString;
 
 public class AssociationParser
 {
-    private static Logger logger = Logger.getLogger(AssociationParser.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(AssociationParser.class);
 
     enum Type
     {
@@ -221,7 +222,7 @@ public class AssociationParser
                         Association assoc = new Association(new ByteString(fields[0]), tid.toString());
                         this.associations.add(assoc);
                     } else {
-                        logger.warning(tid.toString() + " which annotates " + fields[0] + " not found");
+                        logger.warn(tid.toString() + " which annotates " + fields[0] + " not found");
                     }
                 }
             }
@@ -435,7 +436,7 @@ public class AssociationParser
                             if (!dbObject.equals(assoc.getDB_Object())) {
                                 AssociationParser.this.symbolWarnings++;
                                 if (AssociationParser.this.symbolWarnings < 1000) {
-                                    logger.warning("Line " + this.lineno + ": Expected that symbol \""
+                                    logger.warn("Line " + this.lineno + ": Expected that symbol \""
                                         + assoc.getObjectSymbol() + "\" maps to \"" + dbObject + "\" but it maps to \""
                                         + assoc.getDB_Object() + "\"");
                                 }
@@ -450,7 +451,7 @@ public class AssociationParser
                             if (!objectSymbol.equals(assoc.getObjectSymbol())) {
                                 AssociationParser.this.dbObjectWarnings++;
                                 if (AssociationParser.this.dbObjectWarnings < 1000) {
-                                    logger.warning("Line " + this.lineno + ": Expected that dbObject \""
+                                    logger.warn("Line " + this.lineno + ": HRMM Expected that dbObject \""
                                         + assoc.getDB_Object() + "\" maps to symbol \"" + objectSymbol
                                         + "\" but it maps to \"" + assoc.getObjectSymbol() + "\"");
                                 }
@@ -509,10 +510,10 @@ public class AssociationParser
             + " items.");
 
         if (this.symbolWarnings >= 1000) {
-            logger.warning("The symbols of a total of " + this.symbolWarnings + " entries mapped ambiguously");
+            logger.warn("The symbols of a total of " + this.symbolWarnings + " entries mapped ambiguously");
         }
         if (this.dbObjectWarnings >= 1000) {
-            logger.warning("The objects of a  total of " + this.dbObjectWarnings + " entries mapped ambiguously");
+            logger.warn("The objects of a  total of " + this.dbObjectWarnings + " entries mapped ambiguously");
         }
 
         /*
@@ -639,7 +640,7 @@ public class AssociationParser
             item = item.substring(x, y);
 
             if (!item.equals(annot[i])) {
-                logger.severe("Found column header \"" + item + "\" but expected \"" + annot[i] + "\"");
+                logger.error("Found column header \"" + item + "\" but expected \"" + annot[i] + "\"");
                 headerFailure = true;
                 break;
             }

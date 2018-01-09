@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.FileCache;
 import ontologizer.FileCache.FileCacheUpdateCallback;
@@ -32,7 +32,7 @@ import ontologizer.util.MemoryWarningSystem;
  */
 public class WorkSetLoadThread extends Thread
 {
-    private static Logger logger = Logger.getLogger(WorkSetLoadThread.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(WorkSetLoadThread.class.getName());
 
     private static class Message
     {
@@ -250,7 +250,7 @@ public class WorkSetLoadThread extends Thread
             @Override
             public void memoryUsageLow(long usedMemory, long maxMemory)
             {
-                logger.warning("Low memory condition! Trying to clean some caches");
+                logger.warn("Low memory condition! Trying to clean some caches");
                 cleanCache();
             }
         });
@@ -520,7 +520,7 @@ public class WorkSetLoadThread extends Thread
                 workSetProgress.initGauge(0);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to load files", e);
+            logger.error("Failed to load files", e);
         }
     }
 

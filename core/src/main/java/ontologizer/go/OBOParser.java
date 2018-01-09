@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.zip.GZIPInputStream;
 
 import ontologizer.association.AbstractByteLineScanner;
@@ -38,7 +39,7 @@ import sonumina.math.graph.Edge;
  */
 public class OBOParser
 {
-    private static Logger logger = Logger.getLogger(OBOParser.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(OBOParser.class.getCanonicalName());
 
     private enum Stanza
     {
@@ -208,7 +209,7 @@ public class OBOParser
             }
 
             if (this.currentID == null || this.currentName == null) {
-                logger.warning("Error parsing stanza: " + this.currentStanza.toString() + " currentID: "
+                logger.warn("Error parsing stanza: " + this.currentStanza.toString() + " currentID: "
                     + this.currentID
                     + ", currentName: " + this.currentName);
 
