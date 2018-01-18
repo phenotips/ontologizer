@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Thread-class for downloading.
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  */
 class DownloadThread extends Thread
 {
-    private static Logger logger = Logger.getLogger(DownloadThread.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(DownloadThread.class.getName());
 
     private List<FileCache.FileDownload> callbackSubscriberList = new LinkedList<FileCache.FileDownload>();
 
@@ -136,7 +136,7 @@ class DownloadThread extends Thread
 
         InputStream stream;
         try {
-            logger.fine("Open connection");
+            logger.debug("Open connection");
 
             if (this.proxy != null) {
                 this.urlConnection = this.u.openConnection(this.proxy);
@@ -148,7 +148,7 @@ class DownloadThread extends Thread
 
             int cl = this.urlConnection.getContentLength();
 
-            logger.fine("Content-Length = " + cl);
+            logger.debug("Content-Length = " + cl);
             synchronized (this) {
                 this.contentLength = cl;
             }
@@ -172,7 +172,7 @@ class DownloadThread extends Thread
             /* Forward ready status */
             this.downloadCallback.ready(null, this.destFile.getCanonicalPath());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Exception while downloading a file.", e);
+            logger.error("Exception while downloading a file.", e);
             /* Forward ready status */
             this.downloadCallback.ready(e, null);
         }
@@ -202,7 +202,7 @@ class CachedFile implements Serializable
 public class FileCache
 {
     /** For our logging */
-    private static Logger logger = Logger.getLogger(FileCache.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(FileCache.class.getCanonicalName());
 
     /** That's the thread group */
     protected static ThreadGroup downloadThreadGroup;
@@ -319,9 +319,9 @@ public class FileCache
                 }
             }
         } catch (FileNotFoundException e) {
-            logger.log(Level.WARNING, String.format("The cache file was not found in %s.", cachePath));
+            logger.warn(String.format("The cache file was not found in %s.", cachePath));
         } catch (IOException e) {
-            logger.log(Level.WARNING, "", e);
+            logger.warn("", e);
         }
     }
 
@@ -450,7 +450,7 @@ public class FileCache
             DownloadThread dt = downloadHashMap.get(url);
             if (dt != null) {
                 synchronized (dt) {
-                    logger.fine("Added another request for the download for URL \"" + url + "\"");
+                    logger.debug("Added another request for the download for URL \"" + url + "\"");
 
                     if (ready != null) {
                         dt.getCallbackSubscriberList().add(ready);
@@ -463,7 +463,7 @@ public class FileCache
             if (fileCache.containsKey(url)) {
                 String cachedFilename = fileCache.get(url).cachedFilename;
                 if (new File(cachedFilename).exists()) {
-                    logger.fine("URL \"" + url + "\" has already been cached.");
+                    logger.debug("URL \"" + url + "\" has already been cached.");
                     return cachedFilename;
                 }
                 fileCache.remove(url);
@@ -484,7 +484,7 @@ public class FileCache
             t++;
         } while (destFile.exists());
 
-        logger.fine("Starting new download thread for URL \"" + url + "\" (cached as \"" + destFile.getAbsolutePath()
+        logger.debug("Starting new download thread for URL \"" + url + "\" (cached as \"" + destFile.getAbsolutePath()
             + "\"");
 
         /* Leave the process of downloading to the separate thread */

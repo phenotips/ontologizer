@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.GlobalPreferences;
 import ontologizer.association.AssociationContainer;
@@ -31,7 +31,7 @@ import ontologizer.util.Util;
  */
 public class EnrichedGOTermsResult extends AbstractGOTermsResult
 {
-    private static Logger logger = Logger.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
 
     private int populationGeneCount;
 
@@ -129,7 +129,7 @@ public class EnrichedGOTermsResult extends AbstractGOTermsResult
 
             logger.info("\"" + file.getCanonicalPath() + "\"" + " successfully written.");
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Exception occured when writing the table.", e);
+            logger.error("Exception occured when writing the table.", e);
         }
     }
 

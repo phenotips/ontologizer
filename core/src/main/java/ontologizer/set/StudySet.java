@@ -12,7 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.association.Association;
 import ontologizer.association.AssociationContainer;
@@ -38,7 +39,7 @@ import ontologizer.types.ByteString;
  */
 public class StudySet implements Iterable<ByteString>
 {
-    private static Logger logger = Logger.getLogger(StudySet.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(StudySet.class.getCanonicalName());
 
     /**
      * HashMap containing the names of genes (or gene products) of the study and their optional description.
@@ -116,7 +117,7 @@ public class StudySet implements Iterable<ByteString>
     /*
      * public StudySet(String name, String [] entries) { this.name = name; try { if (entries != null) { OneOnALineParser
      * parser = new OneOnALineParser(entries); parseAndRetrieveGenesAndAttributes(parser); } } catch (IOException ex) {
-     * logger.warning(ex.getLocalizedMessage()); } }
+     * logger.warn(ex.getLocalizedMessage()); } }
      */
 
     /**

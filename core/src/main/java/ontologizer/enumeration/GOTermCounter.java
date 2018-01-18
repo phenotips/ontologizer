@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.go.Namespace;
 import ontologizer.go.Ontology;
@@ -22,7 +23,7 @@ import ontologizer.go.TermID;
 
 public class GOTermCounter implements Iterable<TermID>
 {
-    private static Logger logger = Logger.getLogger(GOTermCounter.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(GOTermCounter.class.getCanonicalName());
 
     /**
      * Explicit and total annotations to a given term in the biological process namespace; key: a GO:id, value: an

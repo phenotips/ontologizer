@@ -3,7 +3,8 @@ package ontologizer.calculation;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.association.AssociationContainer;
 import ontologizer.go.Ontology;
@@ -11,7 +12,7 @@ import ontologizer.types.ByteString;
 
 public class SemanticResult
 {
-    private static Logger logger = Logger.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(EnrichedGOTermsResult.class.getCanonicalName());
 
     public Ontology g;
 

@@ -12,7 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.association.Association;
 import ontologizer.association.AssociationContainer;
@@ -370,7 +371,7 @@ class IntHashMapForDoubles
 
 public class SemanticCalculation
 {
-    private static Logger logger = Logger.getLogger(SemanticCalculation.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(SemanticCalculation.class.getCanonicalName());
 
     public static interface ISemanticCalculationProgress
     {

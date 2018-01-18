@@ -9,7 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sonumina.math.graph.AbstractGraph.INeighbourGrabber;
 import sonumina.math.graph.AbstractGraph.IVisitor;
@@ -53,7 +54,7 @@ class OntologyEdge extends Edge<Term>
  */
 public class Ontology implements Iterable<Term>
 {
-    private static Logger logger = Logger.getLogger(Ontology.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(Ontology.class.getCanonicalName());
 
     /** This is used to identify Gene Ontology until a better way is found */
     private static HashSet<String> goLevel1TermNames = new HashSet<String>(Arrays.asList("molecular_function",

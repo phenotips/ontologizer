@@ -6,8 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import att.grappa.Element;
 import att.grappa.GraphEnumeration;
@@ -26,7 +26,7 @@ import sonumina.math.graph.AbstractGraph.DotAttributesProvider;
  */
 public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
 {
-    private static Logger logger = Logger.getLogger(DirectedGraphDotLayout.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(DirectedGraphDotLayout.class.getCanonicalName());
 
     /**
      * Dimensions of dot are specified using inches, this is the used dots per inch conversion number.
@@ -152,14 +152,14 @@ public class DirectedGraphDotLayout<T> extends DirectedGraphLayout<T>
                 emitPosition(g, (int) bb.getMinY());
                 rc = true;
             } else {
-                logger.severe(errStr.toString());
+                logger.error(errStr.toString());
             }
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Unable to layout the graph", e);
+            logger.warn("Unable to layout the graph", e);
         } catch (InterruptedException e) {
-            logger.log(Level.WARNING, "Unable to layout the graph", e);
+            logger.warn("Unable to layout the graph", e);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Unable to layout the graph", e);
+            logger.warn("Unable to layout the graph", e);
         }
 
         return rc;

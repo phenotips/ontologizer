@@ -5,7 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ontologizer.BuildInfo;
 import ontologizer.go.Ontology;
@@ -16,7 +17,7 @@ import sonumina.math.graph.AbstractGraph.DotAttributesProvider;
 
 public class GODOTWriter
 {
-    private static Logger logger = Logger.getLogger(GODOTWriter.class.getCanonicalName());
+    private static Logger logger = LoggerFactory.getLogger(GODOTWriter.class.getCanonicalName());
 
     /**
      * Writes out a basic dot file which can be used within graphviz. All terms of the terms parameter are included in
@@ -163,7 +164,7 @@ public class GODOTWriter
                 }
             });
         } catch (IOException e) {
-            logger.severe("Unable to create dot file: " + e.getLocalizedMessage());
+            logger.error("Unable to create dot file: " + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
