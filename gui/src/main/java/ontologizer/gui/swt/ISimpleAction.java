@@ -7,13 +7,9 @@
 package ontologizer.gui.swt;
 
 /**
- * 
- * @author Sebastian Bauer
- *
- * This is a simple interface in order to issue actions from the
- * GUI to the controller.
+ * @author Sebastian Bauer This is a simple interface in order to issue actions from the GUI to the controller.
  */
 public interface ISimpleAction
 {
-	void act();
+    void act();
 }

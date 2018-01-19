@@ -6,28 +6,28 @@
  */
 package ontologizer.gui.swt.result;
 
-import ontologizer.calculation.svd.SVDGOTermProperties;
-
 import org.eclipse.swt.widgets.Composite;
+
+import ontologizer.calculation.svd.SVDGOTermProperties;
 
 public class PValuesSVDGOTermsComposite extends SVDGOTermsComposite
 {
 
-	public PValuesSVDGOTermsComposite(Composite parent, int style)
-	{
-		super(parent, style);
-	}
+    public PValuesSVDGOTermsComposite(Composite parent, int style)
+    {
+        super(parent, style);
+    }
 
-	@Override
-	protected String getOrginalDataString(SVDGOTermProperties prop, int i)
-	{
-		return String.format("%.3g",prop.pVals[i]);
-	}
+    @Override
+    protected String getOrginalDataString(SVDGOTermProperties prop, int i)
+    {
+        return String.format("%.3g", prop.pVals[i]);
+    }
 
-	@Override
-	public String getTitle()
-	{
-		return "PVal PCA"; 
-	}
+    @Override
+    public String getTitle()
+    {
+        return "PVal PCA";
+    }
 
 }

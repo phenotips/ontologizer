@@ -11,18 +11,6 @@ import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
-import net.sourceforge.nattable.NatTable;
-import ontologizer.GlobalPreferences;
-import ontologizer.association.Gene2Associations;
-import ontologizer.calculation.SemanticResult;
-import ontologizer.go.Ontology;
-import ontologizer.go.TermID;
-import ontologizer.gui.swt.support.GraphCanvas;
-import ontologizer.gui.swt.support.IGraphCanvas;
-import ontologizer.gui.swt.support.IMinimizedAdapter;
-import ontologizer.types.ByteString;
-import ontologizer.util.Util;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.MouseAdapter;
@@ -37,415 +25,442 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 
+import net.sourceforge.nattable.NatTable;
+import ontologizer.GlobalPreferences;
+import ontologizer.association.Gene2Associations;
+import ontologizer.calculation.SemanticResult;
+import ontologizer.go.Ontology;
+import ontologizer.go.TermID;
+import ontologizer.gui.swt.support.IGraphCanvas;
+import ontologizer.gui.swt.support.IMinimizedAdapter;
+import ontologizer.types.ByteString;
+import ontologizer.util.Util;
+
 /**
  * The GUI for semantic similarity measures.
- * 
- * @author Sebastian Bauer
  *
+ * @author Sebastian Bauer
  */
 public class SemanticSimilarityComposite extends Composite implements IGraphAction, ITableAction
 {
-	private SemanticResult result;
+    private SemanticResult result;
 
-	private SemanticSimilarityNatModel semanticSimilarityNatModel;
-	private NatTable natTable;
-	private Point natTableLastSelected = new Point(-1,-1);
+    private SemanticSimilarityNatModel semanticSimilarityNatModel;
 
-	private Text selectedSimilarityText;
+    private NatTable natTable;
 
-	private ResultControls resultControls;
-	private Browser browser;
-	private IGraphCanvas graphCanvas;
+    private Point natTableLastSelected = new Point(-1, -1);
 
-	private static File geneSet1BackgroundFile;
-	private static File geneSet2BackgroundFile;
-	private static File geneSetBothBackgroundFile;
-	
-	static
-	{
-		try
-		{
-			geneSet1BackgroundFile = createBackgroundFile(Color.getHSBColor(180.f / 360.f, 1, 1),new Color(255,255,255));
-			geneSet2BackgroundFile = createBackgroundFile(Color.getHSBColor(60.f / 360.f, 1, 1), new Color(255,255,255));
-			geneSetBothBackgroundFile = createBackgroundFile(Color.getHSBColor(120.f / 360.f, 1, 1),new Color(255,255,255));
-		} catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	};
-	
-	private static File createBackgroundFile(Color color, Color color2) throws IOException
-	{
-		File tmp = File.createTempFile("onto", ".png");
-		BufferedImage bi = new BufferedImage(20,100,BufferedImage.TYPE_INT_ARGB);
-		Graphics2D ig2 = bi.createGraphics();
-		GradientPaint gp = new GradientPaint(0,0,color,0,100,color2);
-		ig2.setPaint(gp);
-		ig2.fillRect(0,0,20,100);
-		ImageIO.write(bi,"PNG",tmp);
-		return tmp;
-	}
+    private Text selectedSimilarityText;
 
+    private ResultControls resultControls;
 
+    private Browser browser;
 
-	public SemanticSimilarityComposite(Composite parent, int style)
-	{
-		super(parent, style);
+    private IGraphCanvas graphCanvas;
 
-		setLayout(new FillLayout());
+    private static File geneSet1BackgroundFile;
 
-		resultControls = new ResultControls(this,0);
-		browser = resultControls.getBrowser();
-		graphCanvas = resultControls.getGraphCanvas();
+    private static File geneSet2BackgroundFile;
 
-		Composite tableComposite = resultControls.getTableComposite();
-		tableComposite.setLayout(new GridLayout());
+    private static File geneSetBothBackgroundFile;
 
-		semanticSimilarityNatModel = new SemanticSimilarityNatModel();
-		semanticSimilarityNatModel.setSingleCellSelection(true);
-		semanticSimilarityNatModel.setEnableMoveColumn(false);
+    static {
+        try {
+            geneSet1BackgroundFile =
+                createBackgroundFile(Color.getHSBColor(180.f / 360.f, 1, 1), new Color(255, 255, 255));
+            geneSet2BackgroundFile =
+                createBackgroundFile(Color.getHSBColor(60.f / 360.f, 1, 1), new Color(255, 255, 255));
+            geneSetBothBackgroundFile =
+                createBackgroundFile(Color.getHSBColor(120.f / 360.f, 1, 1), new Color(255, 255, 255));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-		natTable = new NatTable(tableComposite,
-								SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL | SWT.H_SCROLL,
-				                semanticSimilarityNatModel);
-		natTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+    };
 
-		natTable.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseUp(MouseEvent e)
-			{
-				updateSelectedText();
-			}
-		});
-		natTable.addMouseMoveListener(new MouseMoveListener()
-		{
-			public void mouseMove(MouseEvent e)
-			{
-				updateSelectedText();
-			}
-		});
+    private static File createBackgroundFile(Color color, Color color2) throws IOException
+    {
+        File tmp = File.createTempFile("onto", ".png");
+        BufferedImage bi = new BufferedImage(20, 100, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D ig2 = bi.createGraphics();
+        GradientPaint gp = new GradientPaint(0, 0, color, 0, 100, color2);
+        ig2.setPaint(gp);
+        ig2.fillRect(0, 0, 20, 100);
+        ImageIO.write(bi, "PNG", tmp);
+        return tmp;
+    }
 
-		selectedSimilarityText = new Text(tableComposite,SWT.BORDER);
-		selectedSimilarityText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    public SemanticSimilarityComposite(Composite parent, int style)
+    {
+        super(parent, style);
 
-	}
+        setLayout(new FillLayout());
 
-	public void updateSelectedText()
-	{
-		Point newNatTableLastSelected = natTable.getSelectionSupport().getLastSelectedCell();
-		if (natTableLastSelected.x != newNatTableLastSelected.x ||
-			natTableLastSelected.y != newNatTableLastSelected.y)
-		{
-			selectedSimilarityText.setText(Double.toString(getLastSelectedValue()));
+        this.resultControls = new ResultControls(this, 0);
+        this.browser = this.resultControls.getBrowser();
+        this.graphCanvas = this.resultControls.getGraphCanvas();
 
-			ByteString gene1 = result.names[newNatTableLastSelected.x];
-			ByteString gene2 = result.names[newNatTableLastSelected.y];
+        Composite tableComposite = this.resultControls.getTableComposite();
+        tableComposite.setLayout(new GridLayout());
 
-			updateBrowser(gene1,gene2);
-			updateGraph(gene1,gene2);
+        this.semanticSimilarityNatModel = new SemanticSimilarityNatModel();
+        this.semanticSimilarityNatModel.setSingleCellSelection(true);
+        this.semanticSimilarityNatModel.setEnableMoveColumn(false);
 
-			natTableLastSelected.x = newNatTableLastSelected.x;
-			natTableLastSelected.y = newNatTableLastSelected.y;
-		}
-	}
+        this.natTable = new NatTable(tableComposite,
+            SWT.NO_BACKGROUND | SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL | SWT.H_SCROLL,
+            this.semanticSimilarityNatModel);
+        this.natTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-	public double getLastSelectedValue()
-	{
-		Point p;
+        this.natTable.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseUp(MouseEvent e)
+            {
+                updateSelectedText();
+            }
+        });
+        this.natTable.addMouseMoveListener(new MouseMoveListener()
+        {
+            @Override
+            public void mouseMove(MouseEvent e)
+            {
+                updateSelectedText();
+            }
+        });
 
-		p = natTable.getSelectionSupport().getLastSelectedCell();
-		if (p == null) return Double.NaN;
+        this.selectedSimilarityText = new Text(tableComposite, SWT.BORDER);
+        this.selectedSimilarityText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		int x = p.x;
-		int y = p.y;
+    }
 
-		return semanticSimilarityNatModel.getValue(x,y); 
-	}
+    public void updateSelectedText()
+    {
+        Point newNatTableLastSelected = this.natTable.getSelectionSupport().getLastSelectedCell();
+        if (this.natTableLastSelected.x != newNatTableLastSelected.x ||
+            this.natTableLastSelected.y != newNatTableLastSelected.y) {
+            this.selectedSimilarityText.setText(Double.toString(getLastSelectedValue()));
 
-	private void updateBrowser(ByteString g1, ByteString g2)
-	{
-		HashSet<TermID> onlyG1 = new HashSet<TermID>();
-		HashSet<TermID> onlyG2 = new HashSet<TermID>();
-		HashSet<TermID> both = new HashSet<TermID>();
-		
-		Gene2Associations g2a1 = result.assoc.get(g1);
-		Gene2Associations g2a2 = result.assoc.get(g2);
+            ByteString gene1 = this.result.names[newNatTableLastSelected.x];
+            ByteString gene2 = this.result.names[newNatTableLastSelected.y];
 
-		if (g2a1 != null)
-		{
-			for (TermID t : g2a1.getAssociations())
-				onlyG1.addAll(result.g.getTermsOfInducedGraph(null, t));
-		}
-			
-		if (g2a2 != null)
-		{	
-			for (TermID t : g2a2.getAssociations())
-				onlyG2.addAll(result.g.getTermsOfInducedGraph(null, t));
-		}
+            updateBrowser(gene1, gene2);
+            updateGraph(gene1, gene2);
 
-		both.addAll(onlyG1);
-		both.retainAll(onlyG2);
-		
-		onlyG1.removeAll(both);
-		onlyG2.removeAll(both);
+            this.natTableLastSelected.x = newNatTableLastSelected.x;
+            this.natTableLastSelected.y = newNatTableLastSelected.y;
+        }
+    }
 
-		StringBuilder str = new StringBuilder();
-		str.append("<html>");
-		
-		str.append("<body>");
+    public double getLastSelectedValue()
+    {
+        Point p;
 
-		str.append("<h1>");
-		str.append(g1.toString());
-		str.append(" vs. ");
-		str.append(g2.toString());
-		str.append("</h1>");
-		
-		str.append("<table border=\"1\">");
-		str.append("<tr>");
-		str.append("<th>" + g1.toString() + "</th>");
-		str.append("<th>" + g2.toString() + "</th>");
-		str.append("</tr>");
+        p = this.natTable.getSelectionSupport().getLastSelectedCell();
+        if (p == null) {
+            return Double.NaN;
+        }
 
-		str.append("<tr>");
-		str.append("<td " + buildBackgroundAttribute(geneSet1BackgroundFile) + ">");
-		for (TermID t:onlyG1)
-		{
-			str.append(t.toString());
-			str.append(" ");
-		}
-		str.append("</td>");
-		str.append("<td " + buildBackgroundAttribute(geneSet2BackgroundFile) + ">");
-//		str.append("<td background=\""+ geneSet2BackgroundFile.getAbsolutePath()+ "\">");
-		for (TermID t:onlyG2)
-		{
-			str.append(t.toString());
-			str.append(" ");
-		}
-		str.append("</td>");
-		str.append("</tr>");
-		
-		
-		str.append("<tr>");
-		
-		str.append("<td colspan=\"2\" " + buildBackgroundAttribute(geneSetBothBackgroundFile) + ">");
-		for (TermID t:both)
-		{
-			str.append(t.toString());
-			str.append(" ");
-		}
-		str.append("</td>");
-		str.append("</tr>");
-		
-		str.append("</table>");
-		
-		str.append("</body>");
-		str.append("<html/>");
-		
-		browser.setText(str.toString());
-	}
-	
-	private String buildBackgroundAttribute(File file)
-	{
-		if (file == null) return "";
-		return "background=\""+ file.getAbsolutePath()+"\" style=\"background-repeat: repeat-x;\"";
-	}
+        int x = p.x;
+        int y = p.y;
 
-	/**
-	 * 
-	 *
-	 * @author Sebastian Bauer
-	 */
-	class SemanticGOGraphGenerationThread extends AbstractGOGraphGenerationThread
-	{
-		private HashSet<TermID> gene1Set = new HashSet<TermID>();
-		private HashSet<TermID> gene2Set = new HashSet<TermID>();
+        return this.semanticSimilarityNatModel.getValue(x, y);
+    }
 
-		public SemanticGOGraphGenerationThread(ByteString g1, ByteString g2, Display display, Ontology graph, String dotCMDPath)
-		{
-			super(display, graph, dotCMDPath);
+    private void updateBrowser(ByteString g1, ByteString g2)
+    {
+        HashSet<TermID> onlyG1 = new HashSet<>();
+        HashSet<TermID> onlyG2 = new HashSet<>();
+        HashSet<TermID> both = new HashSet<>();
 
-			HashSet<TermID> leafTerms = new HashSet<TermID>();
+        Gene2Associations g2a1 = this.result.assoc.get(g1);
+        Gene2Associations g2a2 = this.result.assoc.get(g2);
 
-			Gene2Associations g2a1 = result.assoc.get(g1);
-			Gene2Associations g2a2 = result.assoc.get(g2);
+        if (g2a1 != null) {
+            for (TermID t : g2a1.getAssociations()) {
+                onlyG1.addAll(this.result.g.getTermsOfInducedGraph(null, t));
+            }
+        }
 
-			if (g2a1 != null && g2a2 != null)
-			{	
-				for (TermID t : g2a1.getAssociations())
-					gene1Set.addAll(result.g.getTermsOfInducedGraph(null, t));
-			
-				for (TermID t : g2a2.getAssociations())
-					gene2Set.addAll(result.g.getTermsOfInducedGraph(null, t));
+        if (g2a2 != null) {
+            for (TermID t : g2a2.getAssociations()) {
+                onlyG2.addAll(this.result.g.getTermsOfInducedGraph(null, t));
+            }
+        }
 
-				leafTerms.addAll(g2a1.getAssociations());
-				leafTerms.addAll(g2a2.getAssociations());
-			}
-			
-			setLeafTerms(leafTerms);
-		}
+        both.addAll(onlyG1);
+        both.retainAll(onlyG2);
 
-		public void layoutFinished(boolean success, String msg, File pngFile, File dotFile)
-		{
-			if (success)
-			{
-				try
-				{
-					graphCanvas.setLayoutedDotFile(dotFile);
-				} catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
+        onlyG1.removeAll(both);
+        onlyG2.removeAll(both);
 
-		public String getDotNodeAttributes(TermID id)
-		{
-			StringBuilder attributes = new StringBuilder();
-			attributes.append("label=\"");
+        StringBuilder str = new StringBuilder();
+        str.append("<html>");
 
-			if (result.g.isRootTerm(id))
-			{
-				attributes.append("Gene Ontology");
-			} else
-			{
-				attributes.append(id.toString());
-				attributes.append("\\n");
-				
-				String label = result.g.getTerm(id).getName();
-				if (GlobalPreferences.getWrapColumn() != -1)
-					label = Util.wrapLine(label,"\\n",GlobalPreferences.getWrapColumn());
-				
-				attributes.append(label);
-			}
-			attributes.append("\\nIC: ");
-			attributes.append(String.format("%g",result.calculation.p(id)));
-			attributes.append("\"");
-			
-			double saturation = 1.0f - result.calculation.p(id)*0.9f;// 1.0f;// - (((float) rank + 1) / significants_count) * 0.8f;
+        str.append("<body>");
 
-			/* Always full brightness */
-			double brightness = 1.0f;
+        str.append("<h1>");
+        str.append(g1.toString());
+        str.append(" vs. ");
+        str.append(g2.toString());
+        str.append("</h1>");
 
-			double hue = 0.0;
-			/* Hue depends on set */
-			if (gene1Set.contains(id))
-			{
-				if (gene2Set.contains(id))
-					hue = 120.f / 360;
-				else hue = 180.f / 360;
-			} else
-			{
-				if (gene2Set.contains(id)) hue = 60.f / 360;
-			}
+        str.append("<table border=\"1\">");
+        str.append("<tr>");
+        str.append("<th>" + g1.toString() + "</th>");
+        str.append("<th>" + g2.toString() + "</th>");
+        str.append("</tr>");
 
-			String style = "filled";
-			String fillcolor = String.format(Locale.US, "%f,%f,%f", hue, saturation, brightness);
-			attributes.append(",gradientangle=270,style=\""+ style + "\",fillcolor=\"white:" + fillcolor + "\"");
+        str.append("<tr>");
+        str.append("<td " + buildBackgroundAttribute(geneSet1BackgroundFile) + ">");
+        for (TermID t : onlyG1) {
+            str.append(t.toString());
+            str.append(" ");
+        }
+        str.append("</td>");
+        str.append("<td " + buildBackgroundAttribute(geneSet2BackgroundFile) + ">");
+        // str.append("<td background=\""+ geneSet2BackgroundFile.getAbsolutePath()+ "\">");
+        for (TermID t : onlyG2) {
+            str.append(t.toString());
+            str.append(" ");
+        }
+        str.append("</td>");
+        str.append("</tr>");
 
-			return attributes.toString();
-		}
+        str.append("<tr>");
 
-		public String getDotEdgeAttributes(TermID id1, TermID id2)
-		{
-			return null;
-		};
-		
-	};
+        str.append("<td colspan=\"2\" " + buildBackgroundAttribute(geneSetBothBackgroundFile) + ">");
+        for (TermID t : both) {
+            str.append(t.toString());
+            str.append(" ");
+        }
+        str.append("</td>");
+        str.append("</tr>");
 
-	private void updateGraph(ByteString g1, ByteString g2)
-	{
-		SemanticGOGraphGenerationThread sgggt = 
-			new SemanticGOGraphGenerationThread(g1,g2,getDisplay(),result.g,GlobalPreferences.getDOTPath()); 
-		sgggt.start();
-	}
+        str.append("</table>");
 
-	public void setResult(SemanticResult result)
-	{
-		this.result = result;
-		semanticSimilarityNatModel.setValues(result.mat);
-		semanticSimilarityNatModel.setNames(result.names);
-		natTable.updateResize();
-	}
+        str.append("</body>");
+        str.append("<html/>");
 
-	public void setMinimizedAdapter(IMinimizedAdapter minimizedAdapter)
-	{
-		resultControls.setMinimizedAdapter(minimizedAdapter);
-	}
+        this.browser.setText(str.toString());
+    }
 
-	public void resetZoom()
-	{
-		graphCanvas.zoomReset();
-	}
+    private String buildBackgroundAttribute(File file)
+    {
+        if (file == null) {
+            return "";
+        }
+        return "background=\"" + file.getAbsolutePath() + "\" style=\"background-repeat: repeat-x;\"";
+    }
 
-	public void setScaleToFit(boolean fit)
-	{
-		graphCanvas.setScaleToFit(fit);
-	}
+    /**
+     * @author Sebastian Bauer
+     */
+    class SemanticGOGraphGenerationThread extends AbstractGOGraphGenerationThread
+    {
+        private HashSet<TermID> gene1Set = new HashSet<>();
 
-	public void zoomIn()
-	{
-		graphCanvas.zoomIn();
-	}
+        private HashSet<TermID> gene2Set = new HashSet<>();
 
-	public void zoomOut()
-	{
-		graphCanvas.zoomOut();
-	}
+        public SemanticGOGraphGenerationThread(ByteString g1, ByteString g2, Display display, Ontology graph,
+            String dotCMDPath)
+        {
+            super(display, graph, dotCMDPath);
 
-	public void htmlSave(String path)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+            HashSet<TermID> leafTerms = new HashSet<>();
 
-	public void tableAnnotatedSetSave(String path)
-	{
-		// TODO Auto-generated method stub
-		
-	}
+            Gene2Associations g2a1 = SemanticSimilarityComposite.this.result.assoc.get(g1);
+            Gene2Associations g2a2 = SemanticSimilarityComposite.this.result.assoc.get(g2);
 
-	public void tableSave(String path)
-	{
-		File tableFile = new File(path);
-		result.writeTable(tableFile);
-	}
-	
-	public void latexSave(String path)
-	{
-		MessageBox mbox = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mbox.setMessage("Storing results of a semantic similarity\nanalsis is not supported");
-		mbox.setText("Ontologizer - Error");
-		mbox.open();
+            if (g2a1 != null && g2a2 != null) {
+                for (TermID t : g2a1.getAssociations()) {
+                    this.gene1Set.addAll(SemanticSimilarityComposite.this.result.g.getTermsOfInducedGraph(null, t));
+                }
 
-	}
+                for (TermID t : g2a2.getAssociations()) {
+                    this.gene2Set.addAll(SemanticSimilarityComposite.this.result.g.getTermsOfInducedGraph(null, t));
+                }
 
-	public void saveGraph(String file)
-	{
-		if (natTableLastSelected.x != -1)
-		{
-			ByteString gene1 = result.names[natTableLastSelected.x];
-			ByteString gene2 = result.names[natTableLastSelected.y];
+                leafTerms.addAll(g2a1.getAssociations());
+                leafTerms.addAll(g2a2.getAssociations());
+            }
 
-			SemanticGOGraphGenerationThread sgggt = new SemanticGOGraphGenerationThread(gene1,gene2,getDisplay(),result.g,GlobalPreferences.getDOTPath())
-			{
-				@Override
-				public void layoutFinished(boolean success, String message, File pngFile, File dotFile)
-				{
-					if (!success && !isDisposed())
-					{
-						MessageBox mbox = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-						mbox.setMessage("Unable to execute the 'dot' tool!\n\n" + message);
-						mbox.setText("Ontologizer - Error");
-						mbox.open();
-					}
-				}
-			};
-			sgggt.setGfxOutFilename(file);
-			sgggt.start();
-		}
-	}
+            setLeafTerms(leafTerms);
+        }
+
+        @Override
+        public void layoutFinished(boolean success, String msg, File pngFile, File dotFile)
+        {
+            if (success) {
+                try {
+                    SemanticSimilarityComposite.this.graphCanvas.setLayoutedDotFile(dotFile);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public String getDotNodeAttributes(TermID id)
+        {
+            StringBuilder attributes = new StringBuilder();
+            attributes.append("label=\"");
+
+            if (SemanticSimilarityComposite.this.result.g.isRootTerm(id)) {
+                attributes.append("Gene Ontology");
+            } else {
+                attributes.append(id.toString());
+                attributes.append("\\n");
+
+                String label = SemanticSimilarityComposite.this.result.g.getTerm(id).getName();
+                if (GlobalPreferences.getWrapColumn() != -1) {
+                    label = Util.wrapLine(label, "\\n", GlobalPreferences.getWrapColumn());
+                }
+
+                attributes.append(label);
+            }
+            attributes.append("\\nIC: ");
+            attributes.append(String.format("%g", SemanticSimilarityComposite.this.result.calculation.p(id)));
+            attributes.append("\"");
+
+            double saturation = 1.0f - SemanticSimilarityComposite.this.result.calculation.p(id) * 0.9f;// 1.0f;// -
+                                                                                                        // (((float)
+                                                                                                        // rank + 1) /
+            // significants_count) * 0.8f;
+
+            /* Always full brightness */
+            double brightness = 1.0f;
+
+            double hue = 0.0;
+            /* Hue depends on set */
+            if (this.gene1Set.contains(id)) {
+                if (this.gene2Set.contains(id)) {
+                    hue = 120.f / 360;
+                } else {
+                    hue = 180.f / 360;
+                }
+            } else {
+                if (this.gene2Set.contains(id)) {
+                    hue = 60.f / 360;
+                }
+            }
+
+            String style = "filled";
+            String fillcolor = String.format(Locale.US, "%f,%f,%f", hue, saturation, brightness);
+            attributes.append(",gradientangle=270,style=\"" + style + "\",fillcolor=\"white:" + fillcolor + "\"");
+
+            return attributes.toString();
+        }
+
+        @Override
+        public String getDotEdgeAttributes(TermID id1, TermID id2)
+        {
+            return null;
+        };
+
+    };
+
+    private void updateGraph(ByteString g1, ByteString g2)
+    {
+        SemanticGOGraphGenerationThread sgggt =
+            new SemanticGOGraphGenerationThread(g1, g2, getDisplay(), this.result.g, GlobalPreferences.getDOTPath());
+        sgggt.start();
+    }
+
+    public void setResult(SemanticResult result)
+    {
+        this.result = result;
+        this.semanticSimilarityNatModel.setValues(result.mat);
+        this.semanticSimilarityNatModel.setNames(result.names);
+        this.natTable.updateResize();
+    }
+
+    public void setMinimizedAdapter(IMinimizedAdapter minimizedAdapter)
+    {
+        this.resultControls.setMinimizedAdapter(minimizedAdapter);
+    }
+
+    @Override
+    public void resetZoom()
+    {
+        this.graphCanvas.zoomReset();
+    }
+
+    @Override
+    public void setScaleToFit(boolean fit)
+    {
+        this.graphCanvas.setScaleToFit(fit);
+    }
+
+    @Override
+    public void zoomIn()
+    {
+        this.graphCanvas.zoomIn();
+    }
+
+    @Override
+    public void zoomOut()
+    {
+        this.graphCanvas.zoomOut();
+    }
+
+    @Override
+    public void htmlSave(String path)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void tableAnnotatedSetSave(String path)
+    {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void tableSave(String path)
+    {
+        File tableFile = new File(path);
+        this.result.writeTable(tableFile);
+    }
+
+    @Override
+    public void latexSave(String path)
+    {
+        MessageBox mbox = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+        mbox.setMessage("Storing results of a semantic similarity\nanalsis is not supported");
+        mbox.setText("Ontologizer - Error");
+        mbox.open();
+
+    }
+
+    @Override
+    public void saveGraph(String file)
+    {
+        if (this.natTableLastSelected.x != -1) {
+            ByteString gene1 = this.result.names[this.natTableLastSelected.x];
+            ByteString gene2 = this.result.names[this.natTableLastSelected.y];
+
+            SemanticGOGraphGenerationThread sgggt = new SemanticGOGraphGenerationThread(gene1, gene2, getDisplay(),
+                this.result.g, GlobalPreferences.getDOTPath())
+            {
+                @Override
+                public void layoutFinished(boolean success, String message, File pngFile, File dotFile)
+                {
+                    if (!success && !isDisposed()) {
+                        MessageBox mbox = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+                        mbox.setMessage("Unable to execute the 'dot' tool!\n\n" + message);
+                        mbox.setText("Ontologizer - Error");
+                        mbox.open();
+                    }
+                }
+            };
+            sgggt.setGfxOutFilename(file);
+            sgggt.start();
+        }
+    }
 }

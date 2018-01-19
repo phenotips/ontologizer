@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,9 +79,9 @@ public class WorkSetLoadThread extends Thread
 
         public boolean assocDownloaded;
 
-        private List<Runnable> callbacks = new LinkedList<Runnable>();
+        private List<Runnable> callbacks = new LinkedList<>();
 
-        private List<IWorkSetProgress> progresses = new LinkedList<IWorkSetProgress>();
+        private List<IWorkSetProgress> progresses = new LinkedList<>();
 
         /**
          * Add a new callback.
@@ -225,9 +226,9 @@ public class WorkSetLoadThread extends Thread
     private Map<String, AssociationContainer> assocMap = Collections
         .synchronizedMap(new HashMap<String, AssociationContainer>());
 
-    private BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<Message>();
+    private BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
 
-    private List<Task> taskList = new LinkedList<Task>();
+    private List<Task> taskList = new LinkedList<>();
 
     private FileCacheUpdateCallback fileCacheUpdateCallback;
 
@@ -283,7 +284,7 @@ public class WorkSetLoadThread extends Thread
                 public void run()
                 {
                     /* This is performed inside the work set load thread */
-                    List<Task> toBeRemoved = new LinkedList<Task>();
+                    List<Task> toBeRemoved = new LinkedList<>();
 
                     /* Go through all task, check whether the URL affects any tasks */
                     for (Task t : WorkSetLoadThread.this.taskList) {

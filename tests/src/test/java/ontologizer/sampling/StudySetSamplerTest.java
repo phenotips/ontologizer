@@ -2,60 +2,66 @@ package ontologizer.sampling;
 
 import java.util.Set;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import ontologizer.association.AssociationContainer;
 import ontologizer.association.AssociationParserTest2;
 import ontologizer.set.StudySet;
 import ontologizer.set.StudySetFactory;
 import ontologizer.types.ByteString;
 
-public class StudySetSamplerTest extends TestCase
+public class StudySetSamplerTest
 {
-	private StudySet baseStudySet;
-	private StudySetSampler studySetSampler;
-	private int baseStudySetsize;
+    private StudySet baseStudySet;
 
-	@Override
-	protected void setUp() throws Exception
-	{
-		AssociationParserTest2 assocPT = new AssociationParserTest2();
-		assocPT.run();
-		// container = assocPT.container;
-		AssociationContainer assocContainer = assocPT.assocContainer;
+    private StudySetSampler studySetSampler;
 
-		Set<ByteString> allAnnotatedGenes = assocContainer.getAllAnnotatedGenes();
+    private int baseStudySetsize;
 
-		String[] allAnnotatedGenesArray = new String[allAnnotatedGenes.size()];
-		int i = 0;
-		for (ByteString gene : allAnnotatedGenes)
-			allAnnotatedGenesArray[i++] = gene.toString();
-		
-		baseStudySet = StudySetFactory.createFromArray(allAnnotatedGenesArray, false);
-		baseStudySet.setName("baseStudy");
-		baseStudySetsize = baseStudySet.getGeneCount();
-		studySetSampler = new StudySetSampler(baseStudySet);
-	}
+    @Before
+    public void setUp() throws Exception
+    {
+        AssociationParserTest2 assocPT = new AssociationParserTest2();
+        assocPT.setUp();
+        // container = assocPT.container;
+        AssociationContainer assocContainer = assocPT.assocContainer;
 
-	public void testBasicSampling()
-	{
-		StudySet sample;
-		int ss;
+        Set<ByteString> allAnnotatedGenes = assocContainer.getAllAnnotatedGenes();
 
-		ss = 10;
-		sample = studySetSampler.sampleRandomStudySet(ss);
-		Assert.assertTrue(sample.getGeneCount() == ss);
+        String[] allAnnotatedGenesArray = new String[allAnnotatedGenes.size()];
+        int i = 0;
+        for (ByteString gene : allAnnotatedGenes) {
+            allAnnotatedGenesArray[i++] = gene.toString();
+        }
 
-		ss = 0;
-		sample = studySetSampler.sampleRandomStudySet(ss);
-		Assert.assertTrue(sample.getGeneCount() == ss);
+        this.baseStudySet = StudySetFactory.createFromArray(allAnnotatedGenesArray, false);
+        this.baseStudySet.setName("baseStudy");
+        this.baseStudySetsize = this.baseStudySet.getGeneCount();
+        this.studySetSampler = new StudySetSampler(this.baseStudySet);
+    }
 
-		sample = studySetSampler.sampleRandomStudySet(baseStudySetsize);
-		Assert.assertTrue(sample.getGeneCount() == baseStudySetsize);
+    @Test
+    public void testBasicSampling()
+    {
+        StudySet sample;
+        int ss;
 
-		sample = studySetSampler.sampleRandomStudySet(baseStudySetsize + 1);
-		Assert.assertTrue(sample.getGeneCount() == baseStudySetsize);
-		Assert.assertEquals(sample.getAllGeneNames(), baseStudySet.getAllGeneNames());
-	}
+        ss = 10;
+        sample = this.studySetSampler.sampleRandomStudySet(ss);
+        Assert.assertTrue(sample.getGeneCount() == ss);
+
+        ss = 0;
+        sample = this.studySetSampler.sampleRandomStudySet(ss);
+        Assert.assertTrue(sample.getGeneCount() == ss);
+
+        sample = this.studySetSampler.sampleRandomStudySet(this.baseStudySetsize);
+        Assert.assertTrue(sample.getGeneCount() == this.baseStudySetsize);
+
+        sample = this.studySetSampler.sampleRandomStudySet(this.baseStudySetsize + 1);
+        Assert.assertTrue(sample.getGeneCount() == this.baseStudySetsize);
+        Assert.assertEquals(sample.getAllGeneNames(), this.baseStudySet.getAllGeneNames());
+    }
 
 }

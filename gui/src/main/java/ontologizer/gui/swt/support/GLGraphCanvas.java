@@ -5,25 +5,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
-import org.lwjgl.util.glu.GLU;
 
-import att.grappa.Edge;
 import att.grappa.Element;
 import att.grappa.Graph;
 import att.grappa.GraphEnumeration;
@@ -36,205 +27,213 @@ import att.grappa.Subgraph;
 
 public class GLGraphCanvas extends Composite implements IGraphCanvas
 {
-	private GLCanvas canvas;
-	private Graph g;
-	
-	public GLGraphCanvas(Composite parent, int style)
-	{
-		super(parent, style);
-		
-		setLayout(new FillLayout());
-		
-		GLData data = new GLData();
-		data.doubleBuffer = true;
+    private GLCanvas canvas;
 
-		canvas = new GLCanvas(this, 0, data);
-		canvas.addPaintListener(new PaintListener() {
-			
-			@Override
-			public void paintControl(PaintEvent e) {
-				drawGraph(g);
-			}
-		});
-		
-//		canvas.addListener(SWT.Resize, new Listener() {
-//			public void handleEvent(Event event) {
-////				Rectangle bounds = canvas.getBounds();
-////				float fAspect = (float) bounds.width / (float) bounds.height;
-////				canvas.setCurrent();
-////				try {
-////					GLContext.useContext(canvas);
-////				} catch(LWJGLException e) { e.printStackTrace(); }
-////				GL11.glViewport(0, 0, bounds.width, bounds.height);
-////				GL11.glMatrixMode(GL11.GL_PROJECTION);
-////				GL11.glLoadIdentity();
-////				GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
-////				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-////				GL11.glLoadIdentity();
-//				drawGraph(g);
-//			}
-//		});
+    private Graph g;
 
-	}
+    public GLGraphCanvas(Composite parent, int style)
+    {
+        super(parent, style);
 
-	@Override
-	public void setLayoutedDotFile(File dotFile) throws Exception
-	{
-		Parser parser = new Parser(new FileInputStream(dotFile), System.err);
-		parser.parse();
+        setLayout(new FillLayout());
 
-		g = parser.getGraph();
-		g.setEditable(false);
+        GLData data = new GLData();
+        data.doubleBuffer = true;
 
-		drawGraph(g);
-	}
+        this.canvas = new GLCanvas(this, 0, data);
+        this.canvas.addPaintListener(new PaintListener()
+        {
 
-	private void drawGraph(Graph g)
-	{
-		if (g == null)
-			return;
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                drawGraph(GLGraphCanvas.this.g);
+            }
+        });
 
-		canvas.setCurrent();
-		try
-		{
-			GLContext.useContext(canvas);
+        // canvas.addListener(SWT.Resize, new Listener() {
+        // public void handleEvent(Event event) {
+        //// Rectangle bounds = canvas.getBounds();
+        //// float fAspect = (float) bounds.width / (float) bounds.height;
+        //// canvas.setCurrent();
+        //// try {
+        //// GLContext.useContext(canvas);
+        //// } catch(LWJGLException e) { e.printStackTrace(); }
+        //// GL11.glViewport(0, 0, bounds.width, bounds.height);
+        //// GL11.glMatrixMode(GL11.GL_PROJECTION);
+        //// GL11.glLoadIdentity();
+        //// GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+        //// GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        //// GL11.glLoadIdentity();
+        // drawGraph(g);
+        // }
+        // });
 
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			GL11.glOrtho(-100, 800, 100, -600, 1, -1);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+    }
 
-			GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+    @Override
+    public void setLayoutedDotFile(File dotFile) throws Exception
+    {
+        Parser parser = new Parser(new FileInputStream(dotFile), System.err);
+        parser.parse();
 
-			drawGraphElement(g);
+        this.g = parser.getGraph();
+        this.g.setEditable(false);
 
-			canvas.swapBuffers();
-		} catch (LWJGLException e) { e.printStackTrace(); }
-	}
+        drawGraph(this.g);
+    }
 
-	private void drawNode(Node node)
-	{
-		GrappaPoint center = node.getCenterPoint();
+    private void drawGraph(Graph g)
+    {
+        if (g == null) {
+            return;
+        }
 
-		int x = (int)center.x;
-		int y = (int)center.y;
-		double h = (Double)node.getAttributeValue(Node.HEIGHT_ATTR);
-		String label = (String)node.getAttributeValue(Node.LABEL_ATTR);
-		GrappaStyle style = (GrappaStyle)node.getAttributeValue(Node.STYLE_ATTR);
-		@SuppressWarnings("unchecked")
-		List<java.awt.Color> fillColorAWT = (List<java.awt.Color>)node.getAttributeValue(Node.FILLCOLOR_ATTR);
-		int shape = (Integer)node.getAttributeValue(Node.SHAPE_ATTR);
+        this.canvas.setCurrent();
+        try {
+            GLContext.useContext(this.canvas);
 
-		GL11.glColor3f(0f,0f,0.0f);
-		PathIterator iter = node.getGrappaNexus().getPathIterator();
-		float [] coords = new float[6]; 
-		while (!iter.isDone())
-		{
-			int type = iter.currentSegment(coords);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(-100, 800, 100, -600, 1, -1);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
-			System.out.print(type + " ");
-			for (int i=0;i<6;i++) System.out.print(coords[i] + " ");
-			System.out.println();
+            GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-			switch (type)
-			{
-				case	PathIterator.SEG_MOVETO:
-						GL11.glBegin(GL11.GL_POLYGON);
-						GL11.glVertex2f(coords[0], coords[1]);
-						
-						break;
+            drawGraphElement(g);
 
-				case	PathIterator.SEG_LINETO:
-						GL11.glVertex2f(coords[0], coords[1]);
-						break;
+            this.canvas.swapBuffers();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+        }
+    }
 
-				case	PathIterator.SEG_CLOSE:
-						GL11.glEnd();
-						break;
+    private void drawNode(Node node)
+    {
+        GrappaPoint center = node.getCenterPoint();
 
-				case	PathIterator.SEG_QUADTO:
-						break;
+        int x = (int) center.x;
+        int y = (int) center.y;
+        double h = (Double) node.getAttributeValue(GrappaConstants.HEIGHT_ATTR);
+        String label = (String) node.getAttributeValue(GrappaConstants.LABEL_ATTR);
+        GrappaStyle style = (GrappaStyle) node.getAttributeValue(GrappaConstants.STYLE_ATTR);
+        @SuppressWarnings("unchecked")
+        List<java.awt.Color> fillColorAWT =
+            (List<java.awt.Color>) node.getAttributeValue(GrappaConstants.FILLCOLOR_ATTR);
+        int shape = (Integer) node.getAttributeValue(GrappaConstants.SHAPE_ATTR);
 
-				case	PathIterator.SEG_CUBICTO:
-						GL11.glVertex2f(coords[0], coords[1]);
-						GL11.glVertex2f(coords[2], coords[3]);
-						GL11.glVertex2f(coords[4], coords[5]);
-						break;
-			}
-				
-			iter.next();
-		}
+        GL11.glColor3f(0f, 0f, 0.0f);
+        PathIterator iter = node.getGrappaNexus().getPathIterator();
+        float[] coords = new float[6];
+        while (!iter.isDone()) {
+            int type = iter.currentSegment(coords);
 
-		
-		if (fillColorAWT != null && fillColorAWT.size() > 0)
-		{
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			GL11.glEnable(GL11.GL_BLEND);
-			
-			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-			GL11.glBegin(GL11.GL_POLYGON);
-			GL11.glColor3ub((byte)fillColorAWT.get(0).getRed(),(byte)fillColorAWT.get(0).getGreen(),(byte)fillColorAWT.get(0).getBlue());
-			GL11.glVertex2f(node.getGrappaNexus().getBounds().x,node.getGrappaNexus().getBounds().y);
-			GL11.glVertex2f(node.getGrappaNexus().getBounds().x+node.getGrappaNexus().getBounds().width,node.getGrappaNexus().getBounds().y);
-			if (fillColorAWT.size() > 1)
-				GL11.glColor3ub((byte)fillColorAWT.get(1).getRed(),(byte)fillColorAWT.get(1).getGreen(),(byte)fillColorAWT.get(1).getBlue());
-			GL11.glVertex2f(node.getGrappaNexus().getBounds().x+node.getGrappaNexus().getBounds().width,node.getGrappaNexus().getBounds().y+node.getGrappaNexus().getBounds().height);
-			GL11.glVertex2f(node.getGrappaNexus().getBounds().x,node.getGrappaNexus().getBounds().y+node.getGrappaNexus().getBounds().height);
-			GL11.glEnd();
-	
-			GL11.glColor3f(0.5f,0.5f,1.0f);
-			GL11.glDisable(GL11.GL_BLEND);
-		}
+            System.out.print(type + " ");
+            for (int i = 0; i < 6; i++) {
+                System.out.print(coords[i] + " ");
+            }
+            System.out.println();
 
-	}
+            switch (type) {
+                case PathIterator.SEG_MOVETO:
+                    GL11.glBegin(GL11.GL_POLYGON);
+                    GL11.glVertex2f(coords[0], coords[1]);
 
-	private void drawGraphElement(Element e)
-	{
-		switch (e.getType())
-		{
-			case	GrappaConstants.NODE:
-					drawNode((Node)e);
-					break;
+                    break;
 
-//			case	GrappaConstants.EDGE:
-//					paintEdge((Edge)e,gc);
-//					break;
+                case PathIterator.SEG_LINETO:
+                    GL11.glVertex2f(coords[0], coords[1]);
+                    break;
 
-			case	GrappaConstants.SUBGRAPH:
-					{
-						GraphEnumeration en = ((Subgraph)e).elements();
+                case PathIterator.SEG_CLOSE:
+                    GL11.glEnd();
+                    break;
 
-						while (en.hasMoreElements())
-						{
-							Element ne = en.nextGraphElement();
-							if (e != ne)
-								drawGraphElement(ne);
-						}
-					}
-					break;
-		}
+                case PathIterator.SEG_QUADTO:
+                    break;
 
-	}
+                case PathIterator.SEG_CUBICTO:
+                    GL11.glVertex2f(coords[0], coords[1]);
+                    GL11.glVertex2f(coords[2], coords[3]);
+                    GL11.glVertex2f(coords[4], coords[5]);
+                    break;
+            }
 
-	@Override
-	public void zoomReset()
-	{
-	}
+            iter.next();
+        }
 
-	@Override
-	public void setScaleToFit(boolean fit)
-	{
-	}
+        if (fillColorAWT != null && fillColorAWT.size() > 0) {
+            GL11.glShadeModel(GL11.GL_SMOOTH);
+            GL11.glEnable(GL11.GL_BLEND);
 
-	@Override
-	public void zoomIn()
-	{
-	}
+            GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+            GL11.glBegin(GL11.GL_POLYGON);
+            GL11.glColor3ub((byte) fillColorAWT.get(0).getRed(), (byte) fillColorAWT.get(0).getGreen(),
+                (byte) fillColorAWT.get(0).getBlue());
+            GL11.glVertex2f(node.getGrappaNexus().getBounds().x, node.getGrappaNexus().getBounds().y);
+            GL11.glVertex2f(node.getGrappaNexus().getBounds().x + node.getGrappaNexus().getBounds().width,
+                node.getGrappaNexus().getBounds().y);
+            if (fillColorAWT.size() > 1) {
+                GL11.glColor3ub((byte) fillColorAWT.get(1).getRed(), (byte) fillColorAWT.get(1).getGreen(),
+                    (byte) fillColorAWT.get(1).getBlue());
+            }
+            GL11.glVertex2f(node.getGrappaNexus().getBounds().x + node.getGrappaNexus().getBounds().width,
+                node.getGrappaNexus().getBounds().y + node.getGrappaNexus().getBounds().height);
+            GL11.glVertex2f(node.getGrappaNexus().getBounds().x,
+                node.getGrappaNexus().getBounds().y + node.getGrappaNexus().getBounds().height);
+            GL11.glEnd();
 
-	@Override
-	public void zoomOut()
-	{
-	}
+            GL11.glColor3f(0.5f, 0.5f, 1.0f);
+            GL11.glDisable(GL11.GL_BLEND);
+        }
+
+    }
+
+    private void drawGraphElement(Element e)
+    {
+        switch (e.getType()) {
+            case GrappaConstants.NODE:
+                drawNode((Node) e);
+                break;
+
+            // case GrappaConstants.EDGE:
+            // paintEdge((Edge)e,gc);
+            // break;
+
+            case GrappaConstants.SUBGRAPH: {
+                GraphEnumeration en = ((Subgraph) e).elements();
+
+                while (en.hasMoreElements()) {
+                    Element ne = en.nextGraphElement();
+                    if (e != ne) {
+                        drawGraphElement(ne);
+                    }
+                }
+            }
+                break;
+        }
+
+    }
+
+    @Override
+    public void zoomReset()
+    {
+    }
+
+    @Override
+    public void setScaleToFit(boolean fit)
+    {
+    }
+
+    @Override
+    public void zoomIn()
+    {
+    }
+
+    @Override
+    public void zoomOut()
+    {
+    }
 
 }

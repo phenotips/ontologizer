@@ -2,63 +2,70 @@ package ontologizer.go;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class DescriptionParserTest extends TestCase
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class DescriptionParserTest
 {
-	private final String testDescription = "`Distention` (PATO:0001602) of the `abdomen` (FMA:9577).";
+    private final String testDescription = "`Distention` (PATO:0001602) of the `abdomen` (FMA:9577).";
 
-	private final String [] txts = new String[]{
-			"Distention",
-			" of the ",
-			"abdomen",
-			"."
-	};
-	private final String [] tids = new String[]{
-			"PATO:0001602",
-			null,
-			"FMA:9577",
-			null
-	};
+    private final String[] txts = new String[] {
+    "Distention",
+    " of the ",
+    "abdomen",
+    "."
+    };
 
-	public void test()
-	{
-		final ArrayList<String> refList = new ArrayList<String>();
-		
-		DescriptionParser.parse(testDescription, new DescriptionParser.IDescriptionPartCallback() {
-			int i;
+    private final String[] tids = new String[] {
+    "PATO:0001602",
+    null,
+    "FMA:9577",
+    null
+    };
 
-			public boolean part(String txt, String ref)
-			{
-				refList.add(ref);
+    @Test
+    public void test()
+    {
+        final ArrayList<String> refList = new ArrayList<>();
 
-				assertEquals(txts[i],txt);
-				assertEquals(tids[i],ref);
+        DescriptionParser.parse(this.testDescription, new DescriptionParser.IDescriptionPartCallback()
+        {
+            int i;
 
-				i++;
-				return true;
-			}
-		});
-		assertEquals(4,refList.size());
-	}
-	
-	public void test2()
-	{
-		final ArrayList<String> refList = new ArrayList<String>();
-		DescriptionParser.parse("Single Line", new DescriptionParser.IDescriptionPartCallback() {
-			int i;
+            @Override
+            public boolean part(String txt, String ref)
+            {
+                refList.add(ref);
 
-			public boolean part(String txt, String ref)
-			{
-				refList.add(ref);
-				
-				assertEquals("Single Line", txt);
-				assertNull(ref);
+                assertEquals(DescriptionParserTest.this.txts[this.i], txt);
+                assertEquals(DescriptionParserTest.this.tids[this.i], ref);
 
-				i++;
-				return true;
-			}
-		});
-		assertEquals(1,refList.size());
-	}
+                this.i++;
+                return true;
+            }
+        });
+        assertEquals(4, refList.size());
+    }
+
+    @Test
+    public void test2()
+    {
+        final ArrayList<String> refList = new ArrayList<>();
+        DescriptionParser.parse("Single Line", new DescriptionParser.IDescriptionPartCallback()
+        {
+            @Override
+            public boolean part(String txt, String ref)
+            {
+                refList.add(ref);
+
+                assertEquals("Single Line", txt);
+                assertNull(ref);
+
+                return true;
+            }
+        });
+        assertEquals(1, refList.size());
+    }
 }

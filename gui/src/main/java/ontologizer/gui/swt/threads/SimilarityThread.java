@@ -1,11 +1,8 @@
 package ontologizer.gui.swt.threads;
 
-import java.util.logging.Logger;
-
 import org.eclipse.swt.widgets.Display;
 
 import ontologizer.association.AssociationContainer;
-import ontologizer.association.AssociationParser;
 import ontologizer.calculation.SemanticCalculation;
 import ontologizer.calculation.SemanticResult;
 import ontologizer.go.Ontology;
@@ -19,163 +16,186 @@ import ontologizer.worksets.WorkSetLoadThread;
 
 public class SimilarityThread extends AbstractOntologizerThread
 {
-	private static Logger logger = Logger.getLogger(SimilarityThread.class.getCanonicalName());
+    private StudySetList studySetList;
 
-	private StudySetList studySetList;
-	private WorkSet workSet;
+    private WorkSet workSet;
 
-	public SimilarityThread(Display display, Runnable calledWhenFinished, ResultWindow result, StudySetList studySetList, WorkSet workSet)
-	{
-		super("Similarity Thread", calledWhenFinished, display, result);
-		
-		this.studySetList = studySetList;
-		this.workSet = workSet;
-	}
-	
-	@Override
-	public void perform()
-	{
-		final Object lock = new Object();
-		
-		synchronized (lock)
-		{
-			WorkSetLoadThread.obtainDatafiles(workSet, new IWorkSetProgress()
-			{
-				public void message(final String message)
-				{
-					display.asyncExec(new Runnable() {
-						public void run()
-						{
-							if (!result.isDisposed())
-							{
-								result.appendLog(message);
-							}
-						}});
-				}
-	
-				public void initGauge(final int maxWork)
-				{
-					display.asyncExec(new Runnable() {
-						public void run()
-						{
-							if (!result.isDisposed())
-							{
-								result.updateProgress(0);
-								
-								if (maxWork > 0)
-								{
-									result.initProgress(maxWork);
-									result.showProgressBar();
-								} else
-									result.hideProgressBar();
-							}
-						}});
-				}
-	
-				public void updateGauge(final int currentWork)
-				{
-					display.asyncExec(new Runnable() {
-						public void run()
-						{
-							if (!result.isDisposed())
-							{
-								result.updateProgress(currentWork);
-							}
-						}});
-					
-				}
-			},new Runnable()
-			{
-				public void run()
-				{
-					synchronized (lock)
-					{
-						lock.notifyAll();
-					}
-				}
-			});
+    public SimilarityThread(Display display, Runnable calledWhenFinished, ResultWindow result,
+        StudySetList studySetList, WorkSet workSet)
+    {
+        super("Similarity Thread", calledWhenFinished, display, result);
 
-			try
-			{
-				lock.wait();
+        this.studySetList = studySetList;
+        this.workSet = workSet;
+    }
 
-				/* Stuff should have been loaded at this point */
+    @Override
+    public void perform()
+    {
+        final Object lock = new Object();
 
-				Ontology graph = WorkSetLoadThread.getGraph(workSet.getOboPath());
-				AssociationContainer assoc = WorkSetLoadThread.getAssociations(workSet.getAssociationPath());
-				
-				if (graph == null) throw new RuntimeException("Error in loading the ontology graph!");
-				if (assoc == null) throw new RuntimeException("Error in loading the associations!");
+        synchronized (lock) {
+            WorkSetLoadThread.obtainDatafiles(this.workSet, new IWorkSetProgress()
+            {
+                @Override
+                public void message(final String message)
+                {
+                    SimilarityThread.this.display.asyncExec(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (!SimilarityThread.this.result.isDisposed()) {
+                                SimilarityThread.this.result.appendLog(message);
+                            }
+                        }
+                    });
+                }
 
-				display.asyncExec(new ResultAppendLogRunnable("Preparing semantic calculation"));
+                @Override
+                public void initGauge(final int maxWork)
+                {
+                    SimilarityThread.this.display.asyncExec(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (!SimilarityThread.this.result.isDisposed()) {
+                                SimilarityThread.this.result.updateProgress(0);
 
-				SemanticCalculation s = new SemanticCalculation(graph,assoc);
+                                if (maxWork > 0) {
+                                    SimilarityThread.this.result.initProgress(maxWork);
+                                    SimilarityThread.this.result.showProgressBar();
+                                } else {
+                                    SimilarityThread.this.result.hideProgressBar();
+                                }
+                            }
+                        }
+                    });
+                }
 
-				for (StudySet studySet : studySetList)
-				{
-					display.asyncExec(new ResultAppendLogRunnable("Analyzing study set \"" + studySet.getName() + "\""));
+                @Override
+                public void updateGauge(final int currentWork)
+                {
+                    SimilarityThread.this.display.asyncExec(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (!SimilarityThread.this.result.isDisposed()) {
+                                SimilarityThread.this.result.updateProgress(currentWork);
+                            }
+                        }
+                    });
 
-					final SemanticResult sr = s.calculate(studySet,new SemanticCalculation.ISemanticCalculationProgress()
-					{
-						public void init(final int max)
-						{
-							display.asyncExec(new Runnable()
-							{
-								public void run()
-								{
-									result.showProgressBar();
-									result.initProgress(max);
-								}
-							});
-						}
-						
-						public void update(final int update)
-						{
-							display.asyncExec(new Runnable()
-							{
-								public void run()
-								{
-									result.updateProgress(update);
-								}
-							});
-						}
-					});
+                }
+            }, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    synchronized (lock) {
+                        lock.notifyAll();
+                    }
+                }
+            });
 
-					display.asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							result.addResults(sr);
-						}
-					});
+            try {
+                lock.wait();
 
-				}
-				
-				display.asyncExec(new Runnable(){public void run() {
-					if (!result.isDisposed())
-					{
-						result.setBusyPointer(false);
-						result.appendLog("Calculation finished");
-						result.clearProgressText();
-						result.hideProgressBar();
-					}
-				};});
+                /* Stuff should have been loaded at this point */
 
-				WorkSetLoadThread.releaseDatafiles(workSet);
-			} catch (InterruptedException e)
-			{
-				
-			} catch (RuntimeException re)
-			{
-				Ontologizer.logException(re);
-				display.asyncExec(new Runnable(){public void run() {
-					if (!result.isDisposed())
-					{
-						result.dispose();
-					}
-				};});
-			}
+                Ontology graph = WorkSetLoadThread.getGraph(this.workSet.getOboPath());
+                AssociationContainer assoc = WorkSetLoadThread.getAssociations(this.workSet.getAssociationPath());
 
-		}
-	}
+                if (graph == null) {
+                    throw new RuntimeException("Error in loading the ontology graph!");
+                }
+                if (assoc == null) {
+                    throw new RuntimeException("Error in loading the associations!");
+                }
+
+                this.display.asyncExec(new ResultAppendLogRunnable("Preparing semantic calculation"));
+
+                SemanticCalculation s = new SemanticCalculation(graph, assoc);
+
+                for (StudySet studySet : this.studySetList) {
+                    this.display
+                        .asyncExec(new ResultAppendLogRunnable("Analyzing study set \"" + studySet.getName() + "\""));
+
+                    final SemanticResult sr =
+                        s.calculate(studySet, new SemanticCalculation.ISemanticCalculationProgress()
+                        {
+                            @Override
+                            public void init(final int max)
+                            {
+                                SimilarityThread.this.display.asyncExec(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        SimilarityThread.this.result.showProgressBar();
+                                        SimilarityThread.this.result.initProgress(max);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void update(final int update)
+                            {
+                                SimilarityThread.this.display.asyncExec(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        SimilarityThread.this.result.updateProgress(update);
+                                    }
+                                });
+                            }
+                        });
+
+                    this.display.asyncExec(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            SimilarityThread.this.result.addResults(sr);
+                        }
+                    });
+
+                }
+
+                this.display.asyncExec(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (!SimilarityThread.this.result.isDisposed()) {
+                            SimilarityThread.this.result.setBusyPointer(false);
+                            SimilarityThread.this.result.appendLog("Calculation finished");
+                            SimilarityThread.this.result.clearProgressText();
+                            SimilarityThread.this.result.hideProgressBar();
+                        }
+                    };
+                });
+
+                WorkSetLoadThread.releaseDatafiles(this.workSet);
+            } catch (InterruptedException e) {
+
+            } catch (RuntimeException re) {
+                Ontologizer.logException(re);
+                this.display.asyncExec(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (!SimilarityThread.this.result.isDisposed()) {
+                            SimilarityThread.this.result.dispose();
+                        }
+                    };
+                });
+            }
+
+        }
+    }
 }

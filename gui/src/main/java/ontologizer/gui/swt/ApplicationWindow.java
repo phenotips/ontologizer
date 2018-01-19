@@ -10,72 +10,79 @@ import org.eclipse.swt.widgets.Widget;
 
 /**
  * The base class of all windows.
- * 
+ *
  * @author Sebastian Bauer
  */
 public class ApplicationWindow
 {
-	protected Shell shell;
-	protected Display display;
+    protected Shell shell;
 
-	private Cursor waitCursor;
-	private int waitCount;
+    protected Display display;
 
-	public ApplicationWindow(Display display)
-	{
-		this.display = display;
+    private Cursor waitCursor;
 
-		waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
-		shell = new Shell(display);
-	}
+    private int waitCount;
 
-	public void showWaitPointer()
-	{
-		if (waitCount == 0)
-			shell.setCursor(waitCursor);
-		waitCount++;
-	}
-	
-	public void hideWaitPointer()
-	{
-		if (waitCount == 0) return;
-		waitCount--;
-		if (waitCount == 0)
-			shell.setCursor(null);
-	}
-	
-	/**
-	 * Open the window.
-	 */
-	public void open()
-	{
-		shell.open();
-	}
+    public ApplicationWindow(Display display)
+    {
+        this.display = display;
 
-	/**
-	 * Dispose the window.
-	 */
-	public void dispose()
-	{
-		if (!shell.isDisposed())
-			shell.dispose();
-	}
+        this.waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
+        this.shell = new Shell(display);
+    }
 
-	protected void addSimpleSelectionAction(Widget w, final ISimpleAction act)
-	{
-		w.addListener(SWT.Selection, new Listener()
-		{
-			public void handleEvent(Event event)
-			{
-				act.act();
-			}
-		});
-	}
-	
+    public void showWaitPointer()
+    {
+        if (this.waitCount == 0) {
+            this.shell.setCursor(this.waitCursor);
+        }
+        this.waitCount++;
+    }
 
-	public void setVisible(boolean b)
-	{
-		shell.setVisible(b);
-	}
+    public void hideWaitPointer()
+    {
+        if (this.waitCount == 0) {
+            return;
+        }
+        this.waitCount--;
+        if (this.waitCount == 0) {
+            this.shell.setCursor(null);
+        }
+    }
+
+    /**
+     * Open the window.
+     */
+    public void open()
+    {
+        this.shell.open();
+    }
+
+    /**
+     * Dispose the window.
+     */
+    public void dispose()
+    {
+        if (!this.shell.isDisposed()) {
+            this.shell.dispose();
+        }
+    }
+
+    protected void addSimpleSelectionAction(Widget w, final ISimpleAction act)
+    {
+        w.addListener(SWT.Selection, new Listener()
+        {
+            @Override
+            public void handleEvent(Event event)
+            {
+                act.act();
+            }
+        });
+    }
+
+    public void setVisible(boolean b)
+    {
+        this.shell.setVisible(b);
+    }
 
 }

@@ -1,21 +1,21 @@
 package sonumina.math.combinatorics;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-
-public class SubsetGeneratorTest extends TestCase
+public class SubsetGeneratorTest
 {
+    @Test
+    public void testSubsetGenerator()
+    {
+        SubsetGenerator subsetGen = new SubsetGenerator(10, 3);
 
-	public void testSubsetGenerator()
-	{
-		SubsetGenerator subsetGen = new SubsetGenerator(10,3);
+        int no = 0;
 
-		int no = 0;
-
-		while ((subsetGen.next()) != null)
-			no++;
-		Assert.assertTrue(no == 176);
-	}
+        while ((subsetGen.next()) != null) {
+            no++;
+        }
+        Assert.assertTrue(no == 176);
+    }
 
 }

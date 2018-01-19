@@ -18,9 +18,6 @@ import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ontologizer.gui.swt.support.SWTUtil;
-import ontologizer.util.BareBonesBrowserLaunch;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -42,295 +39,309 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import ontologizer.gui.swt.support.SWTUtil;
+import ontologizer.util.BareBonesBrowserLaunch;
+
 /**
- * This class represents the help window of 
- * the Ontologizer Application.
- * 
+ * This class represents the help window of the Ontologizer Application.
+ *
  * @author Sebastian Bauer
  */
 public class HelpWindow extends ApplicationWindow
 {
-	private Browser browser;
-	private StyledText styledText;
-	private List tocList;
+    private Browser browser;
 
-	private String [] urls;
-	private String [] titles;
-	private String [] filenames;
+    private StyledText styledText;
 
-	private String folder;
+    private List tocList;
 
-	private static String NOBROWSER_TOOLTIP = "The SWT browser widget could not " +
-		"be instantiated. Please ensure that your system fulfills the requirements " +
-		"of the SWT browser. Further information can be obtained from the FAQ at " +
-		"http://www.eclipse.org/swt.";
+    private String[] urls;
 
-	/**
-	 * Parse the title of the html file.
-	 * 
-	 * @param file
-	 * @return
-	 */
-	private String parseHTMLTitle(File file)
-	{
-		try
-		{
-			BufferedReader bfr = new BufferedReader(new FileReader(file));
-			StringBuilder title = new StringBuilder();
+    private String[] titles;
 
-			String line;
-			boolean insideTitle = false;
-			boolean leave = false;
+    private String[] filenames;
 
-			while (((line = bfr.readLine()) != null) && !leave)
-			{
-				int titleStart = -1;
-				int titleEnd = -1;
-				if (!insideTitle)
-				{
-					titleStart = line.indexOf("<title>");
-					if (titleStart != -1)
-					{
-						titleStart += 7;
-						insideTitle = true;
-					}
-				}
+    private String folder;
 
-				if (insideTitle)
-				{
-					titleEnd = line.indexOf("</title>");
-					if (titleEnd != -1)
-					{
-						insideTitle = false;
-						leave = true;
-					}
-				}
+    private static String NOBROWSER_TOOLTIP = "The SWT browser widget could not " +
+        "be instantiated. Please ensure that your system fulfills the requirements " +
+        "of the SWT browser. Further information can be obtained from the FAQ at " +
+        "http://www.eclipse.org/swt.";
 
-				if (titleStart != -1 || titleEnd != -1)
-				{
-					if (titleStart == -1) titleStart = 0;
-					if (titleEnd == -1) titleEnd = line.length();
-					title.append(line.substring(titleStart,titleEnd));
-				} else
-				{
-					if (insideTitle)
-						title.append(line);
-				}
-			}
+    /**
+     * Parse the title of the html file.
+     *
+     * @param file
+     * @return
+     */
+    private String parseHTMLTitle(File file)
+    {
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(file));
+            StringBuilder title = new StringBuilder();
 
-			bfr.close();
-			return title.toString().trim();
-		} catch (FileNotFoundException e)
-		{
-		} catch (IOException e)
-		{
-		}
+            String line;
+            boolean insideTitle = false;
+            boolean leave = false;
 
-		return "Unknown title";
-	}
+            while (((line = bfr.readLine()) != null) && !leave) {
+                int titleStart = -1;
+                int titleEnd = -1;
+                if (!insideTitle) {
+                    titleStart = line.indexOf("<title>");
+                    if (titleStart != -1) {
+                        titleStart += 7;
+                        insideTitle = true;
+                    }
+                }
 
-	/**
-	 * Populates the table of contents.
-	 */
-	private void readToc()
-	{
-		File file = new File(folder);
-		File[] files = file.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".html") || name.endsWith(".htm");
-			}
-		});
-		if (files != null)
-		{
-			Arrays.sort(files,new Comparator<File>(){
-				public int compare(File o1, File o2)
-				{
-					return o1.getName().compareToIgnoreCase(o2.getName());   
-				}
-			});
+                if (insideTitle) {
+                    titleEnd = line.indexOf("</title>");
+                    if (titleEnd != -1) {
+                        insideTitle = false;
+                        leave = true;
+                    }
+                }
 
-			urls = new String[files.length];
-			titles = new String[files.length];
-			filenames = new String[files.length];
+                if (titleStart != -1 || titleEnd != -1) {
+                    if (titleStart == -1) {
+                        titleStart = 0;
+                    }
+                    if (titleEnd == -1) {
+                        titleEnd = line.length();
+                    }
+                    title.append(line.substring(titleStart, titleEnd));
+                } else {
+                    if (insideTitle) {
+                        title.append(line);
+                    }
+                }
+            }
 
-			for (int i=0;i<files.length;i++)
-			{
-				try
-				{
-					titles[i] = parseHTMLTitle(files[i]);
-					filenames[i] = files[i].getCanonicalPath();
-					urls[i] = files[i].toURI().toURL().toString();
-				}
-				catch (MalformedURLException e) { }
-				catch (IOException e2) {}
-			}
-		} else
-		{
-			urls = new String[0];
-			titles = new String[0];
-		}
-	}
+            bfr.close();
+            return title.toString().trim();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param display
-	 */
-	public HelpWindow(Display display, String helpFolder)
-	{
-		super(display);
+        return "Unknown title";
+    }
 
-		folder = helpFolder;
-		readToc();
+    /**
+     * Populates the table of contents.
+     */
+    private void readToc()
+    {
+        File file = new File(this.folder);
+        File[] files = file.listFiles(new FilenameFilter()
+        {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return name.endsWith(".html") || name.endsWith(".htm");
+            }
+        });
+        if (files != null) {
+            Arrays.sort(files, new Comparator<File>()
+            {
+                @Override
+                public int compare(File o1, File o2)
+                {
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }
+            });
 
-		shell.setText("Ontologizer - Help");
-		shell.setLayout(new FillLayout());
-		
-		/* Prevent the disposal of the window on a close event,
-		 * but make the window invisible */
-		shell.addShellListener(new ShellAdapter(){
-			public void shellClosed(ShellEvent e)
-			{
-				e.doit = false;
-				shell.setVisible(false);
-			}
-		});
+            this.urls = new String[files.length];
+            this.titles = new String[files.length];
+            this.filenames = new String[files.length];
 
-		Composite composite = new Composite(shell,0);
-		composite.setLayout(new GridLayout(1,false));
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    this.titles[i] = parseHTMLTitle(files[i]);
+                    this.filenames[i] = files[i].getCanonicalPath();
+                    this.urls[i] = files[i].toURI().toURL().toString();
+                } catch (MalformedURLException e) {
+                } catch (IOException e2) {
+                }
+            }
+        } else {
+            this.urls = new String[0];
+            this.titles = new String[0];
+        }
+    }
 
-		final ToolBar navBar = new ToolBar(composite, 0);
-		GridData navBarGridData = new GridData();
-		navBarGridData.grabExcessHorizontalSpace = true;
-		navBarGridData.horizontalAlignment = SWT.END;
-		navBarGridData.horizontalSpan = 2;
-		navBar.setLayoutData(navBarGridData);
+    /**
+     * Constructor.
+     *
+     * @param display
+     */
+    public HelpWindow(Display display, String helpFolder)
+    {
+        super(display);
 
-		final ToolItem back = new ToolItem(navBar, SWT.PUSH);
-		back.setText("Back");
-		back.setEnabled(false);
-		final ToolItem forward = new ToolItem(navBar, SWT.PUSH);
-		forward.setText("Forward");
-		forward.setEnabled(false);
+        this.folder = helpFolder;
+        readToc();
 
-		back.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (browser != null)
-					browser.back();
-			}
-	      });
-		forward.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				if (browser != null)
-					browser.forward();
-			};
-	      });
+        this.shell.setText("Ontologizer - Help");
+        this.shell.setLayout(new FillLayout());
 
-		SashForm sash = new SashForm(composite, SWT.HORIZONTAL);
-		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
+        /*
+         * Prevent the disposal of the window on a close event, but make the window invisible
+         */
+        this.shell.addShellListener(new ShellAdapter()
+        {
+            @Override
+            public void shellClosed(ShellEvent e)
+            {
+                e.doit = false;
+                HelpWindow.this.shell.setVisible(false);
+            }
+        });
 
-		tocList = new List(sash, SWT.BORDER|SWT.SINGLE);
-		tocList.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				int index = tocList.getSelectionIndex();
+        Composite composite = new Composite(this.shell, 0);
+        composite.setLayout(new GridLayout(1, false));
 
-				if (browser != null)
-				{
-					browser.setUrl(urls[index]);
-				} else
-				{
-					/* Load the file manually and display the html stripped contents
-					 * well, not a real HTML parser at all, but it fulfills the needs */
-					try
-					{
-						BufferedReader fr = new BufferedReader(new FileReader(filenames[index]));
-						String line;
-						StringBuilder buffer = new StringBuilder();
+        final ToolBar navBar = new ToolBar(composite, 0);
+        GridData navBarGridData = new GridData();
+        navBarGridData.grabExcessHorizontalSpace = true;
+        navBarGridData.horizontalAlignment = SWT.END;
+        navBarGridData.horizontalSpan = 2;
+        navBar.setLayoutData(navBarGridData);
 
-						Pattern liPattern = Pattern.compile(".*<li>(.*)</li>.*", Pattern.CASE_INSENSITIVE);
+        final ToolItem back = new ToolItem(navBar, SWT.PUSH);
+        back.setText("Back");
+        back.setEnabled(false);
+        final ToolItem forward = new ToolItem(navBar, SWT.PUSH);
+        forward.setText("Forward");
+        forward.setEnabled(false);
 
-						while ((line = fr.readLine()) != null)
-						{
-							line = line.replaceAll("<H1>.*</H1>","<p>");
-							line = line.replaceAll("<h1>.*</h1>","<p>");
-							Matcher m = liPattern.matcher(line);
-							if (m.matches())
-								line = m.replaceFirst(" - " + m.group(1) + "<p>");
-							
-							line = line.replaceAll("<[^Pp].+?>","").trim();
-							line = line.replaceAll("<[Pp]>","\n");
-							line = line.replaceAll("</[Pp]>","\n");
-							
-							if (line.length() != 0)
-							{
-								buffer.append(line);
-								buffer.append(" ");
-							}
-						}
-						styledText.setText(buffer.toString());
-					}
-					catch (FileNotFoundException e1) { }
-					catch (IOException e2) { }
-				}
-			}
-		});
+        back.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (HelpWindow.this.browser != null) {
+                    HelpWindow.this.browser.back();
+                }
+            }
+        });
+        forward.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (HelpWindow.this.browser != null) {
+                    HelpWindow.this.browser.forward();
+                }
+            };
+        });
 
-		for (int i=0;i<titles.length;i++)
-		{
-			tocList.add(titles[i]);
-		}
+        SashForm sash = new SashForm(composite, SWT.HORIZONTAL);
+        sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		/* Use an auxiliary composite for the browser, because
-		 * the browser actually is instanciated even if it fails
-		 * (issue was reported and will be fixed in post Eclipse 3.2) */
-		final Composite browserComposite = new Composite(sash,0);
-		browserComposite.setLayout(new FillLayout());
-		browserComposite.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.GRAB_VERTICAL|GridData.FILL_BOTH));
-		try {
-			browser = new Browser(browserComposite, SWT.BORDER);
+        this.tocList = new List(sash, SWT.BORDER | SWT.SINGLE);
+        this.tocList.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                int index = HelpWindow.this.tocList.getSelectionIndex();
 
-			browser.addLocationListener(new LocationAdapter()
-			{
-				public void changing(LocationEvent event)
-				{
-					if (event.location.startsWith("http://"))
-					{
-						BareBonesBrowserLaunch.openURL(event.location);
-						event.doit = false;
-					}
-				}
+                if (HelpWindow.this.browser != null) {
+                    HelpWindow.this.browser.setUrl(HelpWindow.this.urls[index]);
+                } else {
+                    /*
+                     * Load the file manually and display the html stripped contents well, not a real HTML parser at
+                     * all, but it fulfills the needs
+                     */
+                    try (BufferedReader fr = new BufferedReader(new FileReader(HelpWindow.this.filenames[index]))) {
+                        String line;
+                        StringBuilder buffer = new StringBuilder();
 
-				public void changed(LocationEvent event)
-				{
-		            back.setEnabled(browser.isBackEnabled());
-		            forward.setEnabled(browser.isForwardEnabled());
-				}
-			});
-		} catch (SWTError e) {
-			browserComposite.dispose();
-			browser = null;
-			
-			/* Create the fall back environment */
-			Composite styledTextComposite = new Composite(sash,0);
-			styledTextComposite.setLayout(SWTUtil.newEmptyMarginGridLayout(1));
+                        Pattern liPattern = Pattern.compile(".*<li>(.*)</li>.*", Pattern.CASE_INSENSITIVE);
 
-			Label label = new Label(styledTextComposite,0);
-			label.setText("No browser available! Contents has been stripped!");
+                        while ((line = fr.readLine()) != null) {
+                            line = line.replaceAll("<H1>.*</H1>", "<p>");
+                            line = line.replaceAll("<h1>.*</h1>", "<p>");
+                            Matcher m = liPattern.matcher(line);
+                            if (m.matches()) {
+                                line = m.replaceFirst(" - " + m.group(1) + "<p>");
+                            }
 
-			String error = e.getLocalizedMessage();
-			if (error != null)
-				label.setToolTipText(NOBROWSER_TOOLTIP + "\n\nReason for failing: " + error);
-			else
-				label.setToolTipText(NOBROWSER_TOOLTIP);
+                            line = line.replaceAll("<[^Pp].+?>", "").trim();
+                            line = line.replaceAll("<[Pp]>", "\n");
+                            line = line.replaceAll("</[Pp]>", "\n");
 
-			styledText = new StyledText(styledTextComposite,SWT.BORDER|SWT.READ_ONLY|SWT.WRAP|SWT.V_SCROLL);
-			styledText.setEditable(false);
-			styledText.setLayoutData(new GridData(GridData.FILL_BOTH|GridData.GRAB_HORIZONTAL|GridData.GRAB_VERTICAL));
-	      }
+                            if (line.length() != 0) {
+                                buffer.append(line);
+                                buffer.append(" ");
+                            }
+                        }
+                        HelpWindow.this.styledText.setText(buffer.toString());
+                    } catch (FileNotFoundException e1) {
+                    } catch (IOException e2) {
+                    }
+                }
+            }
+        });
 
-		sash.setWeights(new int[]{1,3});
-	}
+        for (String title : this.titles) {
+            this.tocList.add(title);
+        }
+
+        /*
+         * Use an auxiliary composite for the browser, because the browser actually is instanciated even if it fails
+         * (issue was reported and will be fixed in post Eclipse 3.2)
+         */
+        final Composite browserComposite = new Composite(sash, 0);
+        browserComposite.setLayout(new FillLayout());
+        browserComposite
+            .setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH));
+        try {
+            this.browser = new Browser(browserComposite, SWT.BORDER);
+
+            this.browser.addLocationListener(new LocationAdapter()
+            {
+                @Override
+                public void changing(LocationEvent event)
+                {
+                    if (event.location.startsWith("http://")) {
+                        BareBonesBrowserLaunch.openURL(event.location);
+                        event.doit = false;
+                    }
+                }
+
+                @Override
+                public void changed(LocationEvent event)
+                {
+                    back.setEnabled(HelpWindow.this.browser.isBackEnabled());
+                    forward.setEnabled(HelpWindow.this.browser.isForwardEnabled());
+                }
+            });
+        } catch (SWTError e) {
+            browserComposite.dispose();
+            this.browser = null;
+
+            /* Create the fall back environment */
+            Composite styledTextComposite = new Composite(sash, 0);
+            styledTextComposite.setLayout(SWTUtil.newEmptyMarginGridLayout(1));
+
+            Label label = new Label(styledTextComposite, 0);
+            label.setText("No browser available! Contents has been stripped!");
+
+            String error = e.getLocalizedMessage();
+            if (error != null) {
+                label.setToolTipText(NOBROWSER_TOOLTIP + "\n\nReason for failing: " + error);
+            } else {
+                label.setToolTipText(NOBROWSER_TOOLTIP);
+            }
+
+            this.styledText = new StyledText(styledTextComposite, SWT.BORDER | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+            this.styledText.setEditable(false);
+            this.styledText
+                .setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
+        }
+
+        sash.setWeights(new int[] { 1, 3 });
+    }
 }

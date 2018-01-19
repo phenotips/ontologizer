@@ -3,21 +3,20 @@ package ontologizer.go;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.zip.GZIPInputStream;
 
 import ontologizer.association.AbstractByteLineScanner;
 import ontologizer.types.ByteString;
 import sonumina.collections.ReferencePool;
-import sonumina.math.graph.AbstractGraph.DotAttributesProvider;
 import sonumina.math.graph.DirectedGraph;
 import sonumina.math.graph.Edge;
 
@@ -65,12 +64,12 @@ public class OBOParser
     /**
      * Escaped characters such as \\ in the gene_ontology.obo file.
      */
-    private static final HashMap<Character, Character> escapeChars = new HashMap<Character, Character>();
+    private static final HashMap<Character, Character> escapeChars = new HashMap<>();
 
     /**
      * Reverse direction
      */
-    private static final HashMap<Character, Character> unescapeChars = new HashMap<Character, Character>();
+    private static final HashMap<Character, Character> unescapeChars = new HashMap<>();
 
     static {
         escapeChars.put(new Character(':'), new Character(':'));
@@ -107,10 +106,10 @@ public class OBOParser
     private String date;
 
     /** Collection of all terms */
-    private HashSet<Term> terms = new HashSet<Term>();
+    private HashSet<Term> terms = new HashSet<>();
 
     /** Collection of subsets */
-    private HashMap<String, Subset> subsets = new HashMap<String, Subset>();
+    private HashMap<String, Subset> subsets = new HashMap<>();
 
     /** Statistics */
     private int numberOfRelations;
@@ -119,10 +118,10 @@ public class OBOParser
     private PrefixPool prefixPool = new PrefixPool();
 
     /** Pool for term ids */
-    private ReferencePool<TermID> termIDPool = new ReferencePool<TermID>();
+    private ReferencePool<TermID> termIDPool = new ReferencePool<>();
 
     /** All parsed namespaces */
-    private HashMap<String, Namespace> namespaces = new HashMap<String, Namespace>();
+    private HashMap<String, Namespace> namespaces = new HashMap<>();
 
     /** The Stanza currently being processed */
     private Stanza currentStanza;
@@ -143,25 +142,25 @@ public class OBOParser
     private boolean currentObsolete;
 
     /** The parents of the term of the stanza currently being parsed */
-    private ArrayList<ParentTermID> currentParents = new ArrayList<ParentTermID>();
+    private ArrayList<ParentTermID> currentParents = new ArrayList<>();
 
     /** The alternative ids of the term */
-    private ArrayList<TermID> currentAlternatives = new ArrayList<TermID>();
+    private ArrayList<TermID> currentAlternatives = new ArrayList<>();
 
     /** The equivalent ids of the term */
-    private ArrayList<TermID> currentEquivalents = new ArrayList<TermID>();
+    private ArrayList<TermID> currentEquivalents = new ArrayList<>();
 
     /** Synonyms, if any, for the Term currently being parsed */
-    private ArrayList<String> currentSynonyms = new ArrayList<String>();
+    private ArrayList<String> currentSynonyms = new ArrayList<>();
 
     /** Intersections, if any, for the Term currently being parsed */
-    private ArrayList<String> currentIntersections = new ArrayList<String>();
+    private ArrayList<String> currentIntersections = new ArrayList<>();
 
     /** The subsets */
-    private ArrayList<Subset> currentSubsets = new ArrayList<Subset>();
+    private ArrayList<Subset> currentSubsets = new ArrayList<>();
 
     /** The xrefs of the term */
-    private ArrayList<TermXref> currentXrefs = new ArrayList<TermXref>();
+    private ArrayList<TermXref> currentXrefs = new ArrayList<>();
 
     /**
      * @param filename path and name of the gene_ontology.obo file
@@ -524,43 +523,6 @@ public class OBOParser
                 return next;
             }
 
-            /**
-             * Generate Java code for if clauses.
-             */
-            private void generateKeywordIfClauses()
-            {
-                final DirectedGraph<Integer> tree = new DirectedGraph<Integer>();
-
-                Integer root = new Integer(0);
-                tree.addVertex(root);
-
-                for (byte[] keyword : this.termKeywords) {
-                    /* First level is the length of the keyword */
-                    Integer current = insertEdge(tree, root, (byte) keyword.length);
-
-                    for (byte c : keyword) {
-                        current = insertEdge(tree, current, c);
-                    }
-                }
-
-                /* Collapse */
-                collapse(root, tree);
-
-                writeCode(root, tree, 0, 0, "");
-
-                tree.writeDOT(new PrintStream(System.out), new DotAttributesProvider<Integer>()
-                {
-                    @Override
-                    public String getDotEdgeAttributes(Integer src, Integer dest)
-                    {
-
-                        return "label=\"" + ((StringEdge) tree.getEdge(src, dest)).getL() + "\"";
-                    }
-                });
-
-                System.exit(-1);
-            }
-
             /* Supported relationship types */
             private final byte[] PART_OF_KEYWORD = "part_of".getBytes();
 
@@ -625,14 +587,6 @@ public class OBOParser
             private String getLineContens()
             {
                 return new ByteString(this.line, this.start, this.start + this.len).toString();
-            }
-
-            final private byte toLower(byte c)
-            {
-                if (c >= 65 && c <= 90) {
-                    c += 32;
-                }
-                return c;
             }
 
             /**

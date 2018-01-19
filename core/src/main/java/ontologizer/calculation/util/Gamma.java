@@ -27,7 +27,7 @@ public class Gamma
 
     public static void main(String argv[])
     {
-        double a, b, c, d, e, ulp;
+        double a, b, c, d, e;
         for (int i = 1; i < 171; ++i) {
             a = Math.log(factorial(i));
             b = lgamma(i + 1);
@@ -91,7 +91,6 @@ public class Gamma
 
     private static final double zero = 0.0,
         one = 1.0,
-        two = 2.0,
         half = .5,
         SQRT2PI = 2.50662827463100024157,
         LN_SQRT2PI = 0.9189385332046727418;
@@ -232,8 +231,8 @@ public class Gamma
                     -.26190838401581408670e-4 / ++x +
                     .36899182659531622704e-5 / ++x)
             + (tmp - 4.7421875) * Math.log(tmp) - tmp
-            // + (saveX + .5)*Math.log(tmp) + /*Math.sqrt(tmp)*/ - tmp
-            ;
+        // + (saveX + .5)*Math.log(tmp) + /*Math.sqrt(tmp)*/ - tmp
+        ;
     }
 
     private static final double SC1 = 0.08333333333333333,

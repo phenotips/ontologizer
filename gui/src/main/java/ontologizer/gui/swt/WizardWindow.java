@@ -9,8 +9,6 @@ package ontologizer.gui.swt;
 import java.util.LinkedList;
 import java.util.List;
 
-import ontologizer.gui.swt.support.SWTUtil;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
@@ -25,328 +23,333 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import ontologizer.gui.swt.support.SWTUtil;
+
 public abstract class WizardWindow extends ApplicationWindow
 {
-	private Composite stackComposite;
-	private StackLayout stackLayout;
+    private Composite stackComposite;
 
-	private StyledText descriptionLabel;
+    private StackLayout stackLayout;
 
-	private Button prevButton;
-	private Button nextButton;
-	private Button finishButton;
-	private Button cancelButton;
-	
-	private List<SinglePage> pageList = new LinkedList<SinglePage>();
-	
-	/** Index of currently displayed page */
-	protected int currentPage;
-	
-	public static interface PageCallback
-	{
-		boolean completed();
-	};
-	
-	protected static class SinglePage
-	{
-		private Composite page;
-		private String description;
-		private PageCallback pcb;
+    private StyledText descriptionLabel;
 
-		public SinglePage(Composite page, String description, PageCallback pcb)
-		{
-			this.page = page;
-			this.description = description;
-			this.pcb = pcb;
-		}
+    private Button prevButton;
 
-		public SinglePage(Composite page, String description)
-		{
-			this(page,description,null);
-		}
+    private Button nextButton;
 
-		public Composite getPage()
-		{
-			return page;
-		}
-		
-		public String getDescription()
-		{
-			return description;
-		}
-		
-		public PageCallback getPageCallback()
-		{
-			return pcb;
-		}
-	}
-	
-	public WizardWindow(Display display)
-	{
-		super(display);
+    private Button finishButton;
 
-		/* Prevent the disposal of the window on a close event,
-		 * but make the window invisible */
-		shell.addShellListener(new ShellAdapter(){
-			public void shellClosed(ShellEvent e)
-			{
-				e.doit = false;
-				cancel();
-			}
-		});
+    private Button cancelButton;
 
-		GridData gd;
+    private List<SinglePage> pageList = new LinkedList<>();
 
-		shell.setLayout(SWTUtil.newEmptyMarginGridLayout(1));
+    /** Index of currently displayed page */
+    protected int currentPage;
 
-		Composite titleComposite = new Composite(shell,0);
-		titleComposite.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		titleComposite.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		GridLayout layout = SWTUtil.newEmptyMarginGridLayout(1);
-		layout.verticalSpacing = 0;
-		titleComposite.setLayout(layout);
-		titleComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.GRAB_HORIZONTAL));
+    public static interface PageCallback
+    {
+        boolean completed();
+    };
 
-		Composite descriptionComposite = new Composite(titleComposite,0);
-		descriptionComposite.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		descriptionComposite.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		descriptionComposite.setLayout(new GridLayout());
-		descriptionComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.GRAB_HORIZONTAL));
+    protected static class SinglePage
+    {
+        private Composite page;
 
-		descriptionLabel = new StyledText(descriptionComposite,SWT.WRAP|SWT.READ_ONLY);
-		descriptionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL|GridData.GRAB_HORIZONTAL));
+        private String description;
 
-		Label sep = new Label(titleComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		gd = new GridData();
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.FILL;
-		gd.grabExcessVerticalSpace = false;
-		gd.horizontalSpan = 4;
-		sep.setLayoutData(gd);	
+        private PageCallback pcb;
 
-		stackLayout = new StackLayout();
-		stackComposite = new Composite(shell,0);
-		stackComposite.setLayout(stackLayout);
-		gd = new GridData();
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.FILL;
-		gd.grabExcessVerticalSpace = true;
-		gd.verticalAlignment = SWT.FILL;
-		gd.horizontalSpan = 4;
-		stackComposite.setLayoutData(gd);
+        public SinglePage(Composite page, String description, PageCallback pcb)
+        {
+            this.page = page;
+            this.description = description;
+            this.pcb = pcb;
+        }
 
-		addPages(stackComposite);
+        public SinglePage(Composite page, String description)
+        {
+            this(page, description, null);
+        }
 
-		sep = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
-		gd = new GridData();
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.FILL;
-		gd.grabExcessVerticalSpace = false;
-		gd.horizontalSpan = 4;
-		sep.setLayoutData(gd);	
+        public Composite getPage()
+        {
+            return this.page;
+        }
 
-		Composite buttonComposite = new Composite(shell,0);
-		buttonComposite.setLayout(new GridLayout(4,false));
-		buttonComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END|GridData.FILL_HORIZONTAL));
+        public String getDescription()
+        {
+            return this.description;
+        }
 
-		prevButton = new Button(buttonComposite,0);
-		prevButton.setText("< Prev");
-		prevButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		prevButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (completedCurrentPage())
-					showPage(currentPage-1);
-			}
-		});
-		
-		nextButton = new Button(buttonComposite,0);
-		nextButton.setText("> Next");
-		nextButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		nextButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (completedCurrentPage())
-					showPage(currentPage+1);
-			}
-		});
+        public PageCallback getPageCallback()
+        {
+            return this.pcb;
+        }
+    }
 
-		finishButton = new Button(buttonComposite,0);
-		finishButton.setText("Finish");
-		finishButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		finishButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (completedCurrentPage() && finish())
-					shell.setVisible(false);
-			}
-		});
+    public WizardWindow(Display display)
+    {
+        super(display);
 
-		cancelButton = new Button(buttonComposite,0);
-		cancelButton.setText("Cancel");
-		cancelButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		cancelButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				cancel();
-			}
-		});
+        /*
+         * Prevent the disposal of the window on a close event, but make the window invisible
+         */
+        this.shell.addShellListener(new ShellAdapter()
+        {
+            @Override
+            public void shellClosed(ShellEvent e)
+            {
+                e.doit = false;
+                cancel();
+            }
+        });
 
-		reset();
-		showPage(0);
-		shell.pack();
-	}
+        GridData gd;
 
-	/**
-	 * Cancel the operation.
-	 */
-	private void cancel()
-	{
-		shell.setVisible(false);
-		reset();
-		showPage(0);
-	}
+        this.shell.setLayout(SWTUtil.newEmptyMarginGridLayout(1));
 
-	/**
-	 * Resets the contents of the pages.
-	 */
-	protected void reset()
-	{
-	}
-	
-	/**
-	 * 
-	 * @param page
-	 */
-	protected void addPage(SinglePage page)
-	{
-		pageList.add(page);
-	}
+        Composite titleComposite = new Composite(this.shell, 0);
+        titleComposite.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+        titleComposite.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+        GridLayout layout = SWTUtil.newEmptyMarginGridLayout(1);
+        layout.verticalSpacing = 0;
+        titleComposite.setLayout(layout);
+        titleComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
 
-	/**
-	 * Returns the displayed page number for the given page index.
-	 * You can overwrite this method if your wizard, e.g., defines
-	 * less pages than amount of pages which are presented to the
-	 * user (so some pages are recycled).
-	 * 
-	 * @param which
-	 * @return
-	 */
-	protected int getDisplayedPageNumber(int which)
-	{
-		return which;
-	}
+        Composite descriptionComposite = new Composite(titleComposite, 0);
+        descriptionComposite.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+        descriptionComposite.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+        descriptionComposite.setLayout(new GridLayout());
+        descriptionComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
 
-	/**
-	 * Shows the given page.
-	 * 
-	 * @param which
-	 */
-	protected void showPage(int which)
-	{
-		int displayedPageNumber = getDisplayedPageNumber(which);
+        this.descriptionLabel = new StyledText(descriptionComposite, SWT.WRAP | SWT.READ_ONLY);
+        this.descriptionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
 
-		if (displayedPageNumber >= 0 && displayedPageNumber < pageList.size())
-		{
-			currentPage = which;
-			
-			SinglePage sp = pageList.get(displayedPageNumber);
-			descriptionLabel.setText(sp.getDescription());
-			stackLayout.topControl = sp.getPage();
-			stackComposite.layout();
-			shell.layout();
+        Label sep = new Label(titleComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+        gd = new GridData();
+        gd.grabExcessHorizontalSpace = true;
+        gd.horizontalAlignment = SWT.FILL;
+        gd.grabExcessVerticalSpace = false;
+        gd.horizontalSpan = 4;
+        sep.setLayoutData(gd);
 
-			updateButtonStates();
-		}
-	}
+        this.stackLayout = new StackLayout();
+        this.stackComposite = new Composite(this.shell, 0);
+        this.stackComposite.setLayout(this.stackLayout);
+        gd = new GridData();
+        gd.grabExcessHorizontalSpace = true;
+        gd.horizontalAlignment = SWT.FILL;
+        gd.grabExcessVerticalSpace = true;
+        gd.verticalAlignment = SWT.FILL;
+        gd.horizontalSpan = 4;
+        this.stackComposite.setLayoutData(gd);
 
-	/**
-	 * Perform the action when a page selection has been completed.
-	 * 
-	 * @return false if input was, e.g. invalid.
-	 * 
-	 */
-	private boolean completedCurrentPage()
-	{
-		int displayedPageNumber = getDisplayedPageNumber(currentPage);
+        addPages(this.stackComposite);
 
-		if (displayedPageNumber >= 0 && displayedPageNumber < pageList.size())
-		{
-			SinglePage sp = pageList.get(displayedPageNumber);
-			if (sp.getPageCallback() != null)
-				return sp.getPageCallback().completed();
-			return true;
-		}
-		return false;
-	}
+        sep = new Label(this.shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+        gd = new GridData();
+        gd.grabExcessHorizontalSpace = true;
+        gd.horizontalAlignment = SWT.FILL;
+        gd.grabExcessVerticalSpace = false;
+        gd.horizontalSpan = 4;
+        sep.setLayoutData(gd);
 
-	/**
-	 * Update the buttons' states.
-	 */
-	private void updateButtonStates()
-	{
-		prevButton.setEnabled(currentPage > 0);
-	}
-	
-	/**
-	 * Clears the error message.
-	 */
-	protected void clearError()
-	{
-		nextButton.setEnabled(true);
-		finishButton.setEnabled(true);
+        Composite buttonComposite = new Composite(this.shell, 0);
+        buttonComposite.setLayout(new GridLayout(4, false));
+        buttonComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.FILL_HORIZONTAL));
 
-		int displayedPageNumber = getDisplayedPageNumber(currentPage);
-		if (displayedPageNumber >= 0 && displayedPageNumber < pageList.size())
-		{
-			SinglePage sp = pageList.get(displayedPageNumber);
-			descriptionLabel.setText(sp.getDescription());
-		}
-	}
-	
-	/**
-	 * Displays an error messsage.
-	 * 
-	 * @param err
-	 */
-	protected void displayError(String err)
-	{
-		nextButton.setEnabled(false);
-		finishButton.setEnabled(false);
+        this.prevButton = new Button(buttonComposite, 0);
+        this.prevButton.setText("< Prev");
+        this.prevButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        this.prevButton.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (completedCurrentPage()) {
+                    showPage(WizardWindow.this.currentPage - 1);
+                }
+            }
+        });
 
-		if (err != null)
-		{
-			descriptionLabel.setText(err);
-		} else
-		{
-			int displayedPageNumber = getDisplayedPageNumber(currentPage);
-			if (displayedPageNumber >= 0 && displayedPageNumber < pageList.size())
-			{
-				SinglePage sp = pageList.get(displayedPageNumber);
-				descriptionLabel.setText(sp.getDescription());
-			}
-		}
-	}
+        this.nextButton = new Button(buttonComposite, 0);
+        this.nextButton.setText("> Next");
+        this.nextButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        this.nextButton.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (completedCurrentPage()) {
+                    showPage(WizardWindow.this.currentPage + 1);
+                }
+            }
+        });
 
-	/**
-	 * Returns the parent which should be used to create the
-	 * pages.
-	 * 
-	 * @return
-	 */
-	protected Composite getPageParent()
-	{
-		return stackComposite;
-	}
+        this.finishButton = new Button(buttonComposite, 0);
+        this.finishButton.setText("Finish");
+        this.finishButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        this.finishButton.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (completedCurrentPage() && finish()) {
+                    WizardWindow.this.shell.setVisible(false);
+                }
+            }
+        });
 
-	protected abstract void addPages(Composite parent);
-	protected abstract boolean finish();
+        this.cancelButton = new Button(buttonComposite, 0);
+        this.cancelButton.setText("Cancel");
+        this.cancelButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        this.cancelButton.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                cancel();
+            }
+        });
+
+        reset();
+        showPage(0);
+        this.shell.pack();
+    }
+
+    /**
+     * Cancel the operation.
+     */
+    private void cancel()
+    {
+        this.shell.setVisible(false);
+        reset();
+        showPage(0);
+    }
+
+    /**
+     * Resets the contents of the pages.
+     */
+    protected void reset()
+    {
+    }
+
+    /**
+     * @param page
+     */
+    protected void addPage(SinglePage page)
+    {
+        this.pageList.add(page);
+    }
+
+    /**
+     * Returns the displayed page number for the given page index. You can overwrite this method if your wizard, e.g.,
+     * defines less pages than amount of pages which are presented to the user (so some pages are recycled).
+     *
+     * @param which
+     * @return
+     */
+    protected int getDisplayedPageNumber(int which)
+    {
+        return which;
+    }
+
+    /**
+     * Shows the given page.
+     *
+     * @param which
+     */
+    protected void showPage(int which)
+    {
+        int displayedPageNumber = getDisplayedPageNumber(which);
+
+        if (displayedPageNumber >= 0 && displayedPageNumber < this.pageList.size()) {
+            this.currentPage = which;
+
+            SinglePage sp = this.pageList.get(displayedPageNumber);
+            this.descriptionLabel.setText(sp.getDescription());
+            this.stackLayout.topControl = sp.getPage();
+            this.stackComposite.layout();
+            this.shell.layout();
+
+            updateButtonStates();
+        }
+    }
+
+    /**
+     * Perform the action when a page selection has been completed.
+     *
+     * @return false if input was, e.g. invalid.
+     */
+    private boolean completedCurrentPage()
+    {
+        int displayedPageNumber = getDisplayedPageNumber(this.currentPage);
+
+        if (displayedPageNumber >= 0 && displayedPageNumber < this.pageList.size()) {
+            SinglePage sp = this.pageList.get(displayedPageNumber);
+            if (sp.getPageCallback() != null) {
+                return sp.getPageCallback().completed();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update the buttons' states.
+     */
+    private void updateButtonStates()
+    {
+        this.prevButton.setEnabled(this.currentPage > 0);
+    }
+
+    /**
+     * Clears the error message.
+     */
+    protected void clearError()
+    {
+        this.nextButton.setEnabled(true);
+        this.finishButton.setEnabled(true);
+
+        int displayedPageNumber = getDisplayedPageNumber(this.currentPage);
+        if (displayedPageNumber >= 0 && displayedPageNumber < this.pageList.size()) {
+            SinglePage sp = this.pageList.get(displayedPageNumber);
+            this.descriptionLabel.setText(sp.getDescription());
+        }
+    }
+
+    /**
+     * Displays an error messsage.
+     *
+     * @param err
+     */
+    protected void displayError(String err)
+    {
+        this.nextButton.setEnabled(false);
+        this.finishButton.setEnabled(false);
+
+        if (err != null) {
+            this.descriptionLabel.setText(err);
+        } else {
+            int displayedPageNumber = getDisplayedPageNumber(this.currentPage);
+            if (displayedPageNumber >= 0 && displayedPageNumber < this.pageList.size()) {
+                SinglePage sp = this.pageList.get(displayedPageNumber);
+                this.descriptionLabel.setText(sp.getDescription());
+            }
+        }
+    }
+
+    /**
+     * Returns the parent which should be used to create the pages.
+     *
+     * @return
+     */
+    protected Composite getPageParent()
+    {
+        return this.stackComposite;
+    }
+
+    protected abstract void addPages(Composite parent);
+
+    protected abstract boolean finish();
 }

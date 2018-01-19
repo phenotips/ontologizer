@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ontologizer.go.Namespace;
 import ontologizer.go.Ontology;
@@ -23,8 +21,6 @@ import ontologizer.go.TermID;
 
 public class GOTermCounter implements Iterable<TermID>
 {
-    private static Logger logger = LoggerFactory.getLogger(GOTermCounter.class.getCanonicalName());
-
     /**
      * Explicit and total annotations to a given term in the biological process namespace; key: a GO:id, value: an
      * Association Counter object.
@@ -44,9 +40,9 @@ public class GOTermCounter implements Iterable<TermID>
 
     public GOTermCounter(Ontology g)
     {
-        this.processHashMap = new HashMap<TermID, AssociationCounter>();
-        this.functionHashMap = new HashMap<TermID, AssociationCounter>();
-        this.componentHashMap = new HashMap<TermID, AssociationCounter>();
+        this.processHashMap = new HashMap<>();
+        this.functionHashMap = new HashMap<>();
+        this.componentHashMap = new HashMap<>();
 
         this.graph = g;
     }
@@ -66,7 +62,7 @@ public class GOTermCounter implements Iterable<TermID>
         }
 
         /* Second, add the indirect counts for ids */
-        final HashSet<TermID> allTerms = new HashSet<TermID>();
+        final HashSet<TermID> allTerms = new HashSet<>();
         this.graph.walkToSource(ids, new IVisitingGOVertex()
         {
             @Override
@@ -133,6 +129,8 @@ public class GOTermCounter implements Iterable<TermID>
                     this.componentHashMap.put(id, ac);
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -179,6 +177,8 @@ public class GOTermCounter implements Iterable<TermID>
                     ac.incrementCount();
                     this.componentHashMap.put(id, ac);
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -240,7 +240,7 @@ public class GOTermCounter implements Iterable<TermID>
         /*
          * TODO: This list built up is only temporarily because we have currently three separeted ontologies
          */
-        LinkedList<TermID> nameList = new LinkedList<TermID>();
+        LinkedList<TermID> nameList = new LinkedList<>();
 
         for (TermID term : this.processHashMap.keySet()) {
             nameList.add(term);

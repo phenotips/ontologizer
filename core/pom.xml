@@ -19,13 +19,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.22</version>
+      <version>1.7.25</version>
     </dependency>
 
     <dependency>
       <groupId>com.att.research</groupId>
       <artifactId>grappa</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

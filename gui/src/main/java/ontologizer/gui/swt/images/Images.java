@@ -6,7 +6,6 @@
  */
 package ontologizer.gui.swt.images;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.LinkedList;
 
@@ -14,64 +13,61 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 
-
 /**
  * Static class which manages the images of the program.
- * 
+ *
  * @author Sebastian Bauer
  */
 public class Images
 {
-	private static LinkedList<Image> imageList = new LinkedList<Image>();
-	private static Display display;
+    private static LinkedList<Image> imageList = new LinkedList<>();
 
-	/**
-	 * Sets the static display attribute, which is used
-	 * by loadImage().
-	 * 
-	 * @param newDisplay
-	 */
-	public static void setDisplay(Display newDisplay)
-	{
-		display = newDisplay;
-	}
+    private static Display display;
 
-	/**
-	 * Loads the given image.
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static Image loadImage(String fileName)
-	{
-		ImageData source;
-		try
-		{
-			source = new ImageData("src/ontologizer/gui/swt/images/" + fileName);
-		}
-		catch(Exception e)
-		{
-			InputStream stream = Images.class.getResourceAsStream(fileName);
-			if (stream == null)
-				return null;
-			source = new ImageData(stream);
-		}
+    /**
+     * Sets the static display attribute, which is used by loadImage().
+     *
+     * @param newDisplay
+     */
+    public static void setDisplay(Display newDisplay)
+    {
+        display = newDisplay;
+    }
 
-		Image image = new Image(display, source);
+    /**
+     * Loads the given image.
+     *
+     * @param fileName
+     * @return
+     */
+    public static Image loadImage(String fileName)
+    {
+        ImageData source;
+        try {
+            source = new ImageData("src/ontologizer/gui/swt/images/" + fileName);
+        } catch (Exception e) {
+            InputStream stream = Images.class.getResourceAsStream(fileName);
+            if (stream == null) {
+                return null;
+            }
+            source = new ImageData(stream);
+        }
 
-		if (image != null)
-			imageList.add(image);
-		return image;
-	}
-	
-	/**
-	 * Disposes all loaded images. Should be called before the application
-	 * leaves.
-	 */
-	public static void diposeImages()
-	{
-		for (Image img : imageList)
-			img.dispose();
-	}
+        Image image = new Image(display, source);
+
+        if (image != null) {
+            imageList.add(image);
+        }
+        return image;
+    }
+
+    /**
+     * Disposes all loaded images. Should be called before the application leaves.
+     */
+    public static void diposeImages()
+    {
+        for (Image img : imageList) {
+            img.dispose();
+        }
+    }
 }
-
